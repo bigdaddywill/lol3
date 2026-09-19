@@ -7,12 +7,18 @@ permissions:
   contents: write
 jobs:
   audit:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: packet-automation
-          fetch-depth: 0
+          fetch-depth: 1
+      - name: Fetch source workbook from main
+        run: |
+          git fetch origin main --depth=1
+          git show origin/main:Spanish_cleaned_after_152_on_Leads_Magnet.xlsx > Spanish_cleaned_after_152_on_Leads_Magnet.xlsx
+          test -s Spanish_cleaned_after_152_on_Leads_Magnet.xlsx
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -26,12 +32,12 @@ jobs:
           python pipeline.py inspect-workbook --input Spanish_cleaned_after_152_on_Leads_Magnet.xlsx > audit/contractor_audit.json
       - name: Run controlled live discovery
         run: |
-          python pipeline.py run --input Spanish_cleaned_after_152_on_Leads_Magnet.xlsx --limit 3 --max-results 5 --minimum-score 30 --related-count 1 --output audit/real_run || true
-          test -f audit/real_run/manifest.json && cp audit/real_run/manifest.json audit/real_run_manifest.json || echo '{"status":"no_manifest"}' > audit/real_run_manifest.json
+          python pipeline.py run --input Spanish_cleaned_after_152_on_Leads_Magnet.xlsx --limit 3 --max-results 5 --minimum-score 30 --related-count 1 --output audit/real_run
+          test -f audit/real_run/manifest.json
+          cp audit/real_run/manifest.json audit/real_run_manifest.json
       - name: Commit audit artifacts
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add audit
-          git commit -m "Record real workbook audit" || echo "No changes to commit"
-          git push origin packet-automation
+          git diff --cached --quiet || (git commit -m "Record real workbook audit" && git push origin packet-automation)
