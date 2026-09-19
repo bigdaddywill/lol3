@@ -39,3 +39,8 @@ F008 — Durable context contained stale active blockers.
 Root cause: context was append-heavy with no hot/warm/cold hierarchy.
 Fix: memory architecture upgrade with HOT_STATE and ledgers.
 Status: SOLVED BY MEMORY UPGRADE
+
+F009 — Long work was previously session-bound.
+Root cause: durable memory existed, but no durable representation of in-flight work, ownership, checkpoints, or stale-worker recovery.
+Fix: persistent executor with queue, lease, checkpoint, watchdog, and recovery protocol.
+Status: SOLVED BY EXECUTOR LAYER; END-TO-END WORKER TEST PENDING
