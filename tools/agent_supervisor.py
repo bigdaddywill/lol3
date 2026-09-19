@@ -324,12 +324,17 @@ def self_test() -> None:
     print("AGENT_BRAIN_SELF_TEST: PASS")
 
 
-def cmd_claim(worker_id: str) -> None:
+def load_live_state() -> tuple[dict[str, Any], dict[str, Any]]:
     state = load_json(STATE_PATH)
     queue = load_json(QUEUE_PATH)
     errors = validate_state(state) + validate_queue(queue)
     if errors:
         raise SystemExit("VALIDATION_ERROR: " + "; ".join(errors))
+    return state, queue
+
+
+def cmd_claim(worker_id: str) -> None:
+    state, queue = load_live_state()
     task = claim_next_task(state, queue, worker_id)
     save_json(STATE_PATH, state)
     save_json(QUEUE_PATH, queue)
@@ -339,6 +344,39 @@ def cmd_claim(worker_id: str) -> None:
         print("NO_READY_TASK")
 
 
+def cmd_checkpoint(task_id: str, worker_id: str, detail: str) -> None:
+    state, queue = load_live_state()
+    checkpoint(state, queue, task_id, worker_id, detail)
+    save_json(STATE_PATH, state)
+    save_json(QUEUE_PATH, queue)
+    print("CHECKPOINT_SAVED")
+
+
+def cmd_finish(task_id: str, worker_id: str, result: str) -> None:
+    state, queue = load_live_state()
+    finish(state, queue, task_id, worker_id, result)
+    save_json(STATE_PATH, state)
+    save_json(QUEUE_PATH, queue)
+    print("TASK_COMPLETE")
+
+
+def cmd_fail(task_id: str, worker_id: str, error: str, retry: bool) -> None:
+    state, queue = load_live_state()
+    fail(state, queue, task_id, worker_id, error, retry=retry)
+    save_json(STATE_PATH, state)
+    save_json(QUEUE_PATH, queue)
+    print("TASK_RETRYING" if retry else "TASK_FAILED")
+
+
+def cmd_watchdog() -> None:
+    state, queue = load_live_state()
+    recovered = recover_stale_leases(state, queue)
+    if recovered:
+        save_json(STATE_PATH, state)
+        save_json(QUEUE_PATH, queue)
+    print(f"WATCHDOG_RECOVERED={recovered}")
+
+
 def cmd_self_test() -> None:
     self_test()
 
@@ -346,13 +384,41 @@ def cmd_self_test() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
+
     claim_parser = sub.add_parser("claim")
     claim_parser.add_argument("--worker-id", default=os.environ.get("AGENT_WORKER_ID", "worker"))
+
+    checkpoint_parser = sub.add_parser("checkpoint")
+    checkpoint_parser.add_argument("--task-id", required=True)
+    checkpoint_parser.add_argument("--worker-id", required=True)
+    checkpoint_parser.add_argument("--detail", required=True)
+
+    finish_parser = sub.add_parser("finish")
+    finish_parser.add_argument("--task-id", required=True)
+    finish_parser.add_argument("--worker-id", required=True)
+    finish_parser.add_argument("--result", required=True)
+
+    fail_parser = sub.add_parser("fail")
+    fail_parser.add_argument("--task-id", required=True)
+    fail_parser.add_argument("--worker-id", required=True)
+    fail_parser.add_argument("--error", required=True)
+    fail_parser.add_argument("--no-retry", action="store_true")
+
+    sub.add_parser("watchdog")
     sub.add_parser("self-test")
+
     args = parser.parse_args()
 
     if args.command == "claim":
         cmd_claim(args.worker_id)
+    elif args.command == "checkpoint":
+        cmd_checkpoint(args.task_id, args.worker_id, args.detail)
+    elif args.command == "finish":
+        cmd_finish(args.task_id, args.worker_id, args.result)
+    elif args.command == "fail":
+        cmd_fail(args.task_id, args.worker_id, args.error, retry=not args.no_retry)
+    elif args.command == "watchdog":
+        cmd_watchdog()
     elif args.command == "self-test":
         cmd_self_test()
 
