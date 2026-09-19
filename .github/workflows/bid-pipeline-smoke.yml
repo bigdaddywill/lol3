@@ -55,6 +55,17 @@ jobs:
           print("output invariants: PASS")
           PY
 
+      - name: Live Indiana Armory Board scrape
+        run: |
+          python - <<'PY'
+          from pipeline.live_sources import scrape_sab_bids
+          bids = scrape_sab_bids()
+          assert bids, "Live Armory Board returned zero parseable bids"
+          print(f"live_sab_bids={len(bids)}")
+          for bid in bids[:10]:
+              print(bid["solicitation"], "|", bid["project_name"], "|", bid["deadline"], "|", bid["poc_email"])
+          PY
+
       - name: Upload pipeline artifact
         uses: actions/upload-artifact@v4
         with:
