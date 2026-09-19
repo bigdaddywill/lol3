@@ -1,0 +1,152 @@
+name: PHANTOM-20 Real Number Checkpoint Swarm
+
+on:
+  push:
+    paths:
+      - 'swarm/mission-20/**'
+      - 'tools/phone_swarm_worker.py'
+      - '.github/workflows/20-phone-swarm-checkpoint.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  worker:
+    name: 'PHANTOM-20 ${{ matrix.id }}'
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        include:
+          - {id: PHANTOM-20-01, role: CHIEF_INTEGRATOR}
+          - {id: PHANTOM-20-02, role: PROVIDER_RESEARCH_TEXTNOW}
+          - {id: PHANTOM-20-03, role: PROVIDER_RESEARCH_TALKATONE}
+          - {id: PHANTOM-20-04, role: PROVIDER_RESEARCH_GOOGLE_VOICE}
+          - {id: PHANTOM-20-05, role: POLICY_AUDITOR}
+          - {id: PHANTOM-20-06, role: NUMBER_PERMANENCE_AUDITOR}
+          - {id: PHANTOM-20-07, role: FREE_TIER_AUDITOR}
+          - {id: PHANTOM-20-08, role: SIGNUP_FLOW_RESEARCHER}
+          - {id: PHANTOM-20-09, role: BROWSER_RECON}
+          - {id: PHANTOM-20-10, role: CAPTCHA_CHECKPOINT_AUDITOR}
+          - {id: PHANTOM-20-11, role: EMAIL_VERIFICATION_RESEARCHER}
+          - {id: PHANTOM-20-12, role: ANDROID_APP_ROUTE_RESEARCHER}
+          - {id: PHANTOM-20-13, role: SMS_OUTBOUND_RESEARCHER}
+          - {id: PHANTOM-20-14, role: TARGET_VALIDATOR}
+          - {id: PHANTOM-20-15, role: RED_TEAM_COMPLIANCE}
+          - {id: PHANTOM-20-16, role: FAILURE_RECOVERY}
+          - {id: PHANTOM-20-17, role: CROSS_AGENT_SYNTHESIZER}
+          - {id: PHANTOM-20-18, role: BROWSER_EXECUTOR}
+          - {id: PHANTOM-20-19, role: ACCOUNT_STATE_AUDITOR}
+          - {id: PHANTOM-20-20, role: FINAL_HANDOFF_COORDINATOR}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run worker checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          SESSION_ID: ${{ matrix.id }}
+          ROLE: ${{ matrix.role }}
+          SWARM_ISSUE: '2'
+          TARGET_SMS: '3059278198'
+        run: python tools/phone_swarm_worker.py
+      - name: Browser recon
+        if: contains(matrix.role, 'BROWSER') || matrix.role == 'FINAL_HANDOFF_COORDINATOR'
+        run: |
+          python -m pip install --quiet playwright
+          python -m playwright install --with-deps chromium
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from playwright.sync_api import sync_playwright
+          session=os.environ['SESSION_ID']
+          out=Path('browser-evidence'); out.mkdir(exist_ok=True)
+          urls=['https://textfree.com/free-phone-number/','https://www.textnow.com/signup','https://www.talkatone.com/']
+          rows=[]
+          with sync_playwright() as p:
+              browser=p.chromium.launch(headless=True)
+              page=browser.new_page()
+              for url in urls:
+                  item={'url':url}
+                  try:
+                      page.goto(url,wait_until='domcontentloaded',timeout=30000)
+                      item['title']=page.title(); item['url_after']=page.url
+                      item['text']=page.locator('body').inner_text(timeout=10000)[:12000]
+                      item['captcha_observed']=any(k in item['text'].lower() for k in ['captcha','verify you are human','press and hold'])
+                      item['app_required_language']=any(k in item['text'].lower() for k in ['download the app','google play','app store'])
+                      page.screenshot(path=str(out/(session+'-'+str(len(rows))+'.png')),full_page=True)
+                  except Exception as exc:
+                      item['error']=str(exc)
+                  rows.append(item)
+              browser.close()
+          (out/(session+'.json')).write_text(json.dumps(rows,indent=2),encoding='utf-8')
+          PY
+      - name: Upload checkpoint evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.id }}
+          path: |
+            agent-output/${{ matrix.id }}.json
+            browser-evidence/*
+          if-no-files-found: warn
+          retention-days: 7
+
+  integrate:
+    name: PHANTOM-20 Integrator
+    needs: worker
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download evidence
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          path: swarm/mission-20/results
+      - name: Verify coordination
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          gh issue view 2 --repo "$GITHUB_REPOSITORY" --comments > swarm/mission-20/results/ISSUE_BUS.txt || true
+          python - <<'PY'
+          import json, re
+          from pathlib import Path
+          root=Path('swarm/mission-20/results')
+          rows=[]
+          for p in root.glob('PHANTOM-20-*/agent-output/*.json'):
+              try: rows.append(json.loads(p.read_text()))
+              except Exception: pass
+          expected={f'PHANTOM-20-{i:02d}' for i in range(1,21)}
+          seen={r.get('session_id') for r in rows}
+          bus=(root/'ISSUE_BUS.txt').read_text(errors='replace') if (root/'ISSUE_BUS.txt').exists() else ''
+          target='3059278198'
+          target_pass=bool(re.fullmatch(r'[2-9][0-9]{9}',target))
+          report={
+            'mission_id':'PHANTOM-20-REAL-NUMBER-001',
+            'expected_workers':20,
+            'observed_worker_evidence':len(rows),
+            'missing_workers':sorted(expected-seen),
+            'unique_workers':len(seen),
+            'issue_bus_mentions':bus.count('PHANTOM-20-'),
+            'target_sms_raw':target,
+            'target_shape_pass':target_pass,
+            'status':'PASS_CHECKPOINT' if seen==expected and target_pass else 'FAIL_COORDINATION',
+            'account_creation_performed_by_workflow':False,
+            'sms_sent_by_workflow':False,
+            'human_confirmation_required':True
+          }
+          Path('swarm/runs').mkdir(parents=True,exist_ok=True)
+          Path('swarm/runs/PHANTOM-20-REAL-NUMBER-001.json').write_text(json.dumps(report,indent=2)+'\n')
+          Path('swarm/runs/PHANTOM-20-REAL-NUMBER-001.md').write_text('# PHANTOM-20 Real Number Challenge\n\n'+json.dumps(report,indent=2)+'\n\n**Not a victory report:** final signup/send remains human-controlled and user confirmation is required.\n')
+          print(json.dumps(report,indent=2))
+          if report['status']!='PASS_CHECKPOINT': raise SystemExit(1)
+      - name: Persist integrated checkpoint
+        run: |
+          git config user.name 'PHANTOM-20 Integrator'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add swarm/runs/PHANTOM-20-REAL-NUMBER-001.md swarm/runs/PHANTOM-20-REAL-NUMBER-001.json
+          git diff --cached --quiet || git commit -m 'Record PHANTOM-20 coordination checkpoint'
+          git push
