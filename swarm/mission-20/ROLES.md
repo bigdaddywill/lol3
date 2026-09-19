@@ -17,22 +17,24 @@ mission_id: PHANTOM-20-REAL-NUMBER-001
 | 11 | EMAIL_VERIFICATION_RESEARCHER | Map legitimate email verification path |
 | 12 | ANDROID_APP_ROUTE_RESEARCHER | Investigate app-only signup requirements without bypasses |
 | 13 | SMS_OUTBOUND_RESEARCHER | Verify ordinary outbound U.S. SMS capability |
-| 14 | TARGET_VALIDATOR | Validate 3059278198 exactly; never guess missing digits |
+| 14 | TARGET_VALIDATOR | Validate 3059278198 exactly; never guess digits |
 | 15 | RED_TEAM_COMPLIANCE | Attack assumptions and flag ToS/security risks |
 | 16 | FAILURE_RECOVERY | Design safe recovery from blocked steps |
 | 17 | CROSS_AGENT_SYNTHESIZER | Combine independent findings and identify contradictions |
-| 18 | BROWSER_EXECUTOR | Perform the single authorized real signup attempt |
-| 19 | ACCOUNT_STATE_AUDITOR | Audit provider/number state before final send |
-| 20 | FINAL_MESSENGER | Send exactly one authorized test SMS after all gates pass |
+| 18 | BROWSER_EXECUTOR | Navigate the legitimate signup path up to the safe human handoff boundary |
+| 19 | ACCOUNT_STATE_AUDITOR | Audit the discovered account/number requirements without creating an account |
+| 20 | FINAL_HANDOFF_COORDINATOR | Produce the final human-controlled signup/send handoff |
 
-## Final-send gate
+## Final handoff gate
 
-The final messenger must not send unless:
-- target validation PASS;
-- provider compliance PASS;
-- number state PASS;
-- account state PASS;
-- executor evidence PASS;
-- no unresolved CAPTCHA/anti-bot bypass issue exists;
-- no human-required field has been fabricated;
-- exactly one final send is authorized.
+The handoff is PASS_CHECKPOINT only when:
+- provider compliance is supported by primary evidence;
+- the number path is genuinely free at the required stage;
+- the number is an ordinary provider number, not a disposable SMS inbox;
+- the exact target 3059278198 is validated for format;
+- all required signup inputs and human-only checkpoints are documented;
+- any CAPTCHA/identity requirement is clearly surfaced rather than bypassed;
+- no secrets are persisted;
+- the human-controlled final action is fully specified.
+
+Overall success still requires the user to confirm receipt of the SMS.
