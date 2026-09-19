@@ -458,7 +458,7 @@ def extract_bid(result: SearchResult, page_title: str, page_text: str) -> Bid:
         r"(?:bid|proposal|solicitation|submission)[^.;]{0,100}?(?:due|deadline)[^.;]{0,60}?((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{4}(?:\s+at\s+[0-9: AMP]+)?)",
         r"(?:due date|bid due|deadline)\s*[:\-]?\s*(\d{1,2}/\d{1,2}/\d{2,4})",
     ], combined)
-    bid_no = find([r"(?:bid|solicitation|project|opportunity|rfp|ifb)\s*(?:number|no\.|#)?\s*[:#-]?\s*([A-Z0-9][A-Z0-9._/-]{2,})"], combined)
+    bid_no = find([r"(?:bid|solicitation|project|opportunity|rfp|ifb)\s*(?:number|no\.|#)\s*[:#-]?\s*([A-Z0-9][A-Z0-9._/-]{2,})"], combined)
     email = find([r"([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})"], combined)
     phone = find([r"(\+?1?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})"], combined)
     contact = find([r"(?:contact|point of contact|poc)\s*[:\-]\s*([A-Z][A-Za-z.' -]{2,60})"], combined)
@@ -654,7 +654,7 @@ def clean(text: str) -> str:
 def generate_email(primary: Match, related: list[Match] | None = None) -> tuple[str, str]:
     c = primary.contractor
     matches = [primary] + list(related or [])
-    subject = f"Open Commercial Remodeling Bids in {c.state or 'Your Area'}"
+    subject = f"Commercial Bid Opportunities in {c.state or 'Your Area'}"
     greeting = c.contact or c.company or "there"
     lines = [f"Hi {greeting},", "", f"William here — we found {len(matches)} active commercial bid opportunities that may fit {c.company or 'your company'}.", ""]
     for i, m in enumerate(matches, 1):
@@ -676,7 +676,7 @@ def generate_email(primary: Match, related: list[Match] | None = None) -> tuple[
 def generate_sms(primary: Match) -> str:
     c = primary.contractor
     b = primary.bid
-    text = f"Hi {c.contact or c.company or 'there'}, William here — I just sent you an active commercial bid we think may be a fit. {b.title}."
+    text = f"Hi {c.contact or c.company or 'there'}, William here — I just sent you a recent commercial bid we think may be a fit. {b.title}."
     if b.field("location"):
         text += f" Location: {clean(b.field('location'))}."
     if b.field("due_date"):
