@@ -66,6 +66,7 @@ def main() -> None:
         ("executor files present", (ROOT / "agent/STATE.json").exists() and (ROOT / "agent/QUEUE.json").exists()),
         ("executor supervisor present", (ROOT / "tools/agent_supervisor.py").exists()),
         ("executor audit workflow present", (ROOT / ".github/workflows/agent-brain-audit.yml").exists()),
+        ("worker contract present", (ROOT / "agent/WORKER_CONTRACT.md").exists()),
         ("final audit references prod run", "35422565481" in final),
         ("final audit references smoke run", "35422611533" in final),
     ]
