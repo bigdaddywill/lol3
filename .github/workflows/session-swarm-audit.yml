@@ -1,0 +1,36 @@
+name: LOL3 ChatGPT session swarm audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "swarm/**"
+      - "tools/swarm_protocol.py"
+      - "tests/test_swarm_protocol.py"
+      - ".github/workflows/session-swarm-audit.yml"
+      - "requirements.txt"
+  workflow_dispatch:
+
+jobs:
+  swarm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run swarm self-test
+        run: python tools/swarm_protocol.py self-test
+
+      - name: Run swarm unit tests
+        run: python -m pytest -q tests/test_swarm_protocol.py
