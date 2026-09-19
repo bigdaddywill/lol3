@@ -68,8 +68,9 @@ jobs:
             --contractors Spanish_cleaned_after_152_on_Leads_Magnet.xlsx \
             --output artifacts/production \
             --states IN \
-            --limit-contractors 50 \
+            --limit-contractors 0 \
             --max-bids-per-source 10 \
+            --trade concrete \
             --tracking artifacts/tracking.jsonl \
             --reference-eml "[Concrete _ Indiana] 8 open bids last 14 days — nearest deadline Aug 25, 2026.eml"
 
@@ -89,6 +90,8 @@ jobs:
           assert audit["rows_loaded"] == 264
           assert bids, "Production run produced zero bids"
           assert queue, "Production run produced zero candidate matches"
+          assert manifest["trade_focus"] == "concrete"
+          assert manifest["contractors_evaluated"] == 2
 
           from collections import Counter
           print("manifest=", manifest)
@@ -107,6 +110,8 @@ jobs:
           for row in queue:
               assert row["bid"]["state"] == "IN"
               assert row["contractor"]["state"] == "IN"
+              assert "concrete" in row["contractor"]["category"].lower() or "masonry" in row["contractor"]["category"].lower()
+              assert row["match"].get("trade_focus") == "concrete"
               assert row["send_gate"] == "HUMAN_REVIEW_REQUIRED"
               assert row["match"]["reasons"]
               key = row["key"]
