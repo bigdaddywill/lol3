@@ -48,3 +48,14 @@ The launcher reached 'Starting commander 3B...' and 'Starting independent audito
 6. Build/refine lol3 from the strongest verified pieces.
 7. Add tests, live status, and benchmark harnesses.
 8. Persist all results here.
+
+## BID PIPELINE IMPLEMENTATION UPDATE — 2026-09-19
+- Confirmed repo file `hi` is a readable TSV contractor export; parsed 263 contractor records.
+- Confirmed 13 Concrete & Masonry contractors overall and 2 in Indiana: Percrete and Carr Construction.
+- Built `pipeline/bid_pipeline.py` for EML digest parsing, contractor normalization, evidence-based matching, bid invitation/email/SMS generation, and a dependency-free URL fetch adapter.
+- Added 5 regression tests and GitHub Actions smoke coverage.
+- First audit caught two defects (display text lowercasing and missing company name), both fixed.
+- Second audit caught a material false-positive class: out-of-state trade matches. Added a strict state gate and digest-subject state fallback; all selected matches are now state-consistent.
+- Successful smoke run: 35421452945 at commit 254f33afed6806c23467d11172b51ae391d54579.
+- Detailed audit: `context/PIPELINE_AUDIT_2026-09-19.md`.
+- Production status: reference pipeline functional; live source-specific scraping and geographic/service-area verification remain next-stage work.
