@@ -46,106 +46,77 @@
         "site:govly.com/public/opportunities \"Painting\" \"NY\"",
         "site:gov \"Painting\" \"NY\" bid solicitation"
       ],
-      "candidates": 3,
+      "candidates": 5,
       "candidate_diagnostics": [
         {
-          "title": "Dallas Painting Contractors - Southern Painting",
-          "url": "https://southernpainting.com/dallas/",
-          "domain": "southernpainting.com",
+          "title": "Bids in New York | New York Bid Network provides construction bids and government bids for New York projects",
+          "url": "https://www.newyorkbids.net/register/",
+          "domain": "www.newyorkbids.net",
           "scope": "",
           "location": "",
           "due_date": "",
-          "bid_number": "for",
+          "bid_number": "Network",
           "contact_email": "",
           "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
+          "reasons": []
         },
         {
-          "title": "DFW Painters | Painting Company | Professional Painting Services Dallas | Platinum Painting",
-          "url": "https://www.platinumpainting.com/",
-          "domain": "www.platinumpainting.com",
-          "scope": "",
+          "title": "Bids in New York | New York Bid Network provides construction bids and government bids for New York projects",
+          "url": "https://www.newyorkbids.net/",
+          "domain": "www.newyorkbids.net",
+          "scope": "To assist the city in the implementation of tasks associated with development and redevelopment of commercial, multi-family and mixed-use buildings and reconstruction of existing facilities",
           "location": "",
           "due_date": "",
-          "bid_number": "manager",
+          "bid_number": "Network",
           "contact_email": "",
           "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
+          "reasons": []
         },
         {
-          "title": "Painting - Wikipedia",
-          "url": "https://en.wikipedia.org/wiki/Painting",
-          "domain": "en.wikipedia.org",
+          "title": "Bids in New York | New York Bid Network provides construction bids and government bids for New York projects",
+          "url": "https://www.newyorkbids.net/bid_opportunities/",
+          "domain": "www.newyorkbids.net",
           "scope": "",
           "location": "",
           "due_date": "",
-          "bid_number": "",
+          "bid_number": "Network",
           "contact_email": "",
           "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
+          "reasons": []
+        },
+        {
+          "title": "Post Solicitation to North America Procurement Council",
+          "url": "https://www.napc.pro/post-to-napc/solic/",
+          "domain": "www.napc.pro",
+          "scope": "",
+          "location": "",
+          "due_date": "",
+          "bid_number": "NAPC",
+          "contact_email": "",
+          "score": 0,
+          "reasons": []
+        },
+        {
+          "title": "Bid, Tender, RFP Results",
+          "url": "https://www.newyorkbids.net/bid-result/",
+          "domain": "www.newyorkbids.net",
+          "scope": "",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Results",
+          "contact_email": "",
+          "score": 0,
+          "reasons": []
         }
       ]
     },
     {
       "company": "Universe Gutters Inc.",
-      "status": "no_match",
-      "queries": [
-        "site:govtribe.com/opportunity \"roofing gutters\" \"MA\"",
-        "site:govtribe.com/file/government-file \"roofing gutters\" \"MA\" bid",
-        "site:govly.com/public/opportunities \"roofing gutters\" \"MA\"",
-        "site:gov \"roofing gutters\" \"MA\" bid solicitation"
-      ],
-      "candidates": 3,
-      "candidate_diagnostics": [
-        {
-          "title": "THE BEST 10 Roofing in NORTHGLENN, CO - Updated 2026 - Yelp",
-          "url": "https://www.yelp.com/search?cflt=roofing&find_loc=Northglenn%2C+CO",
-          "domain": "www.yelp.com",
-          "scope": "",
-          "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "ATLAS ROOFING - Updated August 2026 - Northglenn, Colorado - Yelp",
-          "url": "https://www.yelp.com/biz/atlas-roofing-northglenn",
-          "domain": "www.yelp.com",
-          "scope": "",
-          "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "Roofing Contractors near Northglenn, CO | Better Business Bureau",
-          "url": "https://www.bbb.org/us/co/northglenn/category/roofing-contractors",
-          "domain": "www.bbb.org",
-          "scope": "",
-          "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        }
-      ]
+      "status": "qualified",
+      "score": 50,
+      "bid": "Bid, Tender, RFP Results",
+      "source_url": "https://www.massbids.net/bid-result/",
+      "output": "audit/real_run/0002_Universe_Gutters_Inc."
     },
     {
       "company": "D State Tile and Granite Installation, Inc",
@@ -156,49 +127,67 @@
         "site:govly.com/public/opportunities \"tile stone flooring\" \"CA\"",
         "site:gov \"tile stone flooring\" \"CA\" bid solicitation"
       ],
-      "candidates": 3,
+      "candidates": 5,
       "candidate_diagnostics": [
         {
-          "title": "Tile Trackers: Bluetooth Wallet & Key Trackers | Life360",
-          "url": "https://www.life360.com/tile-trackers",
-          "domain": "www.life360.com",
+          "title": "Bids in California | California Bid Network provides construction bids and government bids for California projects",
+          "url": "https://www.californiabids.com/register/",
+          "domain": "www.californiabids.com",
           "scope": "",
           "location": "",
           "due_date": "",
-          "bid_number": "",
+          "bid_number": "Network",
           "contact_email": "",
           "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
+          "reasons": []
         },
         {
-          "title": "Tile - The Home Depot",
-          "url": "https://www.homedepot.com/b/Flooring-Tile/N-5yc1vZar0y",
-          "domain": "www.homedepot.com",
-          "scope": "",
+          "title": "Bids in California | California Bid Network provides construction bids and government bids for California projects",
+          "url": "https://www.californiabids.com/",
+          "domain": "www.californiabids.com",
+          "scope": "Provide qualified contractor to provide janitorial and custodial services for various city facilities",
           "location": "",
           "due_date": "",
-          "bid_number": "",
+          "bid_number": "Network",
           "contact_email": "",
           "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
+          "reasons": []
         },
         {
-          "title": "The Tile Shop - High Quality Floor & Wall Tile",
-          "url": "https://www.tileshop.com/",
-          "domain": "www.tileshop.com",
+          "title": "Bids in California | California Bid Network provides construction bids and government bids for California projects",
+          "url": "https://www.californiabids.com/bid_opportunities/",
+          "domain": "www.californiabids.com",
           "scope": "",
           "location": "",
           "due_date": "",
-          "bid_number": "",
+          "bid_number": "Network",
           "contact_email": "",
           "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
+          "reasons": []
+        },
+        {
+          "title": "Post Solicitation to North America Procurement Council",
+          "url": "https://www.napc.pro/post-to-napc/solic/",
+          "domain": "www.napc.pro",
+          "scope": "",
+          "location": "",
+          "due_date": "",
+          "bid_number": "NAPC",
+          "contact_email": "",
+          "score": 0,
+          "reasons": []
+        },
+        {
+          "title": "Bid, Tender, RFP Results",
+          "url": "https://www.californiabids.com/bid-result/",
+          "domain": "www.californiabids.com",
+          "scope": "",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Results",
+          "contact_email": "",
+          "score": 0,
+          "reasons": []
         }
       ]
     }

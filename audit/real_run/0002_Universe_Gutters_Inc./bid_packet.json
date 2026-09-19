@@ -1,0 +1,48 @@
+{
+  "contractor": {
+    "sheet": "On Leads Magnet",
+    "company": "Universe Gutters Inc.",
+    "contact": "",
+    "email": "universegutters@gmail.com",
+    "phone": "5089048902",
+    "website": "https://leads-magnet.net/listings/universe-gutters-inc-marlborough-ma-01752/",
+    "city": "Marlborough",
+    "state": "MA",
+    "zip": "01752",
+    "trade": "Roofing & Gutters"
+  },
+  "match": {
+    "score": 50,
+    "reasons": [
+      "state match",
+      "trade match: roof, roofing"
+    ]
+  },
+  "bid": {
+    "title": "Bid, Tender, RFP Results",
+    "source_url": "https://www.massbids.net/bid-result/",
+    "source_domain": "www.massbids.net",
+    "bid_number": {
+      "value": "Results",
+      "source_url": "https://www.massbids.net/bid-result/",
+      "confidence": "high"
+    },
+    "scope": null,
+    "location": null,
+    "due_date": null,
+    "contact_name": null,
+    "contact_email": null,
+    "contact_phone": null,
+    "raw_excerpt": "Bid, Tender, RFP Results Massachusetts Bid Network Menu Register Login Bids in Massachusetts | Massachusetts Bid Network provides construction bids and government bids for Massachusetts projects - Navigation Links Home Bids Post a Bid Register Bid Results Us Classifieds Directory Resources Contact Us Username: Pass: Reset Password Register Now Not here Bid, Tender, RFP Results Following are some of the many bid and tender results, bid tabulations, low bidder, contract award and other market intelligence that our members enjoy. Click on the listings below for more details. Outdoor Perspective Low Bidder on IFB 27-0190 Purchase and Installation of Bike Racks in Massachusetts at $24,667.00 USD Williams Stone Company, Inc. Low Bidder on Granite Curbing and Bounds - IFB (RE-BID) in Massachusetts at $153,645.10 USD Taylor Davis Landscaping Low Bidder on Sewer and Water Services - Evergreen Road in Massachusetts at $43,000.00 USD Raffaele Construction Corp Low Bidder on Cressy Beach Revetment - Storm Damage Repair Project in Massachusetts at $557,852.00 USD DND Landscaping Low Bidder on Cemetery Fall Clean-up (Invitation For Bid) in Massachusetts at $45,815.00 USD Ballard Mack Sales & Service, Inc Low Bidder on Cable Hoist Roll-Off Truck (Invitation To Bid) in Massachusetts at $225,000.00 USD Elm Electrical, Inc. Low Bidder on Cummington Water Dept. - Control System Upgrade in Massachusetts at $99,960.00 USD Aalanco Service Corp. Low Bidder on Boiler Replacement - Vernon Hill School / WPS in Massachusetts at $133,365.00 USD Millers Pro Builders Low Bidder on Wheaton Farm Barn Rehabilitation (Requests for Information) in Massachusetts at $290,760.00 USD Calhess Restoration & Waterproofing Corp. Low Bidder on Lincoln School Apartments: Repointing Project in Massachusetts at $196,000.00 USD Sunshine Construction Low Bidder on Boxborough Museum Re-roofing Project in Massachusetts at $28,800.00 USD Site Specifics LLC Low Bidder on Shade Install - Crompton Skatepark / DPRC in Ma",
+    "tags": []
+  },
+  "verification": {
+    "source_url": "https://www.massbids.net/bid-result/",
+    "human_review_before_send": true
+  },
+  "email": {
+    "subject": "Open Commercial Remodeling Bids in MA",
+    "body": "Hi Universe Gutters Inc.,\n\nWilliam here — we found 1 active commercial bid opportunities that may fit Universe Gutters Inc..\n\n1. Bid, Tender, RFP Results\nScope: Not stated in the source\nLocation: Not stated in the source\nBid due: Not stated in the source\nPOC: Not stated in the source\nPOC email: Not stated in the source\nPOC phone: Not stated in the source\nSource: https://www.massbids.net/bid-result/\n\nWe have attached an invitation to bid to the opportunity we think is the closest fit.\nIf you'd like help filling it out or have questions, call us at 855-799-8420.\n\nBest,\nWilliam"
+  },
+  "sms": "Hi Universe Gutters Inc., William here — I just sent you an active commercial bid we think may be a fit. Bid, Tender, RFP Results. Sent to universegutters@gmail.com. Take a look when you have a chance. Questions: 855-799-8420."
+}
