@@ -14,6 +14,7 @@ The memory architecture already solved the first problem. The persistent executo
 - `agent/QUEUE.json` — durable work queue.
 - `agent/STATE.json` — active worker state, lease, checkpoint, and recovery counters.
 - `agent/LEDGER.md` — operational event history.
+- `agent/WORKER_CONTRACT.md` — exact worker/resume procedure.
 - `tools/agent_supervisor.py` — task/lease/checkpoint state machine.
 - `.github/workflows/agent-brain-audit.yml` — watchdog/self-test.
 
