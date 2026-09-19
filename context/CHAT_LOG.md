@@ -106,3 +106,21 @@ Materialize the ZIP/XLSX through a path that exposes their actual bytes, prefera
 
 ### User's preferred working mode
 Use long-running, multi-step work when justified; send milestone updates; keep live visibility where possible; write durable notes; audit code, tests, artifacts, runtime behavior, and semantic results before declaring completion.
+
+## EMAIL ARTIFACT RECOVERED — 2026-09-19
+
+- New GitHub upload commit: ab327610b4b06110c46e284793be1022b94e4624.
+- Recovered file: `[Concrete _ Indiana] 8 open bids last 14 days — nearest deadline Aug 25, 2026.eml`.
+- Email sender: elyohason@gmail.com.
+- Recipient: Aaronverlinde@gmail.com.
+- Subject: [Concrete / Indiana] 8 open bids last 14 days — nearest deadline Aug 25, 2026.
+- The email is an HTML digest of 8 open/relevant Indiana concrete opportunities.
+- Each card contains source/type, score, project, URL, scope/fit explanation, agency, solicitation, posted date, deadline, NAICS, qualifications/set-aside, place, POC, why-match rationale, and listing CTA.
+- The digest includes explicit domain reasoning such as confirming concrete pay items, Division 03, sidewalk/trail fit, slab/foundation fit, and possible PCCP.
+- The downstream contractor-matching product should preserve this evidence-first style and expose the reasons behind any derived score.
+
+## CONTRACTOR WORKBOOK ACCESS ATTEMPT
+
+- GitHub connector exposed the XLSX as a binary upload but did not return usable raw bytes.
+- Direct raw/web retrieval and a container-side GitHub API request were also unavailable due cache/DNS restrictions in the environment.
+- Do not infer workbook columns, contractor counts, or matching fields until the XLSX bytes are actually accessible.
