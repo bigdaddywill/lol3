@@ -40,19 +40,34 @@
     {
       "company": "Vasquez Home Improvement",
       "status": "no_match",
-      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Painting Brewster NY remodeling construction",
+      "queries": [
+        "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Painting Brewster NY commercial construction",
+        "\"invitation to bid\" Painting NY",
+        "\"request for proposal\" Painting NY",
+        "site:gov Painting NY bid"
+      ],
       "candidates": 0
     },
     {
       "company": "Universe Gutters Inc.",
       "status": "no_match",
-      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Roofing & Gutters Marlborough MA remodeling construction",
+      "queries": [
+        "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Roofing & Gutters Marlborough MA commercial construction",
+        "\"invitation to bid\" Roofing & Gutters MA",
+        "\"request for proposal\" Roofing & Gutters MA",
+        "site:gov Roofing & Gutters MA bid"
+      ],
       "candidates": 0
     },
     {
       "company": "D State Tile and Granite Installation, Inc",
       "status": "no_match",
-      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Stone & Tile SAN JOSE CA remodeling construction",
+      "queries": [
+        "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Stone & Tile SAN JOSE CA commercial construction",
+        "\"invitation to bid\" Stone & Tile CA",
+        "\"request for proposal\" Stone & Tile CA",
+        "site:gov Stone & Tile CA bid"
+      ],
       "candidates": 0
     }
   ]
