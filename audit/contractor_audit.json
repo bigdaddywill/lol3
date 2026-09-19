@@ -1,11 +1,179 @@
 {
   "audit": {
-    "sheets": [],
-    "rows_seen": 0,
-    "rows_loaded": 0,
-    "blank_rows": 0,
-    "duplicates_removed": 0,
-    "header_mapping": {}
+    "sheets": [
+      {
+        "name": "Summary",
+        "rows": 8
+      },
+      {
+        "name": "On Leads Magnet",
+        "rows": 266
+      },
+      {
+        "name": "Not on Leads Magnet",
+        "rows": 3
+      }
+    ],
+    "rows_seen": 274,
+    "rows_loaded": 272,
+    "blank_rows": 1,
+    "duplicates_removed": 1,
+    "header_mapping": {
+      "Summary": {
+        "company": null,
+        "contact": "Spanish cleaned contacts after row 152 that are on Leads Magnet",
+        "email": null,
+        "phone": null,
+        "website": null,
+        "city": null,
+        "state": null,
+        "zip": null,
+        "trade": null
+      },
+      "On Leads Magnet": {
+        "company": "business_name",
+        "contact": null,
+        "email": "email_address",
+        "phone": "business_phone",
+        "website": "leads_magnet_url",
+        "city": "city",
+        "state": "state",
+        "zip": "zip_code",
+        "trade": "category"
+      },
+      "Not on Leads Magnet": {
+        "company": "business_name",
+        "contact": null,
+        "email": "email_address",
+        "phone": "business_phone",
+        "website": "angi_url",
+        "city": "city",
+        "state": "state",
+        "zip": "zip_code",
+        "trade": "category"
+      }
+    }
   },
-  "sample": []
+  "sample": [
+    {
+      "sheet": "Summary",
+      "company": "Source file",
+      "contact": "Source file",
+      "email": "",
+      "phone": "",
+      "website": "",
+      "city": "",
+      "state": "",
+      "zip": "",
+      "trade": ""
+    },
+    {
+      "sheet": "Summary",
+      "company": "Source sheet",
+      "contact": "Source sheet",
+      "email": "",
+      "phone": "",
+      "website": "",
+      "city": "",
+      "state": "",
+      "zip": "",
+      "trade": ""
+    },
+    {
+      "sheet": "Summary",
+      "company": "Rows checked",
+      "contact": "Rows checked",
+      "email": "",
+      "phone": "",
+      "website": "",
+      "city": "",
+      "state": "",
+      "zip": "",
+      "trade": ""
+    },
+    {
+      "sheet": "Summary",
+      "company": "On Leads Magnet",
+      "contact": "On Leads Magnet",
+      "email": "",
+      "phone": "",
+      "website": "",
+      "city": "",
+      "state": "",
+      "zip": "",
+      "trade": ""
+    },
+    {
+      "sheet": "Summary",
+      "company": "Not found on Leads Magnet",
+      "contact": "Not found on Leads Magnet",
+      "email": "",
+      "phone": "",
+      "website": "",
+      "city": "",
+      "state": "",
+      "zip": "",
+      "trade": ""
+    },
+    {
+      "sheet": "Summary",
+      "company": "Live site",
+      "contact": "Live site",
+      "email": "",
+      "phone": "",
+      "website": "",
+      "city": "",
+      "state": "",
+      "zip": "",
+      "trade": ""
+    },
+    {
+      "sheet": "On Leads Magnet",
+      "company": "Vasquez Home Improvement",
+      "contact": "",
+      "email": "ramiro0317@hotmail.com",
+      "phone": "",
+      "website": "https://leads-magnet.net/listings/vasquez-home-improvement-brewster-ny-10509/",
+      "city": "Brewster",
+      "state": "NY",
+      "zip": "10509",
+      "trade": "Painting"
+    },
+    {
+      "sheet": "On Leads Magnet",
+      "company": "Universe Gutters Inc.",
+      "contact": "",
+      "email": "universegutters@gmail.com",
+      "phone": "5089048902",
+      "website": "https://leads-magnet.net/listings/universe-gutters-inc-marlborough-ma-01752/",
+      "city": "Marlborough",
+      "state": "MA",
+      "zip": "01752",
+      "trade": "Roofing & Gutters"
+    },
+    {
+      "sheet": "On Leads Magnet",
+      "company": "D State Tile and Granite Installation, Inc",
+      "contact": "",
+      "email": "dstatetile.granite@gmail.com",
+      "phone": "",
+      "website": "https://leads-magnet.net/listings/d-state-tile-and-granite-installation-inc-san-jose-ca-95116/",
+      "city": "SAN JOSE",
+      "state": "CA",
+      "zip": "95116",
+      "trade": "Stone & Tile"
+    },
+    {
+      "sheet": "On Leads Magnet",
+      "company": "Del Carmens Home Remodeling, LLC",
+      "contact": "",
+      "email": "delcarmenshr98@gmail.com",
+      "phone": "",
+      "website": "https://leads-magnet.net/listings/del-carmens-home-remodeling-llc-dayton-oh-45405/",
+      "city": "Dayton",
+      "state": "OH",
+      "zip": "45405",
+      "trade": "Additions and Remodels"
+    }
+  ]
 }

@@ -1,11 +1,77 @@
 {
   "contractor_audit": {
-    "sheets": [],
-    "rows_seen": 0,
-    "rows_loaded": 0,
-    "blank_rows": 0,
-    "duplicates_removed": 0,
-    "header_mapping": {}
+    "sheets": [
+      {
+        "name": "Summary",
+        "rows": 8
+      },
+      {
+        "name": "On Leads Magnet",
+        "rows": 266
+      },
+      {
+        "name": "Not on Leads Magnet",
+        "rows": 3
+      }
+    ],
+    "rows_seen": 274,
+    "rows_loaded": 272,
+    "blank_rows": 1,
+    "duplicates_removed": 1,
+    "header_mapping": {
+      "Summary": {
+        "company": null,
+        "contact": "Spanish cleaned contacts after row 152 that are on Leads Magnet",
+        "email": null,
+        "phone": null,
+        "website": null,
+        "city": null,
+        "state": null,
+        "zip": null,
+        "trade": null
+      },
+      "On Leads Magnet": {
+        "company": "business_name",
+        "contact": null,
+        "email": "email_address",
+        "phone": "business_phone",
+        "website": "leads_magnet_url",
+        "city": "city",
+        "state": "state",
+        "zip": "zip_code",
+        "trade": "category"
+      },
+      "Not on Leads Magnet": {
+        "company": "business_name",
+        "contact": null,
+        "email": "email_address",
+        "phone": "business_phone",
+        "website": "angi_url",
+        "city": "city",
+        "state": "state",
+        "zip": "zip_code",
+        "trade": "category"
+      }
+    }
   },
-  "results": []
+  "results": [
+    {
+      "company": "Source file",
+      "status": "no_match",
+      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" remodeling construction",
+      "candidates": 0
+    },
+    {
+      "company": "Source sheet",
+      "status": "no_match",
+      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" remodeling construction",
+      "candidates": 0
+    },
+    {
+      "company": "Rows checked",
+      "status": "no_match",
+      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" remodeling construction",
+      "candidates": 0
+    }
+  ]
 }
