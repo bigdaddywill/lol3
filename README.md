@@ -38,3 +38,38 @@ Run tests:
 The recovered email is a reference digest from Aug. 23, 2026. Its source listings are used here as an ingestion/parser fixture, not as proof that those bids are still open today.
 
 The old digest scores are stored as source metadata only. LOL3 computes a separate contractor-match score from documented trade, state, scope, and contact fields.
+
+
+## Production mode
+
+The current audited production entrypoint is:
+
+`python -m pipeline.production`
+
+Example for the current Concrete/Indiana workflow:
+
+```bash
+python -m pipeline.production \
+  --contractors Spanish_cleaned_after_152_on_Leads_Magnet.xlsx \
+  --output artifacts/production \
+  --states IN \
+  --limit-contractors 0 \
+  --max-bids-per-source 10 \
+  --trade concrete \
+  --tracking artifacts/tracking.jsonl \
+  --reference-eml "[Concrete _ Indiana] 8 open bids last 14 days — nearest deadline Aug 25, 2026.eml"
+```
+
+Production outputs:
+- `bids.json`
+- `source_health.json`
+- `contractor_audit.json`
+- `outreach_queue.json`
+- `manifest.json`
+- tracking JSONL
+
+The production queue is human-gated. LOL3 does not automatically send generated emails or SMS.
+
+## Final audited status
+
+The current Concrete/Indiana path has passed the complete production audit and standalone smoke workflow. See `context/FINAL_AUDIT_2026-09-19.md`.
