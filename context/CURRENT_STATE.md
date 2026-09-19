@@ -59,3 +59,11 @@ The launcher reached 'Starting commander 3B...' and 'Starting independent audito
 - Successful smoke run: 35421452945 at commit 254f33afed6806c23467d11172b51ae391d54579.
 - Detailed audit: `context/PIPELINE_AUDIT_2026-09-19.md`.
 - Production status: reference pipeline functional; live source-specific scraping and geographic/service-area verification remain next-stage work.
+
+
+## LIVE SOURCE UPDATE — 2026-09-19
+- Added `pipeline/live_sources.py` with an Indiana Armory Board adapter and regression fixture.
+- Added live source validation to the smoke workflow.
+- Diagnostic run showed the public SAB endpoint returned a 620-byte valid HTML shell with `No Bids Posted at This Time`; browser-like headers did not change that.
+- The gate was corrected to treat an explicitly verified empty source as a valid scrape result instead of falsely declaring a parser failure.
+- Final smoke run `35421618318` at commit `ca19e382edd822a5ff63b4749ad18472564bbb93` passed all 6 tests, reference E2E, output invariants, live source check, and artifact upload.
