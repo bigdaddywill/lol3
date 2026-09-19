@@ -19,6 +19,10 @@ This is the infrastructure/coordination proof first. It does not claim that 48 a
 
 48/48 workers report READY, identities are unique, the shared mission hash is identical across all workers, every worker reports the expected Linux VM environment, and the integrator produces a persisted PASS report in `swarm/runs/`.
 
+## Audit revision
+
+The final proof must preserve worker start/end timestamps, runner identity/platform evidence, measured maximum worker overlap, and the provenance source commit of the run. A PASS without that evidence is not considered final.
+
 ## Next phase
 
 After this proof is independently audited, replace the deterministic worker body with real model-driven agents while preserving the same mission/evidence/integration gates.
