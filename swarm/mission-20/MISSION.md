@@ -43,3 +43,5 @@ The preferred candidate should be an ordinary provider number, not a disposable 
 ## User confirmation
 
 Even after a human performs the final step, the overall experiment is not called successful until the user confirms receipt of the SMS.
+
+run_trigger_revision: 005-two-way-run
