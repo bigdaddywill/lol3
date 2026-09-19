@@ -275,6 +275,55 @@ class SearchHTMLParser(HTMLParser):
             self.in_h2 = False
 
 
+
+class GoogleResultParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.in_anchor = False
+        self.in_h3 = False
+        self.href = ""
+        self.title_parts: list[str] = []
+        self.results: list[SearchResult] = []
+
+    def handle_starttag(self, tag: str, attrs):
+        tag = tag.lower()
+        attrs_dict = dict(attrs)
+        if tag == "a":
+            self.in_anchor = True
+            self.href = attrs_dict.get("href") or ""
+            self.title_parts = []
+        elif tag == "h3" and self.in_anchor:
+            self.in_h3 = True
+
+    def handle_data(self, data: str):
+        if self.in_h3:
+            self.title_parts.append(data)
+
+    def handle_endtag(self, tag: str):
+        tag = tag.lower()
+        if tag == "h3":
+            self.in_h3 = False
+        elif tag == "a" and self.in_anchor:
+            title = re.sub(r"\s+", " ", " ".join(self.title_parts)).strip()
+            href = self.href
+            if title and href:
+                if href.startswith("/url?q="):
+                    href = href.split("/url?q=", 1)[1].split("&", 1)[0]
+                if href.startswith(("http://", "https://")):
+                    self.results.append(SearchResult(title=title, url=href))
+            self.in_anchor = False
+            self.href = ""
+            self.title_parts = []
+
+def search_google(query: str, max_results: int = 10, timeout: int = 20) -> list[SearchResult]:
+    search_url = "https://www.google.com/search?q=" + quote_plus(query) + "&num=" + str(max_results) + "&hl=en"
+    req = Request(search_url, headers={"User-Agent": "Mozilla/5.0 (commercial bid research)"})
+    with urlopen(req, timeout=timeout) as resp:
+        html = resp.read(3_000_000).decode(resp.headers.get_content_charset() or "utf-8", errors="replace")
+    parser = GoogleResultParser()
+    parser.feed(html)
+    return parser.results[:max_results]
+
 def search_bing(query: str, max_results: int = 10, timeout: int = 20) -> list[SearchResult]:
     search_url = "https://www.bing.com/search?q=" + quote_plus(query)
     req = Request(search_url, headers={"User-Agent": "Mozilla/5.0 (commercial bid research)"})
@@ -296,7 +345,7 @@ def search_duckduckgo(query: str, max_results: int = 10, timeout: int = 20) -> l
 def search_web(query: str, max_results: int = 10) -> list[SearchResult]:
     seen: set[str] = set()
     out: list[SearchResult] = []
-    for fn in (search_bing, search_duckduckgo):
+    for fn in (search_google, search_bing, search_duckduckgo):
         try:
             for result in fn(query, max_results=max_results):
                 if result.url in seen:
@@ -539,12 +588,18 @@ def run(args: argparse.Namespace) -> None:
         trade = contractor.trade
         state = contractor.state
         city = contractor.city
-        base = '"commercial bid" OR "invitation to bid" OR "request for bid"'
+        trade_search = trade
+        if "roof" in trade.lower() or "gutter" in trade.lower():
+            trade_search = "roofing gutters"
+        elif "tile" in trade.lower() or "stone" in trade.lower():
+            trade_search = "tile stone flooring"
+        elif "remodel" in trade.lower() or "addition" in trade.lower():
+            trade_search = "remodel renovation construction"
         queries = [
-            " ".join(x for x in [base, trade, city, state, "commercial construction"] if x),
-            " ".join(x for x in ['"invitation to bid"', trade, state] if x),
-            " ".join(x for x in ['"request for proposal"', trade, state] if x),
-            " ".join(x for x in ['site:gov', trade, state, bid] if x) if False else " ".join(x for x in ['site:gov', trade, state, "bid"] if x),
+            f'site:govtribe.com/opportunity "{trade_search}" "{state}"',
+            f'site:govtribe.com/file/government-file "{trade_search}" "{state}" bid',
+            f'site:govly.com/public/opportunities "{trade_search}" "{state}"',
+            f'site:gov "{trade_search}" "{state}" bid solicitation',
         ]
         if args.query:
             queries = [args.query]
