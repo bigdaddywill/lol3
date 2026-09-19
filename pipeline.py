@@ -200,20 +200,65 @@ class SearchResult:
     url: str
     snippet: str = ""
 
-def search_duckduckgo(query: str, max_results: int = 10, timeout: int = 20) -> list[SearchResult]:
-    search_url = "https://html.duckduckgo.com/html/?q=" + quote_plus(query)
-    req = Request(search_url, headers={"User-Agent": "CommercialBidPipeline/1.0"})
+def _extract_anchor_results(html: str) -> list[SearchResult]:
+    results: list[SearchResult] = []
+    pattern = re.compile(
+        r'<a[^>]*href=["\\']([^"\\']+)["\\'][^>]*>(.*?)</a>',
+        flags=re.I | re.S,
+    )
+    for href, title_html in pattern.findall(html):
+        if "result__a" not in title_html.lower() and not re.search(r"<h2", title_html, re.I):
+            continue
+        title = re.sub(r"\\s+", " ", re.sub(r"<[^>]+>", " ", title_html)).strip()
+        if not title or len(title) < 4:
+            continue
+        results.append(SearchResult(title=title, url=href))
+    return results
+
+def search_bing(query: str, max_results: int = 10, timeout: int = 20) -> list[SearchResult]:
+    search_url = "https://www.bing.com/search?q=" + quote_plus(query)
+    req = Request(search_url, headers={"User-Agent": "Mozilla/5.0 (commercial bid research)"})
     with urlopen(req, timeout=timeout) as resp:
         html = resp.read(3_000_000).decode(resp.headers.get_content_charset() or "utf-8", errors="replace")
-    anchors = re.findall(
-        r'<a[^>]+class=["\']result__a["\'][^>]+href=["\']([^"\']+)["\'][^>]*>(.*?)</a>',
-        html, flags=re.I | re.S
-    )
     results: list[SearchResult] = []
-    for href, title_html in anchors[:max_results]:
-        title = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", title_html)).strip()
-        results.append(SearchResult(title=title, url=urljoin(search_url, href)))
+    for href, title_html in re.findall(
+        r'<li[^>]*class=["\\'][^"\\']*b_algo[^"\\']*["\\'][^>]*>.*?<h2><a[^>]*href=["\\']([^"\\']+)["\\'][^>]*>(.*?)</a>',
+        html, flags=re.I | re.S
+    )[:max_results]:
+        title = re.sub(r"\\s+", " ", re.sub(r"<[^>]+>", " ", title_html)).strip()
+        results.append(SearchResult(title=title, url=href))
     return results
+
+def search_duckduckgo(query: str, max_results: int = 10, timeout: int = 20) -> list[SearchResult]:
+    search_url = "https://html.duckduckgo.com/html/?q=" + quote_plus(query)
+    req = Request(search_url, headers={"User-Agent": "Mozilla/5.0 (commercial bid research)"})
+    with urlopen(req, timeout=timeout) as resp:
+        html = resp.read(3_000_000).decode(resp.headers.get_content_charset() or "utf-8", errors="replace")
+    results: list[SearchResult] = []
+    anchor_re = re.compile(r'<a[^>]*class=["\\'][^"\\']*result__a[^"\\']*["\\'][^>]*>(.*?)</a>', re.I | re.S)
+    href_re = re.compile(r'href=["\\']([^"\\']+)["\\']', re.I)
+    for node in anchor_re.findall(html)[:max_results]:
+        href = href_re.search(node)
+        title = re.sub(r"\\s+", " ", re.sub(r"<[^>]+>", " ", node)).strip()
+        if href and title:
+            results.append(SearchResult(title=title, url=urljoin(search_url, href.group(1))))
+    return results
+
+def search_web(query: str, max_results: int = 10) -> list[SearchResult]:
+    seen: set[str] = set()
+    out: list[SearchResult] = []
+    for fn in (search_bing, search_duckduckgo):
+        try:
+            for result in fn(query, max_results=max_results):
+                if result.url in seen:
+                    continue
+                seen.add(result.url)
+                out.append(result)
+                if len(out) >= max_results:
+                    return out
+        except Exception:
+            continue
+    return out
 
 @dataclass
 class SourceField:
@@ -278,9 +323,25 @@ def extract_bid(result: SearchResult, page_title: str, page_text: str) -> Bid:
         raw_excerpt=combined[:2000],
     )
 
-def discover(query: str, max_results: int = 10) -> list[Bid]:
+def discover(queries: list[str] | str, max_results: int = 10) -> list[Bid]:
+    if isinstance(queries, str):
+        queries = [queries]
+    results: list[SearchResult] = []
+    seen: set[str] = set()
+    per_query = max(3, max_results // max(1, len(queries)))
+    for query in queries:
+        for result in search_web(query, max_results=per_query):
+            if result.url in seen:
+                continue
+            seen.add(result.url)
+            results.append(result)
+            if len(results) >= max_results:
+                break
+        if len(results) >= max_results:
+            break
+
     bids: list[Bid] = []
-    for result in search_duckduckgo(query, max_results=max_results):
+    for result in results:
         try:
             title, text = fetch_page(result.url)
             bids.append(extract_bid(result, title, text))
@@ -321,6 +382,8 @@ class Match:
 
 def score_match(contractor: Contractor, bid: Bid) -> Match:
     hay = " ".join([bid.title, bid.field("scope"), bid.field("location"), bid.raw_excerpt]).lower()
+    if not any(term in hay for term in ("invitation to bid", "request for bid", "request for proposal", "rfp", "rfq", "ifb", "solicitation", "bid opportunity", "procurement")):
+        return Match(contractor, bid, 0, ["not clearly a bid opportunity"])
     score = 0
     reasons: list[str] = []
     if contractor.state and re.search(rf"\b{re.escape(contractor.state.lower())}\b", hay):
@@ -424,15 +487,26 @@ def run(args: argparse.Namespace) -> None:
     output.mkdir(parents=True, exist_ok=True)
     manifest: list[dict[str, Any]] = []
     for index, contractor in enumerate(contractors, 1):
-        query = args.query or " ".join(x for x in ['"commercial bid" OR "invitation to bid" OR "request for bid"', contractor.trade, contractor.city, contractor.state, "remodeling construction"] if x)
+        trade = contractor.trade
+        state = contractor.state
+        city = contractor.city
+        base = '"commercial bid" OR "invitation to bid" OR "request for bid"'
+        queries = [
+            " ".join(x for x in [base, trade, city, state, "commercial construction"] if x),
+            " ".join(x for x in ['"invitation to bid"', trade, state] if x),
+            " ".join(x for x in ['"request for proposal"', trade, state] if x),
+            " ".join(x for x in ['site:gov', trade, state, bid] if x) if False else " ".join(x for x in ['site:gov', trade, state, "bid"] if x),
+        ]
+        if args.query:
+            queries = [args.query]
         try:
-            bids = discover(query, max_results=args.max_results)
+            bids = discover(queries, max_results=args.max_results)
         except Exception as exc:
             manifest.append({"company": contractor.company, "status": "discovery_error", "error": str(exc), "query": query})
             continue
         matches = rank_matches(contractor, bids, minimum_score=args.minimum_score)
         if not matches:
-            manifest.append({"company": contractor.company, "status": "no_match", "query": query, "candidates": len(bids)})
+            manifest.append({"company": contractor.company, "status": "no_match", "queries": queries, "candidates": len(bids)})
             continue
         safe = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in contractor.company)[:60]
         folder = output / f"{index:04d}_{safe}"
