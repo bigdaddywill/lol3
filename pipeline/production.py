@@ -712,7 +712,7 @@ def parse_indot_notice_text(text: str, source_url: str, as_of: str) -> list[BidR
     return bids
 
 def scrape_indot_current() -> tuple[list[BidRecord], dict[str, Any]]:
-    health = {"source": "indot_current_regular_letting", "status": "unknown", "count": 0, "error": ""}
+    health = {"source": "indot_current_regular_letting", "status": "unknown", "count": 0, "error": "", "required": True}
     try:
         status, _, index_html = fetch_text(INDOT_INDEX_URL)
         if status >= 400:
