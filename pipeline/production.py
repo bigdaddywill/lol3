@@ -969,6 +969,7 @@ def generate_messages(bid: BidRecord, contractor: Contractor, match: dict[str, A
     subject = f"Bid opportunity: {bid.project_name} — {location}"
     body = (
         f"Hi {first_name},\n\n"
+        f"Company: {contractor.business_name}\n\n"
         f"I’m reaching out about {bid.project_name} in {location}. "
         f"Your listed {contractor.category or 'contracting'} services match documented bid scope, "
         "so I wanted to put the opportunity in front of you.\n\n"
