@@ -39,3 +39,59 @@ The Gmail connector is currently disabled by admin, so the target email cannot b
 - Inspect workbook sheets, headers, row count, and sample records with the spreadsheet tooling.
 - Build the scraper/matcher against the actual schema.
 - Benchmark matching quality and message correctness on representative bid cases.
+
+## Reference email audit — exact Gmail export
+
+Source file:
+`[Concrete _ Indiana] 8 open bids last 14 days — nearest deadline Aug 25, 2026.eml`
+
+Email metadata:
+- From: elyohason@gmail.com
+- To: Aaronverlinde@gmail.com
+- Date: Aug 23, 2026
+- Subject: [Concrete / Indiana] 8 open bids last 14 days — nearest deadline Aug 25, 2026
+
+The email is an HTML digest, not a single bid invitation. Its reusable structure is:
+1. Market header: state + trade.
+2. Digest summary: count of open bids, recency window, nearest deadline, and narrative observations.
+3. Repeated bid cards.
+4. Each card contains:
+   - bid type/source label
+   - numeric score
+   - project title
+   - source/listing URL
+   - concise scope/fit summary
+   - agency
+   - solicitation/contract
+   - posted date
+   - deadline
+   - NAICS
+   - set-aside / qualification requirement
+   - location
+   - POC name/title/email/phone
+   - "Why this matched" explanation
+   - Open listing CTA
+5. Footer cites source families and summarizes common qualification requirements.
+
+Eight example cards visible in the reference:
+- Overlay Phase 2 — City of Columbus #26-10
+- Bike and Pedestrian Facilities — Marquette Greenway
+- Pavement Patching — LaPorte District
+- Small Structure Replacement — Reinforced Concrete Boxes
+- Camp Atterbury Covered Training Area Facility
+- Camp Atterbury 2026 Paving
+- CGHS Renovations Package 2 — General Trades
+- Muscatatuck Building 5114 Maintenance and Repair
+
+Important product insight:
+The digest does more than scrape. It applies a domain-specific relevance judgment such as "confirm concrete pay items", "cleanest sidewalk/trail fit", "commercial building slab/foundation", "Division 03 concrete", or "possible concrete floor/sidewalk/pad repair". Those explanations should become explicit, auditable matching reasons in the new pipeline.
+
+The score should be treated as a derived ranking signal, not as a fact from the source listing. The implementation must expose the dimensions contributing to it and preserve the raw source evidence.
+
+### Proposed end-to-end output
+
+For each new bid:
+`bid_source -> normalized_bid -> matched_contractors -> bid_invitation -> email -> follow_up_sms -> status`
+
+The email generator should mirror the reference digest's factual discipline while changing the unit of output from a market digest to a contractor-specific opportunity.
+
