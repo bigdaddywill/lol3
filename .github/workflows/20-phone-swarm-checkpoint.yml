@@ -125,6 +125,11 @@ jobs:
           target='3059278198'
           import os
           target_pass=bool(re.fullmatch(r'[2-9][0-9]{9}',target))
+          peer_failures=[r.get('session_id') for r in rows if not r.get('responded_to')]
+          target_rows=[r for r in rows if r.get('role')=='TARGET_VALIDATOR']
+          target_evidence_pass=any(r.get('target_validation')=='PASS_NANP_SHAPE' for r in target_rows)
+          browser_jsons=list(root.glob('PHANTOM-20-*/browser-evidence/*.json'))
+          browser_evidence_count=len(browser_jsons)
           run_id=os.environ.get('GITHUB_RUN_ID','')
           try:
               comments=json.loads(bus)
@@ -140,7 +145,10 @@ jobs:
             'unique_workers':len(seen),
             'issue_bus_mentions':bus.count('PHANTOM-20-'),
             'interagent_messages':interagent_messages,
+            'peer_consumption_failures':peer_failures,
             'target_sms_raw':target,
+            'target_evidence_pass':target_evidence_pass,
+            'browser_evidence_files':browser_evidence_count,
             'target_shape_pass':target_pass,
             'status':'PASS_CHECKPOINT' if seen==expected and target_pass else 'FAIL_COORDINATION',
             'account_creation_performed_by_workflow':False,
@@ -149,17 +157,24 @@ jobs:
           }
           if interagent_messages < 20:
               report['status']='FAIL_TWO_WAY_COMMUNICATION'
+          if peer_failures:
+              report['status']='FAIL_PEER_CONSUMPTION'
+          if browser_evidence_count < 3:
+              report['status']='FAIL_BROWSER_EVIDENCE'
+          if not target_evidence_pass:
+              report['status']='FAIL_TARGET_VALIDATION'
           if seen!=expected:
               report['status']='FAIL_COORDINATION'
           Path('swarm/runs').mkdir(parents=True,exist_ok=True)
-          Path('swarm/runs/PHANTOM-20-REAL-NUMBER-001.json').write_text(json.dumps(report,indent=2)+'\n')
-          Path('swarm/runs/PHANTOM-20-REAL-NUMBER-001.md').write_text('# PHANTOM-20 Real Number Challenge\n\n'+json.dumps(report,indent=2)+'\n\n**Not a victory report:** final signup/send remains human-controlled and user confirmation is required.\n')
+          run_id=os.environ.get('GITHUB_RUN_ID','unknown')
+          Path(f'swarm/runs/PHANTOM-20-REAL-NUMBER-001-{run_id}.json').write_text(json.dumps(report,indent=2)+'\n')
+          Path(f'swarm/runs/PHANTOM-20-REAL-NUMBER-001-{run_id}.md').write_text('# PHANTOM-20 Real Number Challenge\n\n'+json.dumps(report,indent=2)+'\n\n**Not a victory report:** final signup/send remains human-controlled and user confirmation is required.\n')
           print(json.dumps(report,indent=2))
           if report['status']!='PASS_CHECKPOINT': raise SystemExit(1)
       - name: Persist integrated checkpoint
         run: |
           git config user.name 'PHANTOM-20 Integrator'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add swarm/runs/PHANTOM-20-REAL-NUMBER-001.md swarm/runs/PHANTOM-20-REAL-NUMBER-001.json
+          git add swarm/runs/PHANTOM-20-REAL-NUMBER-001-*.md swarm/runs/PHANTOM-20-REAL-NUMBER-001-*.json
           git diff --cached --quiet || git commit -m 'Record PHANTOM-20 coordination checkpoint'
           git push
