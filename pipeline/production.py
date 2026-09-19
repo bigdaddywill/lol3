@@ -639,36 +639,33 @@ def scrape_state_network(state: str, trade: str, max_results: int = 8) -> tuple[
 
 def parse_indot_notice_text(text: str, source_url: str, as_of: str) -> list[BidRecord]:
     flat = re.sub(r"\s+\n", "\n", text.replace("\r", ""))
-    blocks = re.split(r"(?m)(?=^\s*\d{2,4}\s+[A-Z]-[A-Z0-9-]+\s+)", flat)
+    blocks = re.split(r"(?m)(?=^\s*[A-Z]\s*-\s*[A-Z0-9-]+\s+)", flat)
     bids: list[BidRecord] = []
     for block in blocks:
-        head = re.search(r"(?m)^\s*(\d{2,4})\s+([A-Z]-[A-Z0-9-]+)\s+(.+?)(?:\n|$)", block)
+        head = re.search(r"(?m)^\s*([A-Z]\s*-\s*[A-Z0-9-]+)\s+(.+?)(?:\n|$)", block)
         if not head:
             continue
-        call, solicitation, title = head.group(1), head.group(2), head.group(3).strip()
-        district = ""
-        district_m = re.search(r"(?m)^\s*Call\s+(.+?)\s+District\s*$", block)
-        if district_m:
-            district = district_m.group(1).strip()
+
+        solicitation = re.sub(r"\s+", "", head.group(1))
+        title = head.group(2).strip()
+
         locations = re.findall(
             r"(?m)^\s*([A-Z][A-Z /-]+ COUNTY)\s+-\s+ON\s+(.+)$",
             block,
         )
-        location = "; ".join(f"{county.title()} - {road.strip()}" for county, road in locations)
+        location = "; ".join(
+            f"{county.title()} - {road.strip()}" for county, road in locations
+        ) or "Indiana"
+
         qualifications = ""
-        qual_m = re.search(r"(?m)^\s*(?:Qualifications:\s*)?\n?\s*([A-Z](?:\([A-Z]\))?(?:\s+[A-Z](?:\([A-Z]\))?)*)\s*$", block)
-        if qual_m:
-            qualifications = qual_m.group(1).strip()
-        completion = ""
-        date_m = re.search(
-            r"(?m)^\s*((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4})\s+[\d.]+\s*$",
+        qual_m = re.search(
+            r"(?m)^\s*([A-Z](?:\([A-Z]\))?(?:\s+[A-Z](?:\([A-Z]\))?)*)\s*$",
             block,
         )
-        if date_m:
-            completion = date_m.group(1)
+        if qual_m:
+            qualifications = qual_m.group(1).strip()
+
         scope = f"{title}. {block[:900].strip()}"
-        if not location:
-            location = "Indiana"
         bid = BidRecord(
             bid_id="",
             source_type="indot_ntc_pdf",
@@ -680,17 +677,12 @@ def parse_indot_notice_text(text: str, source_url: str, as_of: str) -> list[BidR
             scope=scope,
             location=location,
             state="IN",
-            deadline="October 7, 2026 10:00 AM",
-            deadline_iso="2026-10-07T10:00:00-04:00",
-            requirements=qualifications,
-            posted="September 9, 2026",
             source_as_of=as_of,
             raw_excerpt=block[:1600],
         )
         bid.bid_id = make_bid_id(bid)
         bids.append(bid)
     return bids
-
 
 def scrape_indot_current() -> tuple[list[BidRecord], dict[str, Any]]:
     health = {"source": "indot_current_regular_letting", "status": "unknown", "count": 0, "error": ""}
