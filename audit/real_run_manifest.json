@@ -1,0 +1,11 @@
+{
+  "contractor_audit": {
+    "sheets": [],
+    "rows_seen": 0,
+    "rows_loaded": 0,
+    "blank_rows": 0,
+    "duplicates_removed": 0,
+    "header_mapping": {}
+  },
+  "results": []
+}
