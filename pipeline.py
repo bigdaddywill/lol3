@@ -215,37 +215,67 @@ def _extract_anchor_results(html: str) -> list[SearchResult]:
         results.append(SearchResult(title=title, url=href))
     return results
 
+class SearchHTMLParser(HTMLParser):
+    def __init__(self, mode: str):
+        super().__init__()
+        self.mode = mode
+        self.in_h2 = False
+        self.in_anchor = False
+        self.anchor_href = ""
+        self.title_parts: list[str] = []
+        self.results: list[SearchResult] = []
+        self.anchor_is_result = False
+
+    def handle_starttag(self, tag: str, attrs):
+        attrs_dict = dict(attrs)
+        if tag.lower() == "h2":
+            self.in_h2 = True
+        if tag.lower() == "a":
+            classes = set((attrs_dict.get("class") or "").split())
+            self.in_anchor = True
+            self.anchor_href = attrs_dict.get("href") or ""
+            self.title_parts = []
+            if self.mode == "bing":
+                self.anchor_is_result = self.in_h2
+            else:
+                self.anchor_is_result = "result__a" in classes
+
+    def handle_data(self, data: str):
+        if self.in_anchor and self.anchor_is_result:
+            self.title_parts.append(data)
+
+    def handle_endtag(self, tag: str):
+        tag = tag.lower()
+        if tag == "a" and self.in_anchor:
+            if self.anchor_is_result and self.anchor_href:
+                title = re.sub(r"\\s+", " ", " ".join(self.title_parts)).strip()
+                if title:
+                    self.results.append(SearchResult(title=title, url=self.anchor_href))
+            self.in_anchor = False
+            self.anchor_href = ""
+            self.title_parts = []
+            self.anchor_is_result = False
+        elif tag == "h2":
+            self.in_h2 = False
+
+
 def search_bing(query: str, max_results: int = 10, timeout: int = 20) -> list[SearchResult]:
     search_url = "https://www.bing.com/search?q=" + quote_plus(query)
     req = Request(search_url, headers={"User-Agent": "Mozilla/5.0 (commercial bid research)"})
     with urlopen(req, timeout=timeout) as resp:
         html = resp.read(3_000_000).decode(resp.headers.get_content_charset() or "utf-8", errors="replace")
-
-    results: list[SearchResult] = []
-    pattern = re.compile(
-        r"""<h2[^>]*>\\s*<a[^>]*href=["']([^"']+)["'][^>]*>(.*?)</a>\\s*</h2>""",
-        flags=re.I | re.S,
-    )
-    for href, title_html in pattern.findall(html)[:max_results]:
-        title = re.sub(r"\\s+", " ", re.sub(r"<[^>]+>", " ", title_html)).strip()
-        if title:
-            results.append(SearchResult(title=title, url=href))
-    return results
+    parser = SearchHTMLParser("bing")
+    parser.feed(html)
+    return parser.results[:max_results]
 
 def search_duckduckgo(query: str, max_results: int = 10, timeout: int = 20) -> list[SearchResult]:
     search_url = "https://html.duckduckgo.com/html/?q=" + quote_plus(query)
     req = Request(search_url, headers={"User-Agent": "Mozilla/5.0 (commercial bid research)"})
     with urlopen(req, timeout=timeout) as resp:
         html = resp.read(3_000_000).decode(resp.headers.get_content_charset() or "utf-8", errors="replace")
-    results: list[SearchResult] = []
-    anchor_re = re.compile(r"""<a[^>]*class=["'](?:[^"']*result__a[^"']*)["'][^>]*>(.*?)</a>""", re.I | re.S)
-    href_re = re.compile(r"""href=["']([^"']+)["']""", re.I)
-    for node in anchor_re.findall(html)[:max_results]:
-        href = href_re.search(node)
-        title = re.sub(r"\\s+", " ", re.sub(r"<[^>]+>", " ", node)).strip()
-        if href and title:
-            results.append(SearchResult(title=title, url=urljoin(search_url, href.group(1))))
-    return results
+    parser = SearchHTMLParser("ddg")
+    parser.feed(html)
+    return parser.results[:max_results]
 
 def search_web(query: str, max_results: int = 10) -> list[SearchResult]:
     seen: set[str] = set()
