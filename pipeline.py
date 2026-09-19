@@ -606,7 +606,7 @@ def run(args: argparse.Namespace) -> None:
         try:
             bids = discover(queries, max_results=args.max_results)
         except Exception as exc:
-            manifest.append({"company": contractor.company, "status": "discovery_error", "error": str(exc), "query": query})
+            manifest.append({"company": contractor.company, "status": "discovery_error", "error": str(exc), "queries": queries})
             continue
         matches = rank_matches(contractor, bids, minimum_score=args.minimum_score)
         if not matches:
