@@ -58,8 +58,15 @@ jobs:
       - name: Live Indiana Armory Board scrape
         run: |
           python - <<'PY'
-          from pipeline.live_sources import scrape_sab_bids
-          bids = scrape_sab_bids()
+          import re
+          from pipeline.bid_pipeline import scrape_url
+          from pipeline.live_sources import parse_sab_bids
+          raw = scrape_url("https://www.in.gov/apps/sab/bidsystem/sab_bviewer")
+          print("live_sab_bytes=", len(raw))
+          title = re.search(r"<title[^>]*>(.*?)</title>", raw, re.I | re.S)
+          print("live_sab_title=", re.sub(r"\s+", " ", title.group(1)).strip() if title else "<none>")
+          print("live_sab_prefix=", re.sub(r"\s+", " ", raw[:1000]))
+          bids = parse_sab_bids(raw)
           assert bids, "Live Armory Board returned zero parseable bids"
           print(f"live_sab_bids={len(bids)}")
           for bid in bids[:10]:
