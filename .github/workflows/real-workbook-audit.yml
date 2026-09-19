@@ -26,6 +26,28 @@ jobs:
         run: |
           python -m pip install -U pytest openpyxl
           PYTHONPATH=. pytest -q
+      - name: Diagnose public search access
+        run: |
+          python - <<'PY'
+          from urllib.request import Request, urlopen
+          from urllib.parse import quote_plus
+          for host in [
+              "https://www.bing.com/search?q=" + quote_plus("invitation to bid roofing Massachusetts 2026"),
+              "https://html.duckduckgo.com/html/?q=" + quote_plus("invitation to bid roofing Massachusetts 2026"),
+          ]:
+              try:
+                  req = Request(host, headers={"User-Agent": "Mozilla/5.0"})
+                  with urlopen(req, timeout=15) as r:
+                      body = r.read(50000)
+                      print("URL", host)
+                      print("STATUS", r.status)
+                      print("FINAL", r.geturl())
+                      print("BYTES", len(body))
+                      print("HEAD", body[:500].decode("utf-8", "replace"))
+              except Exception as exc:
+                  print("URL", host)
+                  print("ERROR", repr(exc))
+          PY
       - name: Audit real workbook
         run: |
           mkdir -p audit
