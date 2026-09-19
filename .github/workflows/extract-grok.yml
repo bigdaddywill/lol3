@@ -1,0 +1,28 @@
+name: inspect-grok-export
+on:
+  push:
+    branches: [packet-automation]
+permissions:
+  contents: write
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract Grok workspace
+        run: |
+          rm -rf grok_build
+          mkdir -p grok_build
+          unzip -q Bs0DhhjMBGFJgTHV-grok-workspace.zip -d grok_build
+          find grok_build -type f | sort
+      - name: Commit extracted source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add grok_build
+          if git diff --cached --quiet; then
+            echo "No extracted files changed."
+            exit 0
+          fi
+          git commit -m "Extract Grok workspace source"
+          git push
