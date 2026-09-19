@@ -124,6 +124,7 @@ jobs:
           bus=(root/'ISSUE_BUS.txt').read_text(errors='replace') if (root/'ISSUE_BUS.txt').exists() else ''
           target='3059278198'
           target_pass=bool(re.fullmatch(r'[2-9][0-9]{9}',target))
+          interagent_messages=bus.count(' INTERAGENT**')
           report={
             'mission_id':'PHANTOM-20-REAL-NUMBER-001',
             'expected_workers':20,
@@ -131,6 +132,7 @@ jobs:
             'missing_workers':sorted(expected-seen),
             'unique_workers':len(seen),
             'issue_bus_mentions':bus.count('PHANTOM-20-'),
+            'interagent_messages':interagent_messages,
             'target_sms_raw':target,
             'target_shape_pass':target_pass,
             'status':'PASS_CHECKPOINT' if seen==expected and target_pass else 'FAIL_COORDINATION',
@@ -138,6 +140,10 @@ jobs:
             'sms_sent_by_workflow':False,
             'human_confirmation_required':True
           }
+          if interagent_messages < 20:
+              report['status']='FAIL_TWO_WAY_COMMUNICATION'
+          if seen!=expected:
+              report['status']='FAIL_COORDINATION'
           Path('swarm/runs').mkdir(parents=True,exist_ok=True)
           Path('swarm/runs/PHANTOM-20-REAL-NUMBER-001.json').write_text(json.dumps(report,indent=2)+'\n')
           Path('swarm/runs/PHANTOM-20-REAL-NUMBER-001.md').write_text('# PHANTOM-20 Real Number Challenge\n\n'+json.dumps(report,indent=2)+'\n\n**Not a victory report:** final signup/send remains human-controlled and user confirmation is required.\n')
