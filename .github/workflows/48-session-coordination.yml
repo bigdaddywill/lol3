@@ -84,7 +84,9 @@ jobs:
           import hashlib
           import json
           import os
+          from datetime import datetime, timezone
           from pathlib import Path
+          started_at = datetime.now(timezone.utc)
           mission = Path("swarm/mission-48/MISSION.md").read_text(encoding="utf-8")
           required = [
               "mission_id: 48-SESSION-COORDINATION-001",
@@ -95,6 +97,7 @@ jobs:
           missing = [x for x in required if x not in mission]
           if missing:
               raise SystemExit(f"MISSION_INVALID missing={missing}")
+          finished_at = datetime.now(timezone.utc)
           result = {
               "session_id": os.environ["SESSION_ID"],
               "mission_id": "48-SESSION-COORDINATION-001",
@@ -103,6 +106,9 @@ jobs:
               "runner_os": os.environ.get("RUNNER_OS"),
               "runner_name": os.environ.get("RUNNER_NAME"),
               "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "started_at": started_at.isoformat().replace("+00:00", "Z"),
+              "finished_at": finished_at.isoformat().replace("+00:00", "Z"),
+              "duration_seconds": (finished_at - started_at).total_seconds(),
               "evidence": [
                   "worker VM booted",
                   "shared mission loaded",
@@ -143,6 +149,7 @@ jobs:
           python - <<'PY'
           import json
           import os
+          from datetime import datetime
           from pathlib import Path
           
           root = Path("swarm/mission-48/results")
@@ -165,6 +172,29 @@ jobs:
               errors.append("one or more sessions did not reach READY")
           if any(r.get("runner_os") != "Linux" for r in rows):
               errors.append("one or more workers did not report a Linux GitHub-hosted VM")
+          try:
+              intervals = [
+                  (datetime.fromisoformat(r["started_at"].replace("Z", "+00:00")),
+                   datetime.fromisoformat(r["finished_at"].replace("Z", "+00:00")),
+                   r["session_id"])
+                  for r in rows
+              ]
+              events = []
+              for start, finish, sid in intervals:
+                  events.append((start, 1, sid))
+                  events.append((finish, -1, sid))
+              events.sort(key=lambda x: (x[0], 0 if x[1] == -1 else 1))
+              current = 0
+              max_concurrency = 0
+              for _, delta, _ in events:
+                  current += delta
+                  max_concurrency = max(max_concurrency, current)
+          except Exception as exc:
+              errors.append(f"worker timing evidence invalid: {exc}")
+              max_concurrency = 0
+          runner_names = sorted({r.get("runner_name") for r in rows if r.get("runner_name")})
+          runner_oses = sorted({r.get("runner_os") for r in rows if r.get("runner_os")})
+          durations = [float(r.get("duration_seconds", 0)) for r in rows if r.get("duration_seconds") is not None]
           status = "PASS" if not errors else "FAIL"
           
           report = [
@@ -177,6 +207,10 @@ jobs:
               f"- Observed sessions: {len(files)}",
               f"- Unique session IDs: {len(unique)}",
               f"- Shared mission hashes: {len(hashes)}",
+              f"- Unique runner names observed: {len(runner_names)}",
+              f"- Runner OS values observed: {', '.join(runner_oses) if runner_oses else 'NONE'}",
+              f"- Measured maximum worker overlap: {max_concurrency}",
+              f"- Worker duration range (seconds): {min(durations) if durations else 'N/A'} to {max(durations) if durations else 'N/A'}",
               f"- Result: **{status}**",
               "",
               "## Session evidence",
@@ -187,7 +221,7 @@ jobs:
           if errors:
               report += ["", "## Errors", ""] + [f"- {e}" for e in errors]
           else:
-              report += ["", "## Integration conclusion", "", "All 48 workers independently loaded the same mission contract and returned machine-readable evidence. The integrator observed one result per worker and no mission-hash divergence."]
+              report += ["", "## Integration conclusion", "", f"All 48 workers independently loaded the same mission contract and returned machine-readable evidence. The integrator observed one result per worker, no mission-hash divergence, {len(runner_names)} unique runner names, and a measured maximum overlap of {max_concurrency} workers."]
           
           Path("swarm/runs").mkdir(parents=True, exist_ok=True)
           Path("swarm/runs/48-SESSION-COORDINATION-001.md").write_text("\n".join(report)+"\n", encoding="utf-8")
