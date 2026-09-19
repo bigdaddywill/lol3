@@ -32,6 +32,12 @@ PHANTOM_20_REAL_NUMBER_CHECKPOINT_SWARM
 - TextNow and Talkatone remain alternate candidates to be rechecked by the swarm.
 These are externally verified findings and must be rechecked in-run for current accuracy.
 
+## LATEST PHANTOM-20 RUN
+- Hardened two-phase design commits: `c296237cd8fb76a0fb1fed673177fa51c60ada1a` (worker) and `cc901249f4e41fe7b0dd7860c41cdd561ef51e55` (workflow).
+- Triggered run: `35425362522`.
+- That run is currently queued/in progress on GitHub Actions and has not produced a final integrated audit yet.
+- Do not treat the earlier one-phase or old-workflow evidence as the final two-way result.
+
 ## ACTIVE AUDIT RULE
 No victory claim until:
 1. 20/20 worker evidence is observed and integrated;
