@@ -54,6 +54,8 @@ def main() -> None:
         ("memory index references hot", "HOT_STATE.md" in idx),
         ("memory index references ledgers", all(x in idx for x in ["FACT_LEDGER.md", "DECISION_LEDGER.md", "FAILURE_LEDGER.md"])),
         ("restart protocol", "Cold start" in read("RESTART.md")),
+        ("executor state indexed", "agent/STATE.json" in idx and "agent/QUEUE.json" in idx),
+        ("executor files present", (ROOT / "agent/STATE.json").exists() and (ROOT / "agent/QUEUE.json").exists()),
         ("final audit references prod run", "35422565481" in final),
         ("final audit references smoke run", "35422611533" in final),
     ]
@@ -88,7 +90,9 @@ def main() -> None:
     ])
     for needle in [
         "bigdaddywill/lol3",
-        "FINALIZED_FOR_CURRENT_CONCRETE_INDIANA_SCOPE",
+        current_phase or "",
+        "agent/STATE.json",
+        "agent/QUEUE.json",
         "Percrete",
         "Carr Construction",
         "35422565481",
@@ -100,10 +104,10 @@ def main() -> None:
 
     print("MEMORY AUDIT: PASS")
     print("Cold-start reconstruction: PASS")
-    print("Current phase: FINALIZED_FOR_CURRENT_CONCRETE_INDIANA_SCOPE")
+    print(f"Current phase: {current_phase}")
     print("Production audit: 35422565481 SUCCESS")
     print("Smoke audit: 35422611533 SUCCESS")
-    print("Active TODO: none for defined scope")
+    print("Executor control plane: present")
 
 if __name__ == "__main__":
     main()
