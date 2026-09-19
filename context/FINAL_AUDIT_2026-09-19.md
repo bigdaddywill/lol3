@@ -4,8 +4,11 @@
 
 The LOL3 bid-to-outreach pipeline is finalized for the current **Concrete / Indiana** production path represented by the recovered reference email and the available contractor workbook.
 
-Final main branch commit:
-- `d332e9eb4f159dc8d1d0700aafb95c7f741af47a`
+Audited source commit:
+- `f8f768ba97534e7cddca9013598bae5c0af86a8c`
+
+Final documentation-freeze commit:
+- `5a11b22fa331b149b4b79466a00a0751c32fd5eb`
 
 Final comprehensive production audit:
 - Workflow: `LOL3 production audit`
