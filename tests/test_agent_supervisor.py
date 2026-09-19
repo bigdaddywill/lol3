@@ -1,3 +1,5 @@
+import pytest
+
 from tools.agent_supervisor import (
     claim_next_task,
     checkpoint,
@@ -7,6 +9,13 @@ from tools.agent_supervisor import (
     validate_queue,
     validate_state,
 )
+
+
+@pytest.fixture(autouse=True)
+def isolated_ledger(monkeypatch, tmp_path):
+    monkeypatch.setenv("LOL3_LEDGER_PATH", str(tmp_path / "ledger.md"))
+
+
 
 
 def blank_state():
