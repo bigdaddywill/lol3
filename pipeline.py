@@ -528,15 +528,18 @@ def discover_bid_network(contractor: Contractor, max_results: int = 8) -> list[B
             )
             if not relevant:
                 continue
+            trade_hits = sum(1 for t in trade_terms_set if t in low)
+            construction_hits = sum(1 for k in ("renovation", "remodel", "roof", "tile", "floor", "gutter", "paint", "painting", "building", "construction") if k in low)
             seen_urls.add(absolute)
-            candidates.append((title, absolute))
-            if len(candidates) >= max_results * 4:
-                break
+            candidates.append((trade_hits, construction_hits, title, absolute))
+        # Strong trade evidence first; generic construction pages stay behind specific trade pages.
+        candidates.sort(key=lambda x: (-x[0], -x[1], x[2].lower()))
+        candidates = candidates[:max_results * 8]
         if len(candidates) >= max_results * 4:
             break
 
     bids: list[Bid] = []
-    for result_title, url in candidates:
+    for _, _, result_title, url in candidates:
         try:
             page_title, page_text = fetch_page(url)
             result = SearchResult(result_title, url)
@@ -634,6 +637,8 @@ def score_match(contractor: Contractor, bid: Bid) -> Match:
     if hits:
         score += min(45, len(hits) * 10)
         reasons.append("trade match: " + ", ".join(hits[:5]))
+    else:
+        return Match(contractor, bid, 0, ["no trade evidence"])
     if bid.field("due_date"):
         score += 5
         reasons.append("deadline present")
