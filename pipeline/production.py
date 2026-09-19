@@ -185,6 +185,7 @@ def _load_rows_from_xlsx(path: str | Path) -> tuple[list[dict[str, str]], dict[s
         "rows_loaded": 0,
         "blank_rows": 0,
         "duplicates_removed": 0,
+        "recovered_business_name_rows": 0,
         "header_mapping": {},
     }
     seen: set[tuple[str, str, str]] = set()
@@ -243,6 +244,7 @@ def _load_rows_from_tsv(path: str | Path) -> tuple[list[dict[str, str]], dict[st
         "rows_loaded": 0,
         "blank_rows": 0,
         "duplicates_removed": 0,
+        "recovered_business_name_rows": 0,
         "header_mapping": {},
     }
     seen: set[tuple[str, str, str]] = set()
@@ -258,8 +260,18 @@ def _load_rows_from_tsv(path: str | Path) -> tuple[list[dict[str, str]], dict[st
         if raw.get("txt sheet_row") and not normalized.get("sheet_row"):
             normalized["sheet_row"] = raw["txt sheet_row"]
         if not normalized["business_name"]:
-            audit["blank_rows"] += 1
-            continue
+            fallback_name = " ".join(
+                x for x in (normalized.get("first_name", ""), normalized.get("last_name", ""))
+                if x
+            ).strip()
+            fallback_name = fallback_name or normalized.get("email", "").strip()
+            fallback_name = fallback_name or normalized.get("business_phone", "").strip()
+            fallback_name = fallback_name or normalized.get("cell_phone", "").strip()
+            if not fallback_name:
+                audit["blank_rows"] += 1
+                continue
+            normalized["business_name"] = fallback_name
+            audit["recovered_business_name_rows"] += 1
         business_key = normalize(normalized["business_name"])
         email_key = normalize(normalized["email"])
         phone_key = re.sub(r"\D", "", normalized["business_phone"])
