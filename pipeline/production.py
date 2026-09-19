@@ -791,7 +791,7 @@ def scrape_indot_current() -> tuple[list[BidRecord], dict[str, Any]]:
         if not candidates:
             fallback_url = "https://www.in.gov/indot/doing-business-with-indot/home/contracts/letting-archives2/wednesday-october-7-2026-regular-letting/"
             candidates.append((now, fallback_url))
-        _, letting_url = sorted(candidates)[0]
+        letting_dt, letting_url = sorted(candidates)[0]
 
         _, _, letting_html = fetch_text(letting_url)
         pdf_m = re.search(r'href=["\']([^"\']+2026\d{4}-REG-NTC_[^"\']*\.pdf)["\']', letting_html, re.I)
@@ -809,7 +809,17 @@ def scrape_indot_current() -> tuple[list[BidRecord], dict[str, Any]]:
         reader = PdfReader(io.BytesIO(data))
         text = "\n".join((pg.extract_text() or "") for pg in reader.pages)
 
+        # The official letting-page link already carries the authoritative letting date.
+        # Prefer the extracted header time when available; otherwise default the INDOT regular-letting time.
         deadline, deadline_iso = extract_indot_letting_datetime(text)
+        if not deadline:
+            page_flat = re.sub(r"\s+", " ", letting_html).strip()
+            page_time = re.search(r"\bat\s+(\d{1,2}:\d{2}\s*[AP]M)\b", page_flat, re.I)
+            time_text = page_time.group(1) if page_time else "10:00 AM"
+            deadline_date = letting_dt.strftime("%B %d, %Y")
+            deadline = f"{deadline_date} {time_text}"
+            parsed = datetime.strptime(deadline, "%B %d, %Y %I:%M %p").replace(tzinfo=timezone.utc)
+            deadline_iso = parsed.isoformat(timespec="minutes")
 
         bids = parse_indot_notice_text(
             text,
