@@ -14,6 +14,7 @@ from pipeline.production import (
     generate_messages,
     load_contractors,
     make_bid_id,
+    extract_indot_letting_datetime,
     parse_indot_notice_text,
     score_contract_match,
     validate_outreach,
@@ -136,6 +137,16 @@ class ProductionTests(unittest.TestCase):
         )
         self.assertEqual(make_bid_id(a), make_bid_id(b))
         self.assertEqual(len(dedupe_bids([a, b])), 1)
+
+    def test_indot_letting_datetime_survives_pdf_line_breaks(self):
+        fixture = """NOTICE TO HIGHWAY CONTRACTORS
+Letting Date & Time:
+October 7, 2026
+at 10:00 AM
+"""
+        deadline, deadline_iso = extract_indot_letting_datetime(fixture)
+        self.assertEqual(deadline, "October 7, 2026 10:00 AM")
+        self.assertEqual(deadline_iso, "2026-10-07T10:00+00:00")
 
     def test_indot_notice_parser(self):
         fixture = """NOTICE TO HIGHWAY CONTRACTORS
