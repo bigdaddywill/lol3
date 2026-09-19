@@ -711,8 +711,8 @@ def run(args: argparse.Namespace) -> None:
             queries = [args.query]
         try:
             bids = discover_bid_network(contractor, max_results=args.max_results)
-        if not bids:
-            bids = discover(queries, max_results=args.max_results)
+            if not bids:
+                bids = discover(queries, max_results=args.max_results)
         except Exception as exc:
             manifest.append({"company": contractor.company, "status": "discovery_error", "error": str(exc), "queries": queries})
             continue
