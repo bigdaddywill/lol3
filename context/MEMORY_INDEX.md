@@ -2,6 +2,14 @@
 
 ## Memory architecture
 
+SESSION SWARM
+- swarm/README.md — session swarm overview.
+- swarm/SESSION_BOOT.md — fresh-session boot card.
+- swarm/PROTOCOL.md — message contract.
+- swarm/ROUTER.md — role routing.
+- swarm/board/BLACKBOARD.md — shared mission board.
+- swarm/inbox/<agent>/ — immutable agent mailbox.
+
 HOT
 - HOT_STATE.md — current truth.
 - RESTART.md — startup protocol.
@@ -25,6 +33,7 @@ COLD
 ## Retrieval strategy
 
 Current status -> HOT_STATE only.
+Session swarm status -> HOT_STATE + swarm/board/BLACKBOARD.md + relevant inbox.
 Why a decision exists -> HOT_STATE + DECISION_LEDGER.
 Whether something was tested or fixed -> HOT_STATE + FACT_LEDGER + FAILURE_LEDGER.
 What happened historically -> CHAT_LOG.
