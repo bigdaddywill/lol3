@@ -16,6 +16,8 @@ from pipeline.production import (
     make_bid_id,
     extract_indot_letting_datetime,
     parse_indot_notice_text,
+    bid_relevant_to_trade,
+    contractor_trade_terms,
     score_contract_match,
     validate_outreach,
     valid_email,
@@ -54,6 +56,52 @@ class ProductionTests(unittest.TestCase):
         self.assertFalse(valid_email("not-an-email"))
         self.assertTrue(valid_phone("2602392608"))
         self.assertFalse(valid_phone("12345"))
+
+    def test_trade_terms_do_not_use_stopwords_as_match_evidence(self):
+        terms = contractor_trade_terms("Additions and Remodels")
+        self.assertNotIn("and", terms)
+        self.assertIn("construction", terms)
+
+    def test_concrete_focus_blocks_non_concrete_contractors_and_irrelevant_bids(self):
+        relevant_bid = BidRecord(
+            bid_id="b-concrete",
+            source_type="test",
+            source_url="https://example.com/bid",
+            source_domain="example.com",
+            project_name="Bridge Deck Overlay",
+            scope="reinforced concrete bridge deck and structural beam work",
+            location="Indianapolis, IN",
+            state="IN",
+            deadline="October 1, 2099",
+            deadline_iso="2099-10-01T10:00:00+00:00",
+        )
+        irrelevant_bid = BidRecord(
+            bid_id="b-tree",
+            source_type="test",
+            source_url="https://example.com/bid",
+            source_domain="example.com",
+            project_name="Tree Removal and Trimming",
+            scope="tree removal and trimming",
+            location="Indianapolis, IN",
+            state="IN",
+            deadline="October 1, 2099",
+            deadline_iso="2099-10-01T10:00:00+00:00",
+        )
+        concrete = Contractor(
+            contractor_id="c1", business_name="Percrete",
+            email="lp@example.com", city="Indianapolis", state="IN",
+            category="Concrete & Masonry",
+        )
+        general = Contractor(
+            contractor_id="c2", business_name="Carrillos Construction",
+            email="c2@example.com", city="Indianapolis", state="IN",
+            category="Additions and Remodels",
+        )
+        self.assertTrue(bid_relevant_to_trade(relevant_bid, "concrete"))
+        self.assertFalse(bid_relevant_to_trade(irrelevant_bid, "concrete"))
+        self.assertTrue(score_contract_match(concrete, relevant_bid, trade_focus="concrete")["eligible"])
+        self.assertFalse(score_contract_match(general, relevant_bid, trade_focus="concrete")["eligible"])
+        self.assertFalse(score_contract_match(concrete, irrelevant_bid, trade_focus="concrete")["eligible"])
 
     def test_state_gate_blocks_wrong_state(self):
         bid = BidRecord(
