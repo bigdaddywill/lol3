@@ -1,0 +1,25 @@
+name: LOL3 memory audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "context/**"
+      - "tools/memory_audit.py"
+      - ".github/workflows/memory-audit.yml"
+  workflow_dispatch:
+
+jobs:
+  memory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run memory audit and cold-start simulation
+        run: python tools/memory_audit.py
