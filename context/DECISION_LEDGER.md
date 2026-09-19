@@ -43,3 +43,11 @@ Status: ACTIVE
 D011 — Long-running work uses bounded resumable slices.
 Reason: GitHub-hosted jobs are time-bounded; persisted checkpoints let work continue across many worker lifetimes.
 Status: ACTIVE
+
+D012 — Independent ChatGPT sessions communicate through immutable GitHub messages.
+Reason: separate conversations have separate context windows; GitHub provides a durable synchronization boundary without requiring shared live memory.
+Status: ACTIVE
+
+D013 — Swarm roles are explicit and evidence is routed by role.
+Reason: chief integration, building, auditing, research, and red-team work have different failure modes and should be independently represented.
+Status: ACTIVE
