@@ -29,3 +29,7 @@ Proof -> FACT_LEDGER + relevant audit/artifact.
 Only HOT_STATE declares the current phase.
 
 CHAT_LOG is archival history, not current truth.
+
+Spin evidence:
+- context/MEMORY_SPIN_RESULT.md
+- GitHub memory audit run 35423030637: SUCCESS
