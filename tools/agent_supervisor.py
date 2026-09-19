@@ -250,7 +250,7 @@ def fail(state: dict[str, Any], queue: dict[str, Any], task_id: str,
             state["lease_expires_at"] = None
             state["last_error"] = error
             state["last_heartbeat_at"] = iso(now)
-            append_ledger("FAIL_RETRY" if retry else "FAIL_TERMINAL", task_id, worker_id, error)
+            append_ledger("FAIL_RETRY" if task["state"] == "READY" else "FAIL_TERMINAL", task_id, worker_id, error)
             return
     raise KeyError(f"unknown task: {task_id}")
 
