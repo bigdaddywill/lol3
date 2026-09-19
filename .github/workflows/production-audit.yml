@@ -1,0 +1,122 @@
+name: LOL3 production audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "pipeline/**"
+      - "tests/**"
+      - "requirements.txt"
+      - "hi"
+      - "*.xlsx"
+      - "*.eml"
+      - ".github/workflows/production-audit.yml"
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run complete test suite
+        run: python -m unittest discover -s tests -v
+
+      - name: Audit actual contractor workbook
+        run: |
+          python - <<'PY'
+          from pipeline.production import load_contractors
+          contractors, audit = load_contractors("Spanish_cleaned_after_152_on_Leads_Magnet.xlsx")
+          print(audit)
+          assert audit["rows_seen"] == 265, audit
+          assert audit["rows_loaded"] == 264, audit
+          assert audit["duplicates_removed"] == 1, audit
+          assert audit["rows_with_email"] == 263, audit
+          assert audit["rows_with_trade"] == 215, audit
+          assert audit["rows_with_location"] == 262, audit
+          assert len(contractors) == 264
+          print("real workbook audit: PASS")
+          PY
+
+      - name: Run reference digest audit
+        run: |
+          python -m pipeline.bid_pipeline \
+            --contractors hi \
+            --source "[Concrete _ Indiana] 8 open bids last 14 days — nearest deadline Aug 25, 2026.eml" \
+            --output artifacts/reference_digest.json
+          python - <<'PY'
+          import json
+          data = json.load(open("artifacts/reference_digest.json", encoding="utf-8"))
+          assert data["bid_count"] == 8
+          assert data["contractor_count"] == 263
+          assert len(data["results"]) == 8
+          print("reference digest audit: PASS")
+          PY
+
+      - name: Run live Indiana production pipeline
+        run: |
+          python -m pipeline.production \
+            --contractors Spanish_cleaned_after_152_on_Leads_Magnet.xlsx \
+            --output artifacts/production \
+            --states IN \
+            --limit-contractors 50 \
+            --max-bids-per-source 10 \
+            --tracking artifacts/tracking.jsonl \
+            --reference-eml "[Concrete _ Indiana] 8 open bids last 14 days — nearest deadline Aug 25, 2026.eml"
+
+      - name: Validate production artifacts
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("artifacts/production")
+          manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+          health = json.loads((root / "source_health.json").read_text(encoding="utf-8"))
+          bids = json.loads((root / "bids.json").read_text(encoding="utf-8"))
+          queue = json.loads((root / "outreach_queue.json").read_text(encoding="utf-8"))
+          audit = json.loads((root / "contractor_audit.json").read_text(encoding="utf-8"))
+
+          assert audit["rows_loaded"] == 264
+          assert bids, "Production run produced zero bids"
+          assert queue, "Production run produced zero candidate matches"
+
+          seen = set()
+          for row in queue:
+              assert row["bid"]["state"] == "IN"
+              assert row["contractor"]["state"] == "IN"
+              assert row["send_gate"] == "HUMAN_REVIEW_REQUIRED"
+              assert row["match"]["reasons"]
+              key = row["key"]
+              assert key not in seen
+              seen.add(key)
+              if row["validation"]["ready_for_email"]:
+                  assert row["messages"]["email_subject"]
+                  assert row["messages"]["email_body"]
+                  assert "not been independently verified" in row["messages"]["email_body"].lower()
+
+          for source in health:
+              print(source)
+              assert source["status"] not in {"invalid_empty"}, source
+
+          print("production artifact audit: PASS")
+          print("bids=", len(bids))
+          print("candidate_matches=", len(queue))
+          print("email_ready=", manifest["email_ready"])
+          print("sms_ready=", manifest["sms_ready"])
+          PY
+
+      - name: Upload complete audit artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lol3-production-audit
+          path: artifacts
