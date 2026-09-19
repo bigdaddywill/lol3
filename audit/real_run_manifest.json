@@ -39,224 +39,27 @@
   "results": [
     {
       "company": "Vasquez Home Improvement",
-      "status": "no_match",
-      "queries": [
-        "site:govtribe.com/opportunity \"Painting\" \"NY\"",
-        "site:govtribe.com/file/government-file \"Painting\" \"NY\" bid",
-        "site:govly.com/public/opportunities \"Painting\" \"NY\"",
-        "site:gov \"Painting\" \"NY\" bid solicitation"
-      ],
-      "candidates": 5,
-      "candidate_diagnostics": [
-        {
-          "title": "Bid on Building Code Compliance and Enforcement Consulting Services (Request for Qualifications) in City Hall, 2 Fifteenth St | New York Bid Network",
-          "url": "https://www.newyorkbids.net/bid_opportunities/2026/09/18/15035632-building-code-compliance-and-enforcement-consulting-services-request-for-qualifications.html",
-          "domain": "www.newyorkbids.net",
-          "scope": "To assist the city in the implementation of tasks associated with development and redevelopment of commercial, multi-family and mixed-use buildings and reconstruction of existing facilities",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        },
-        {
-          "title": "Bid on Avenue of the Pines Trail Reroute at Saratoga Spa State Park in | New York Bid Network",
-          "url": "https://www.newyorkbids.net/bid_opportunities/2026/09/18/15035610-avenue-of-the-pines-trail-reroute-at-saratoga-spa-state-park.html",
-          "domain": "www.newyorkbids.net",
-          "scope": "Remove existing asphalt trail, install new asphalt trail and install new landscaping",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        },
-        {
-          "title": "Bid on Cleaning of Various Greene County Government Buildings in Various locations | New York Bid Network",
-          "url": "https://www.newyorkbids.net/bid_opportunities/2026/09/18/15035605-cleaning-of-various-greene-county-government-buildings.html",
-          "domain": "www.newyorkbids.net",
-          "scope": "Cleaning of Various County Government Buildings",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        },
-        {
-          "title": "Bid on Digital Evidence Management System (Request for Information) in State-wide | New York Bid Network",
-          "url": "https://www.newyorkbids.net/bid_opportunities/2026/09/18/15035590-digital-evidence-management-system-request-for-information.html",
-          "domain": "www.newyorkbids.net",
-          "scope": "Seeking information regarding potential solutions for a digital evidence storage and management environment to be utilized by OFPC’s Fire Investigations Branch",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        },
-        {
-          "title": "Bid on On-Demand Construction Services in Various County Buildings | New York Bid Network",
-          "url": "https://www.newyorkbids.net/bid_opportunities/2026/09/18/15035570-on-demand-construction-services.html",
-          "domain": "www.newyorkbids.net",
-          "scope": "Work includes on-demand construction contract for the four (4) major trades",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        }
-      ]
+      "status": "qualified",
+      "score": 30,
+      "bid": "Bid on Building Code Compliance and Enforcement Consulting Services (Request for Qualifications) in City Hall, 2 Fifteenth St | New York Bid Network",
+      "source_url": "https://www.newyorkbids.net/bid_opportunities/2026/09/18/15035632-building-code-compliance-and-enforcement-consulting-services-request-for-qualifications.html",
+      "output": "audit/real_run/0001_Vasquez_Home_Improvement"
     },
     {
       "company": "Universe Gutters Inc.",
-      "status": "no_match",
-      "queries": [
-        "site:govtribe.com/opportunity \"roofing gutters\" \"MA\"",
-        "site:govtribe.com/file/government-file \"roofing gutters\" \"MA\" bid",
-        "site:govly.com/public/opportunities \"roofing gutters\" \"MA\"",
-        "site:gov \"roofing gutters\" \"MA\" bid solicitation"
-      ],
-      "candidates": 5,
-      "candidate_diagnostics": [
-        {
-          "title": "Bid on Bellevue Pond Dam Rehabilitation in Middlesex Fells Reservation | Massachusetts Bid Network",
-          "url": "https://www.massbids.net/bid_opportunities/2026/09/18/15035479-bellevue-pond-dam-rehabilitation.html",
-          "domain": "www.massbids.net",
-          "scope": "Project consists of repairs to the existing weir, stoplog bay, spillway structure, culvert pipe, headwalls, and training walls that have deteriorated over time",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        },
-        {
-          "title": "Bid on 689 Mass Ave Roofing Replacement - General Contractors in | Massachusetts Bid Network",
-          "url": "https://www.massbids.net/bid_opportunities/2026/09/18/15035163-689-mass-ave-roofing-replacement---general-contractors.html",
-          "domain": "www.massbids.net",
-          "scope": "Roof replacement and minor envelope repairs",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 20,
-          "reasons": [
-            "trade match: roof, roofing"
-          ]
-        },
-        {
-          "title": "Bid on HCM Services and Solutions (Request for Information) in | Massachusetts Bid Network",
-          "url": "https://www.massbids.net/bid_opportunities/2026/09/18/15035119-hcm-services-and-solutions-request-for-information.html",
-          "domain": "www.massbids.net",
-          "scope": "Provide hcm services and solutions",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        },
-        {
-          "title": "Bid on Corporate Catering (Request for Proposal) in Various Massport Locations | Massachusetts Bid Network",
-          "url": "https://www.massbids.net/bid_opportunities/2026/09/18/15035101-corporate-catering-request-for-proposal.html",
-          "domain": "www.massbids.net",
-          "scope": "Provide corporate catering services on an as-needed basis",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        },
-        {
-          "title": "Bid on Snow Plowing Operations for City Streets in | Massachusetts Bid Network",
-          "url": "https://www.massbids.net/bid_opportunities/2026/09/18/15035071-snow-plowing-operations-for-city-streets.html",
-          "domain": "www.massbids.net",
-          "scope": "Snow plowing operations for City Streets",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        }
-      ]
+      "status": "qualified",
+      "score": 50,
+      "bid": "Bid on 689 Mass Ave Roofing Replacement - General Contractors in | Massachusetts Bid Network",
+      "source_url": "https://www.massbids.net/bid_opportunities/2026/09/18/15035163-689-mass-ave-roofing-replacement---general-contractors.html",
+      "output": "audit/real_run/0002_Universe_Gutters_Inc."
     },
     {
       "company": "D State Tile and Granite Installation, Inc",
-      "status": "no_match",
-      "queries": [
-        "site:govtribe.com/opportunity \"tile stone flooring\" \"CA\"",
-        "site:govtribe.com/file/government-file \"tile stone flooring\" \"CA\" bid",
-        "site:govly.com/public/opportunities \"tile stone flooring\" \"CA\"",
-        "site:gov \"tile stone flooring\" \"CA\" bid solicitation"
-      ],
-      "candidates": 5,
-      "candidate_diagnostics": [
-        {
-          "title": "Bid on Janitorial Services 2026 (Request for Proposal) in | California Bid Network",
-          "url": "https://www.californiabids.com/bid_opportunities/2026/09/18/15035574-janitorial-services-2026-request-for-proposal.html",
-          "domain": "www.californiabids.com",
-          "scope": "Provide qualified contractor to provide janitorial and custodial services for various city facilities",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        },
-        {
-          "title": "Bid on San Francisco International Resource Management System/ Airport Operations Database Implementation, Maintenance and Support Services (Request for Pro) in | California Bid Network",
-          "url": "https://www.californiabids.com/bid_opportunities/2026/09/18/15035563-san-francisco-international-resource-management-system-airport-operations-database-implementation-maintenance-and-support-services-request-for-pro.html",
-          "domain": "www.californiabids.com",
-          "scope": "Provide international resource management system/ airport operations database implementation, maintenance and support services",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        },
-        {
-          "title": "Bid on As-Needed Audio/Visual, Telecom, & Security System Design Services 2027 (Request for Qualifications) in | California Bid Network",
-          "url": "https://www.californiabids.com/bid_opportunities/2026/09/18/15035553-as-needed-audiovisual-telecom--security-system-design-services-2027-request-for-qualifications.html",
-          "domain": "www.californiabids.com",
-          "scope": "Provision of qualified consultants and or joint venture firms to provide professional as-needed audio/visual, telecom, & security system design services",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        },
-        {
-          "title": "Bid on Telematics Services (Request for Qualifications) in | California Bid Network",
-          "url": "https://www.californiabids.com/bid_opportunities/2026/09/18/15035542-telematics-services-request-for-qualifications.html",
-          "domain": "www.californiabids.com",
-          "scope": "Provide comprehensive telematics solution",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        },
-        {
-          "title": "Bid on Construction Manager / General Contractor - Embarcadero Plaza & Sue Bierman Park Renovation Project (Request for Qualifications & Proposals) in Embarcadero Plaza | California Bid Network",
-          "url": "https://www.californiabids.com/bid_opportunities/2026/09/18/15035527-construction-manager--general-contractor---embarcadero-plaza--sue-bierman-park-renovation-project-request-for-qualifications--proposals.html",
-          "domain": "www.californiabids.com",
-          "scope": "Perform pre-construction and construction services for park renovation project",
-          "location": "",
-          "due_date": "",
-          "bid_number": "Network",
-          "contact_email": "",
-          "score": 0,
-          "reasons": []
-        }
-      ]
+      "status": "qualified",
+      "score": 30,
+      "bid": "Bid on Construction Manager / General Contractor - Embarcadero Plaza & Sue Bierman Park Renovation Project (Request for Qualifications & Proposals) in Embarcadero Plaza | California Bid Network",
+      "source_url": "https://www.californiabids.com/bid_opportunities/2026/09/18/15035527-construction-manager--general-contractor---embarcadero-plaza--sue-bierman-park-renovation-project-request-for-qualifications--proposals.html",
+      "output": "audit/real_run/0003_D_State_Tile_and_Granite_Installation__Inc"
     }
   ]
 }

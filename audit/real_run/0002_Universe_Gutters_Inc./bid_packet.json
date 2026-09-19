@@ -14,35 +14,42 @@
   "match": {
     "score": 50,
     "reasons": [
-      "state match",
+      "trusted state bid source",
       "trade match: roof, roofing"
     ]
   },
   "bid": {
-    "title": "Bid, Tender, RFP Results",
-    "source_url": "https://www.massbids.net/bid-result/",
+    "title": "Bid on 689 Mass Ave Roofing Replacement - General Contractors in | Massachusetts Bid Network",
+    "source_url": "https://www.massbids.net/bid_opportunities/2026/09/18/15035163-689-mass-ave-roofing-replacement---general-contractors.html",
     "source_domain": "www.massbids.net",
     "bid_number": {
-      "value": "Results",
-      "source_url": "https://www.massbids.net/bid-result/",
+      "value": "Network",
+      "source_url": "https://www.massbids.net/bid_opportunities/2026/09/18/15035163-689-mass-ave-roofing-replacement---general-contractors.html",
       "confidence": "high"
     },
-    "scope": null,
+    "scope": {
+      "value": "Roof replacement and minor envelope repairs",
+      "source_url": "https://www.massbids.net/bid_opportunities/2026/09/18/15035163-689-mass-ave-roofing-replacement---general-contractors.html",
+      "confidence": "medium"
+    },
     "location": null,
     "due_date": null,
     "contact_name": null,
     "contact_email": null,
     "contact_phone": null,
-    "raw_excerpt": "Bid, Tender, RFP Results Massachusetts Bid Network Menu Register Login Bids in Massachusetts | Massachusetts Bid Network provides construction bids and government bids for Massachusetts projects - Navigation Links Home Bids Post a Bid Register Bid Results Us Classifieds Directory Resources Contact Us Username: Pass: Reset Password Register Now Not here Bid, Tender, RFP Results Following are some of the many bid and tender results, bid tabulations, low bidder, contract award and other market intelligence that our members enjoy. Click on the listings below for more details. Outdoor Perspective Low Bidder on IFB 27-0190 Purchase and Installation of Bike Racks in Massachusetts at $24,667.00 USD Williams Stone Company, Inc. Low Bidder on Granite Curbing and Bounds - IFB (RE-BID) in Massachusetts at $153,645.10 USD Taylor Davis Landscaping Low Bidder on Sewer and Water Services - Evergreen Road in Massachusetts at $43,000.00 USD Raffaele Construction Corp Low Bidder on Cressy Beach Revetment - Storm Damage Repair Project in Massachusetts at $557,852.00 USD DND Landscaping Low Bidder on Cemetery Fall Clean-up (Invitation For Bid) in Massachusetts at $45,815.00 USD Ballard Mack Sales & Service, Inc Low Bidder on Cable Hoist Roll-Off Truck (Invitation To Bid) in Massachusetts at $225,000.00 USD Elm Electrical, Inc. Low Bidder on Cummington Water Dept. - Control System Upgrade in Massachusetts at $99,960.00 USD Aalanco Service Corp. Low Bidder on Boiler Replacement - Vernon Hill School / WPS in Massachusetts at $133,365.00 USD Millers Pro Builders Low Bidder on Wheaton Farm Barn Rehabilitation (Requests for Information) in Massachusetts at $290,760.00 USD Calhess Restoration & Waterproofing Corp. Low Bidder on Lincoln School Apartments: Repointing Project in Massachusetts at $196,000.00 USD Sunshine Construction Low Bidder on Boxborough Museum Re-roofing Project in Massachusetts at $28,800.00 USD Site Specifics LLC Low Bidder on Shade Install - Crompton Skatepark / DPRC in Ma",
-    "tags": []
+    "raw_excerpt": "Bid on 689 Mass Ave Roofing Replacement - General Contractors in | Massachusetts Bid Network Massachusetts Bid Network Menu Register Login Bids in Massachusetts | Massachusetts Bid Network provides construction bids and government bids for Massachusetts projects - Navigation Links Home Bids Post a Bid Register Bid Results Us Classifieds Directory Resources Contact Us Username: Pass: Reset Password Register Now » Bid Opportunities » 2026 » September » 18 Not here Bids in Massachusetts | Massachusetts Bid Network provides construction bids and government bids for Massachusetts projects - Bid Opportunities Search Opportunities User login is required to use this feature. Register here Browse Opportunities Browse by County and Buyer (login now required) 689 Mass Ave Roofing Replacement - General Contractors Login for complete opportunity report. Added/Updated: 09/18/26 Solicitation Title: 689 Mass Ave Roofing Replacement - General Contractors Scope: Roof replacement and minor envelope repairs. Login to view file attachments Click HERE to receive filtered opportunity reports by email with a monthly subscription. Click HERE for a list of our other web sites Contact us if you like to have a single PDF file with each report send in your email each day. Bids in Massachusetts | Massachusetts Bid Network provides construction bids and government bids for Massachusetts projects - News, Informations, and Entries Classified Ads WBE Supply, Inc. For All Your Supply Needs Certified woman-owned, small business Commercial Power Washing OTR & Truck Tires & Wheels--Nationwide SDVOSB/MBE Sub Looking for Teaming Opportunities with General Contractors More Massachusetts Bid Network Free Classified Ads >> Bid Results Bid, Tender, RFP Results Following are some of the many bid and tender results, bid tabulations, low bidder, contract award and other market intelligence that our members enjoy. Click on the listings below for more details. Login to view the full list . Williams Stone Company, ",
+    "tags": [
+      "state_bid_network",
+      "MA"
+    ]
   },
   "verification": {
-    "source_url": "https://www.massbids.net/bid-result/",
+    "source_url": "https://www.massbids.net/bid_opportunities/2026/09/18/15035163-689-mass-ave-roofing-replacement---general-contractors.html",
     "human_review_before_send": true
   },
   "email": {
     "subject": "Open Commercial Remodeling Bids in MA",
-    "body": "Hi Universe Gutters Inc.,\n\nWilliam here — we found 1 active commercial bid opportunities that may fit Universe Gutters Inc..\n\n1. Bid, Tender, RFP Results\nScope: Not stated in the source\nLocation: Not stated in the source\nBid due: Not stated in the source\nPOC: Not stated in the source\nPOC email: Not stated in the source\nPOC phone: Not stated in the source\nSource: https://www.massbids.net/bid-result/\n\nWe have attached an invitation to bid to the opportunity we think is the closest fit.\nIf you'd like help filling it out or have questions, call us at 855-799-8420.\n\nBest,\nWilliam"
+    "body": "Hi Universe Gutters Inc.,\n\nWilliam here — we found 2 active commercial bid opportunities that may fit Universe Gutters Inc..\n\n1. Bid on 689 Mass Ave Roofing Replacement - General Contractors in | Massachusetts Bid Network\nScope: Roof replacement and minor envelope repairs\nLocation: Not stated in the source\nBid due: Not stated in the source\nPOC: Not stated in the source\nPOC email: Not stated in the source\nPOC phone: Not stated in the source\nSource: https://www.massbids.net/bid_opportunities/2026/09/18/15035163-689-mass-ave-roofing-replacement---general-contractors.html\n\n2. Bid on Corporate Catering (Request for Proposal) in Various Massport Locations | Massachusetts Bid Network\nScope: Provide corporate catering services on an as-needed basis\nLocation: Not stated in the source\nBid due: Not stated in the source\nPOC: Not stated in the source\nPOC email: Not stated in the source\nPOC phone: Not stated in the source\nSource: https://www.massbids.net/bid_opportunities/2026/09/18/15035101-corporate-catering-request-for-proposal.html\n\nWe have attached an invitation to bid to the opportunity we think is the closest fit.\nIf you'd like help filling it out or have questions, call us at 855-799-8420.\n\nBest,\nWilliam"
   },
-  "sms": "Hi Universe Gutters Inc., William here — I just sent you an active commercial bid we think may be a fit. Bid, Tender, RFP Results. Sent to universegutters@gmail.com. Take a look when you have a chance. Questions: 855-799-8420."
+  "sms": "Hi Universe Gutters Inc., William here — I just sent you an active commercial bid we think may be a fit. Bid on 689 Mass Ave Roofing Replacement - General Contractors in | Massachusetts Bid Network. Sent to universegutters@gmail.com. Take a look when you have a chance. Questions: 855-799-8420."
 }
