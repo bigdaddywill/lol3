@@ -85,10 +85,13 @@ Update this file only from verified reality.
 
 ## 48-SESSION PROOF STATUS
 - Provisional first run: GitHub Actions run 35424136351, source commit 2677dfdd, result PASS with 48/48 workers and one shared mission hash.
-- That result is NOT canonical because the integrator failure-handling bug was discovered afterward.
-- Hardened workflow commit: e08042fcc98d09c681dd83b1ee6200549e7f4eae.
-- Hardened mission commit: 47141871175d72c3af5b82ee223a25d3705bec99.
-- Corrected rerun is expected from the hardened mission push; its final persisted report must name the corrected source commit before it can replace the provisional result as canonical.
+- Corrected run: GitHub Actions run 35424191384, source commit 47141871175d72c3af5b82ee223a25d3705bec99, result PASS with 48/48 workers and 48 unique runner names.
+- The corrected run's measured overlap was 1, but its worker execution window was only microseconds, so that measurement is insufficient to characterize real scheduler concurrency.
+- Concurrency evidence was hardened with a 15-second measurement hold.
+- Measurement workflow commit: b55009b257adbd9223497399c23c6f16d43b6939.
+- Measurement mission commit: b223a6278d88192d4a582c86aa711d56a57e2204.
+- Final concurrency run is pending its persisted result. Do not claim 48 simultaneous workers until that result reports the measured overlap.
+- The last verified architectural fact is: 48 distinct GitHub-hosted runner jobs can be created and integrated through the shared mission/result mechanism.
 
 ## MEMORY SYSTEM SELF-TEST
 - Memory audit run 35423030637: SUCCESS.
