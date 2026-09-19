@@ -73,7 +73,8 @@ The launcher reached 'Starting commander 3B...' and 'Starting independent audito
 
 LOL3 is finalized for the audited Concrete/Indiana production path.
 
-Final main branch: `8b29b0282e3c8603de1e5d8cb4934d9234045e5c`
+Audited source commit: `f8f768ba97534e7cddca9013598bae5c0af86a8c`
+Final documentation-freeze commit: `5a11b22fa331b149b4b79466a00a0751c32fd5eb`
 
 Final verified gates:
 - Production audit run `35422565481`: SUCCESS
