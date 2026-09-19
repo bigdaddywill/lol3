@@ -184,3 +184,55 @@ This is now a verified reference-digest matcher/outreach engine, not yet a compl
 
 ### Durable conclusion
 The LOL3 reference pipeline is functional and audited. The live-source layer now has one verified adapter, and the source-status gate distinguishes real empty boards from parsing/access failures. Remaining production work is adding more source adapters and authenticated/dynamic-source handling where necessary.
+
+
+## FINAL CONTINUATION UPDATE — 2026-09-19
+
+### User directive
+Ghost asked Phantom to finish the system, keep hard context in GitHub, audit everything, and not claim victory until finalized with nothing left to suggest.
+
+### Final engineering work
+- Added production XLSX ingestion against the actual On Leads Magnet sheet.
+- Added source health and required/optional source policy.
+- Added dynamic INDOT regular-letting discovery and PDF contract parsing.
+- Fixed INDOT letting deadline propagation after artifact-level inspection exposed blank deadlines.
+- Added strict concrete trade mode.
+- Added contractor trade gating and bid trade-relevance gating.
+- Removed generic stopword/category substring matches.
+- Explicitly rejected HMA-only and pavement-marking-only records from concrete mode.
+- Added duplicate tracking and message hashes.
+- Kept human approval as the final send gate.
+- Fixed standalone smoke CI to install requirements.txt.
+
+### Final audits
+Production audit:
+- Run `35422565481`
+- SUCCESS
+- Real XLSX audit passed.
+- Full test suite passed.
+- Reference digest audit passed.
+- Live production run passed.
+- Production artifact validation passed.
+- Artifact upload passed.
+
+Standalone smoke:
+- Run `35422611533`
+- SUCCESS
+- 17/17 tests passed.
+- Reference E2E passed.
+- Output invariants passed.
+- Live SAB source check passed.
+- Artifact upload passed.
+
+### Final production artifact
+- 25 current concrete-relevant INDOT bids
+- 2 Indiana Concrete/Masonry contractors
+- 50 current pairings
+- 50 email-ready
+- 50 SMS-ready
+- 0 validation errors
+- all current records open
+- every message human-gated
+
+### Final durable conclusion
+The audited Concrete/Indiana bid-to-outreach pipeline is complete in the repository. The full final audit is preserved in `context/FINAL_AUDIT_2026-09-19.md`.
