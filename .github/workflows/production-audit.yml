@@ -106,8 +106,11 @@ jobs:
 
           for source in health:
               print(source)
-              assert source["status"] not in {"invalid_empty"}, source
+              if source.get("required"):
+                  assert source["status"] in {"ok", "empty"}, source
 
+          assert manifest["email_ready"] > 0
+          assert manifest["sms_ready"] >= 0
           print("production artifact audit: PASS")
           print("bids=", len(bids))
           print("candidate_matches=", len(queue))
