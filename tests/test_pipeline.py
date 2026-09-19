@@ -103,3 +103,27 @@ def test_bing_rss_parser(monkeypatch):
     results = search_bing_rss("roofing bid")
     assert results and results[0].title == "Roofing Bid"
     assert results[0].url == "https://example.org/roof"
+
+
+def test_trusted_index_page_cannot_qualify():
+    c = Contractor(sheet="x", company="Universe Gutters Inc.", state="MA", city="Marlborough", trade="Roofing & Gutters")
+    b = Bid(
+        title="Bid, Tender, RFP Results",
+        source_url="https://www.massbids.net/bid-result/",
+        source_domain="www.massbids.net",
+        scope=source_field("Bid results and low bidder information.", "https://www.massbids.net/bid-result/")
+    )
+    m = rank_matches(c, [b], minimum_score=1)
+    assert not m
+
+
+def test_trusted_detail_page_can_qualify():
+    c = Contractor(sheet="x", company="Universe Gutters Inc.", state="MA", city="Marlborough", trade="Roofing & Gutters")
+    b = Bid(
+        title="Partial Roof Replacement and Gutter Replacement",
+        source_url="https://www.massbids.net/bid_opportunities/2026/09/16/123-partial-roof-replacement.html",
+        source_domain="www.massbids.net",
+        scope=source_field("Replace roofing system, gutters and downspouts.", "https://www.massbids.net/bid_opportunities/2026/09/16/123-partial-roof-replacement.html")
+    )
+    m = rank_matches(c, [b], minimum_score=1)
+    assert m
