@@ -41,17 +41,17 @@
       "company": "Vasquez Home Improvement",
       "status": "no_match",
       "queries": [
-        "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Painting Brewster NY commercial construction",
-        "\"invitation to bid\" Painting NY",
-        "\"request for proposal\" Painting NY",
-        "site:gov Painting NY bid"
+        "site:govtribe.com/opportunity \"Painting\" \"NY\"",
+        "site:govtribe.com/file/government-file \"Painting\" \"NY\" bid",
+        "site:govly.com/public/opportunities \"Painting\" \"NY\"",
+        "site:gov \"Painting\" \"NY\" bid solicitation"
       ],
-      "candidates": 5,
+      "candidates": 3,
       "candidate_diagnostics": [
         {
-          "title": "COMMERCIAL  Definition & Meaning -  Merriam-Webster",
-          "url": "https://www.merriam-webster.com/dictionary/commercial",
-          "domain": "www.merriam-webster.com",
+          "title": "Painting - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Painting",
+          "domain": "en.wikipedia.org",
           "scope": "",
           "location": "",
           "due_date": "",
@@ -63,9 +63,9 @@
           ]
         },
         {
-          "title": "LoopNet: #1 in  Commercial  Real Estate for Sale & Lease",
-          "url": "https://www.loopnet.com/",
-          "domain": "www.loopnet.com",
+          "title": "Paint",
+          "url": "https://paint.js.org/",
+          "domain": "paint.js.org",
           "scope": "",
           "location": "",
           "due_date": "",
@@ -77,39 +77,11 @@
           ]
         },
         {
-          "title": "Browse TV Commercials & TV Ads - iSpot",
-          "url": "https://www.ispot.tv/browse",
-          "domain": "www.ispot.tv",
+          "title": "Kleki - Paint Tool",
+          "url": "https://kleki.com/",
+          "domain": "kleki.com",
           "scope": "",
           "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "'gay motoboy amador' Search - XVIDEOS.COM",
-          "url": "https://www.xvideos.com/?k=gay+motoboy+amador",
-          "domain": "www.xvideos.com",
-          "scope": "",
-          "location": "USA Straight Login Join for FREE Premium Best Videos Categories Porn in your language 3d AI Amateur Anal Arab Asian ASMR Ass BBW Bi Big Ass",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "'motoboy gay- amador' Search - XVIDEOS.COM",
-          "url": "https://www.xvideos.com/?k=motoboy+gay-+amador",
-          "domain": "www.xvideos.com",
-          "scope": "",
-          "location": "USA Straight Login Join for FREE Premium Best Videos Categories Porn in your language 3d AI Amateur Anal Arab Asian ASMR Ass BBW Bi Big Ass",
           "due_date": "",
           "bid_number": "",
           "contact_email": "",
@@ -124,17 +96,17 @@
       "company": "Universe Gutters Inc.",
       "status": "no_match",
       "queries": [
-        "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Roofing & Gutters Marlborough MA commercial construction",
-        "\"invitation to bid\" Roofing & Gutters MA",
-        "\"request for proposal\" Roofing & Gutters MA",
-        "site:gov Roofing & Gutters MA bid"
+        "site:govtribe.com/opportunity \"roofing gutters\" \"MA\"",
+        "site:govtribe.com/file/government-file \"roofing gutters\" \"MA\" bid",
+        "site:govly.com/public/opportunities \"roofing gutters\" \"MA\"",
+        "site:gov \"roofing gutters\" \"MA\" bid solicitation"
       ],
       "candidates": 5,
       "candidate_diagnostics": [
         {
-          "title": "COMMERCIAL  Definition & Meaning -  Merriam-Webster",
-          "url": "https://www.merriam-webster.com/dictionary/commercial",
-          "domain": "www.merriam-webster.com",
+          "title": "Roofing  Contractors near  Ocean Isle Beach ,  NC  | Better ...",
+          "url": "https://www.bbb.org/us/nc/ocean-isle-beach/category/roofing-contractors",
+          "domain": "www.bbb.org",
           "scope": "",
           "location": "",
           "due_date": "",
@@ -146,9 +118,9 @@
           ]
         },
         {
-          "title": "LoopNet: #1 in  Commercial  Real Estate for Sale & Lease",
-          "url": "https://www.loopnet.com/",
-          "domain": "www.loopnet.com",
+          "title": "The Best  10 Roofing near Ocean Isle Beach ,  NC  28469 -  Yelp",
+          "url": "https://www.yelp.com/search?cflt=roofing&find_loc=Ocean+Isle+Beach%2C+NC+28469&msockid=10b3412a205d67fb35a656f321c76628",
+          "domain": "www.yelp.com",
           "scope": "",
           "location": "",
           "due_date": "",
@@ -160,9 +132,23 @@
           ]
         },
         {
-          "title": "Browse TV Commercials & TV Ads - iSpot",
-          "url": "https://www.ispot.tv/browse",
-          "domain": "www.ispot.tv",
+          "title": "Roofing Contractor | Blankenship Roofing",
+          "url": "https://www.blankenshiproofinginc.com/",
+          "domain": "www.blankenshiproofinginc.com",
+          "scope": "",
+          "location": "",
+          "due_date": "",
+          "bid_number": "begins",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "not clearly a bid opportunity"
+          ]
+        },
+        {
+          "title": "The Best  10 Roofing near Ocean Isle Beach ,  NC  28469 -  Yelp",
+          "url": "https://www.yelp.com/search?cflt=roofing&find_loc=Ocean+Isle+Beach%2C+NC+28469&msockid=25628c8b3bd269ad15b39b523a6768c4",
+          "domain": "www.yelp.com",
           "scope": "",
           "location": "",
           "due_date": "",
@@ -174,23 +160,9 @@
           ]
         },
         {
-          "title": "DistroKid : Music Distribution Services",
-          "url": "https://distrokid.com/?msockid=1ee1a5de4c536e050a46b2074d0a6f9f",
-          "domain": "distrokid.com",
-          "scope": "",
-          "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "Sign in to your  DistroKid  account",
-          "url": "https://distrokid.com/signin/?msockid=1ee1a5de4c536e050a46b2074d0a6f9f",
-          "domain": "distrokid.com",
+          "title": "The Best  10 Roofing near Ocean Isle Beach ,  NC  28469 -  Yelp",
+          "url": "https://www.yelp.com/search?cflt=roofing&find_loc=Ocean+Isle+Beach%2C+NC+28469&msockid=14ff4d90320e66e024d45a4933d7677c",
+          "domain": "www.yelp.com",
           "scope": "",
           "location": "",
           "due_date": "",
@@ -207,17 +179,17 @@
       "company": "D State Tile and Granite Installation, Inc",
       "status": "no_match",
       "queries": [
-        "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Stone & Tile SAN JOSE CA commercial construction",
-        "\"invitation to bid\" Stone & Tile CA",
-        "\"request for proposal\" Stone & Tile CA",
-        "site:gov Stone & Tile CA bid"
+        "site:govtribe.com/opportunity \"tile stone flooring\" \"CA\"",
+        "site:govtribe.com/file/government-file \"tile stone flooring\" \"CA\" bid",
+        "site:govly.com/public/opportunities \"tile stone flooring\" \"CA\"",
+        "site:gov \"tile stone flooring\" \"CA\" bid solicitation"
       ],
-      "candidates": 5,
+      "candidates": 3,
       "candidate_diagnostics": [
         {
-          "title": "COMMERCIAL  Definition & Meaning -  Merriam-Webster",
-          "url": "https://www.merriam-webster.com/dictionary/commercial",
-          "domain": "www.merriam-webster.com",
+          "title": "Tile Trackers: Bluetooth Wallet & Key Trackers | Life360",
+          "url": "https://www.life360.com/tile-trackers",
+          "domain": "www.life360.com",
           "scope": "",
           "location": "",
           "due_date": "",
@@ -229,9 +201,9 @@
           ]
         },
         {
-          "title": "LoopNet: #1 in  Commercial  Real Estate for Sale & Lease",
-          "url": "https://www.loopnet.com/",
-          "domain": "www.loopnet.com",
+          "title": "Tile  -  The Home Depot",
+          "url": "https://www.homedepot.com/b/Flooring-Tile/N-5yc1vZar0y",
+          "domain": "www.homedepot.com",
           "scope": "",
           "location": "",
           "due_date": "",
@@ -243,37 +215,9 @@
           ]
         },
         {
-          "title": "Browse TV Commercials & TV Ads - iSpot",
-          "url": "https://www.ispot.tv/browse",
-          "domain": "www.ispot.tv",
-          "scope": "",
-          "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "Download Free  - Best Software &  Apps  - Softonic",
-          "url": "https://en.softonic.com/downloads/free",
-          "domain": "en.softonic.com",
-          "scope": "",
-          "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "Android Apps on Google Play",
-          "url": "https://play.google.com/store/apps?hl=en-us",
-          "domain": "play.google.com",
+          "title": "The Tile Shop - High Quality Floor & Wall Tile",
+          "url": "https://www.tileshop.com/",
+          "domain": "www.tileshop.com",
           "scope": "",
           "location": "",
           "due_date": "",
