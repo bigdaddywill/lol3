@@ -126,3 +126,40 @@ The current SAB endpoint returned an explicitly empty board during the final smo
 
 ### Final smoke
 Run `35421618318` passed all checks.
+
+
+## FINALIZED PRODUCTION CONTRACT — 2026-09-19
+
+The production path is now explicit and audited:
+
+`LIVE BID SOURCES -> NORMALIZE -> TRADE RELEVANCE -> STATE GATE -> OPEN-DEADLINE GATE -> MATCH SCORE/REASONS -> INVITATION -> EMAIL -> SMS -> TRACKING -> HUMAN SEND GATE`
+
+### Concrete mode
+The audited production invocation uses `--trade concrete`.
+
+Contractor eligibility requires a documented Concrete/Masonry category. Generic words from contractor names/categories such as `and` or `construction` cannot independently create a match.
+
+Bid relevance uses an explicit concrete evidence vocabulary. Broad HMA-only and pavement-marking-only records are excluded from the concrete queue.
+
+### Final verified result
+- 39 current INDOT contracts ingested.
+- 25 current concrete-relevant INDOT bids retained.
+- 8 historical reference bids retained only as fixture/provenance.
+- 2 Indiana Concrete/Masonry contractors evaluated.
+- 50 current contractor-bid pairings generated.
+- 50 email-ready and 50 SMS-ready.
+- 0 duplicate tracking blocks.
+- Every record is human-gated.
+
+### Source health
+Required source:
+- INDOT current regular letting: healthy and producing current contracts.
+
+Optional sources:
+- SAB: degraded in GitHub Actions and safely excluded from matching.
+- Public Purchase: reachable but returned no current rows.
+
+The final system records these states instead of fabricating missing bids.
+
+### Durable audit
+See `context/FINAL_AUDIT_2026-09-19.md`.
