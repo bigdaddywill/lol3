@@ -1,6 +1,7 @@
 # LOL3 Hot State
 
 updated: 2026-09-19
+executor_layer_updated: 2026-09-19
 repo: bigdaddywill/lol3
 branch: main
 
@@ -8,9 +9,9 @@ branch: main
 Build and maintain the bid-to-outreach automation system while preserving durable context in GitHub.
 
 ## CURRENT PHASE
-FINALIZED_FOR_CURRENT_CONCRETE_INDIANA_SCOPE
+PERSISTENT_EXECUTOR_BRAIN
 
-The current production path is complete and audited. Older "next step" notes elsewhere are historical unless HOT_STATE changes.
+The production bid path remains audited for its defined scope. The new phase adds durable work-in-motion state so long tasks can survive worker/session restarts.
 
 ## CURRENT FLOW
 LIVE BID SOURCES -> NORMALIZE -> TRADE RELEVANCE -> STATE GATE -> OPEN-DEADLINE GATE -> MATCH SCORE/REASONS -> BID INVITATION -> EMAIL -> FOLLOW-UP SMS -> TRACKING -> HUMAN SEND GATE
@@ -46,6 +47,14 @@ Optional:
 - SAB: degraded/empty responses are recorded and excluded.
 - Public Purchase Indianapolis: optional.
 
+## PERSISTENT EXECUTOR TRUTH
+- `agent/QUEUE.json`: durable task queue.
+- `agent/STATE.json`: active task, worker lease, checkpoint, recovery counter.
+- `agent/LEDGER.md`: operational event history.
+- `tools/agent_supervisor.py`: claim/checkpoint/finish/fail/watchdog protocol.
+- `.github/workflows/agent-brain-audit.yml`: scheduled watchdog + self-test.
+- Worker runtime connection is not yet verified end-to-end; the current implementation is the durable control plane, not an immortal chat session.
+
 ## AUDIT TRUTH
 - Production audit 35422565481: SUCCESS.
 - Standalone smoke 35422611533: SUCCESS, 17/17 tests.
@@ -54,9 +63,10 @@ Optional:
 - Audited source head f8f768ba97534e7cddca9013598bae5c0af86a8c.
 
 ## ACTIVE TODO
-None for this defined scope.
+- Connect an always-on worker runtime to the executor protocol.
+- Run and record an end-to-end multi-slice resume test, including a forced worker death and watchdog recovery.
 
-A new user request creates a new phase. Update this file only from verified reality.
+Update this file only from verified reality.
 
 ## MEMORY SYSTEM SELF-TEST
 - Memory audit run 35423030637: SUCCESS.
