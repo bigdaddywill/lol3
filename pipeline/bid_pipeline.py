@@ -126,7 +126,7 @@ def _clean_tag_text(value: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def parse_reference_html(html_text: str) -> list[dict[str, Any]]:
+def parse_reference_html(html_text: str, default_state: str = "") -> list[dict[str, Any]]:
     parser = _CardParser()
     parser.feed(html_text)
     bids: list[dict[str, Any]] = []
@@ -179,7 +179,7 @@ def parse_reference_html(html_text: str) -> list[dict[str, Any]]:
         bid["bid_text"] = normalize(" ".join([
             bid["project_name"], bid["scope"], bid["agency"], bid["requirements"], bid["location"]
         ]))
-        bid["state"] = infer_state(bid["location"])
+        bid["state"] = infer_state(bid["location"]) or normalize_state(default_state)
         bids.append(bid)
 
     return bids
@@ -203,16 +203,21 @@ def infer_state(location: str) -> str:
     return aliases.get(match.group(1).lower(), match.group(1).upper())
 
 
-def extract_eml_html(path: str | Path) -> str:
+def extract_eml(path: str | Path) -> tuple[str, str]:
     raw = Path(path).read_bytes()
     msg = BytesParser(policy=policy.default).parsebytes(raw)
+    subject = str(msg.get("Subject") or "")
     if msg.is_multipart():
         for part in msg.walk():
             if part.get_content_type() == "text/html":
-                return part.get_content()
+                return part.get_content(), subject
     if msg.get_content_type() == "text/html":
-        return msg.get_content()
+        return msg.get_content(), subject
     raise ValueError("No HTML MIME part found in EML")
+
+
+def extract_eml_html(path: str | Path) -> str:
+    return extract_eml(path)[0]
 
 
 def scrape_url(url: str, timeout: int = 20) -> str:
@@ -274,7 +279,7 @@ def score_match(bid: dict[str, Any], contractor: dict[str, Any]) -> dict[str, An
     state_score = 0
     if bid_state and contractor_state and bid_state == contractor_state:
         state_score = 25
-        reasons.append(f"State match: bid={bid_state}, contractor={contractor_state}.")
+        reasons.append(f"State match: bid={bid_state}, contractor={contractor_state}; distance/service area is not verified.")
         evidence.append(f"contractor.state={contractor['state']}")
 
     scope_score = 0
@@ -327,8 +332,22 @@ def score_match(bid: dict[str, Any], contractor: dict[str, Any]) -> dict[str, An
     }
 
 
-def match_contractors(bid: dict[str, Any], contractors: list[dict[str, Any]], limit: int = 10) -> list[dict[str, Any]]:
-    scored = [score_match(bid, c) for c in contractors]
+def match_contractors(
+    bid: dict[str, Any],
+    contractors: list[dict[str, Any]],
+    limit: int = 10,
+    strict_state: bool = True,
+) -> list[dict[str, Any]]:
+    bid_state = normalize_state(bid.get("state") or infer_state(bid.get("location", "")))
+
+    eligible = []
+    for contractor in contractors:
+        contractor_state = normalize_state(contractor.get("state"))
+        if strict_state and bid_state and contractor_state and contractor_state != bid_state:
+            continue
+        eligible.append(contractor)
+
+    scored = [score_match(bid, c) for c in eligible]
     scored.sort(key=lambda x: (-x["score"], x["business_name"].lower()))
     return [m for m in scored if m["score"] >= 55][:limit]
 
@@ -383,8 +402,9 @@ def generate_outreach(
 
 def run_pipeline(contractor_path: str, source_path: str, output_path: str) -> dict[str, Any]:
     contractors = read_contractors_tsv(contractor_path)
-    html_text = extract_eml_html(source_path)
-    bids = parse_reference_html(html_text)
+    html_text, subject = extract_eml(source_path)
+    default_state = infer_state(subject)
+    bids = parse_reference_html(html_text, default_state=default_state)
 
     results = []
     for bid in bids:
