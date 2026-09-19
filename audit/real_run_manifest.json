@@ -46,7 +46,7 @@
         "\"request for proposal\" Painting NY",
         "site:gov Painting NY bid"
       ],
-      "candidates": 0
+      "candidates": 5
     },
     {
       "company": "Universe Gutters Inc.",
@@ -57,7 +57,7 @@
         "\"request for proposal\" Roofing & Gutters MA",
         "site:gov Roofing & Gutters MA bid"
       ],
-      "candidates": 0
+      "candidates": 5
     },
     {
       "company": "D State Tile and Granite Installation, Inc",
@@ -68,7 +68,7 @@
         "\"request for proposal\" Stone & Tile CA",
         "site:gov Stone & Tile CA bid"
       ],
-      "candidates": 0
+      "candidates": 5
     }
   ]
 }
