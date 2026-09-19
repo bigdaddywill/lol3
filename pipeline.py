@@ -524,7 +524,7 @@ def discover_bid_network(contractor: Contractor, max_results: int = 8) -> list[B
             low = (title + " " + absolute).lower()
             relevant = (
                 any(t in low for t in trade_terms_set)
-                or any(k in low for k in ("bid", "solicitation", "rfp", "rfq", "invitation", "proposal", "project", "renovation", "roof", "tile", "paint"))
+                or any(k in low for k in ("solicitation", "rfp", "rfq", "invitation", "proposal", "renovation", "remodel", "roof", "tile", "paint", "floor", "gutter", "building", "construction"))
             )
             if not relevant:
                 continue
@@ -584,7 +584,7 @@ TRADE_GROUPS = {
     "hvac": {"hvac", "mechanical", "air conditioning", "heating", "cooling"},
     "roofing": {"roof", "roofing", "reroof"},
     "painting": {"paint", "painting", "coating"},
-    "flooring": {"floor", "flooring", "tile", "carpet", "vinyl"},
+    "flooring": {"floor", "flooring", "tile", "stone", "granite", "marble", "carpet", "vinyl"},
     "general": {"general contractor", "gc", "remodel", "renovation", "construction"},
 }
 
@@ -621,7 +621,10 @@ def score_match(contractor: Contractor, bid: Bid) -> Match:
         return Match(contractor, bid, 0, ["untrusted opportunity source"])
     score = 0
     reasons: list[str] = []
-    if contractor.state and re.search(rf"\b{re.escape(contractor.state.lower())}\b", hay):
+    if trusted_detail:
+        score += 30
+        reasons.append("trusted state bid source")
+    elif contractor.state and re.search(rf"\b{re.escape(contractor.state.lower())}\b", hay):
         score += 30
         reasons.append("state match")
     if contractor.city and re.search(rf"\b{re.escape(contractor.city.lower())}\b", hay):
