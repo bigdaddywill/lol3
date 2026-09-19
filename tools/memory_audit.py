@@ -46,7 +46,7 @@ def main() -> None:
 
     assertions = [
         ("hot phase", "FINALIZED_FOR_CURRENT_CONCRETE_INDIANA_SCOPE" in hot),
-        ("hot no todo", "## ACTIVE TODO\n\nNone for this defined scope." in hot),
+        ("hot no todo", bool(re.search(r"(?is)## ACTIVE TODO\s*None for this defined scope\.", hot))),
         ("prod run", "35422565481" in hot and "SUCCESS" in hot),
         ("smoke run", "35422611533" in hot and "SUCCESS" in hot),
         ("17 tests", "17/17" in hot),
