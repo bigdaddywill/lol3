@@ -8,6 +8,7 @@ ISSUE=os.environ.get("SWARM_ISSUE","2")
 SESSION=os.environ["SESSION_ID"]
 ROLE=os.environ["ROLE"]
 TARGET=os.environ.get("TARGET_SMS","3059278198")
+RUN_ID=os.environ.get("GITHUB_RUN_ID","unknown")
 OUTPUT=Path("agent-output"); OUTPUT.mkdir(exist_ok=True)
 
 ROLE_URLS={
@@ -27,17 +28,17 @@ def comment(body):
     gh(["issue","comment",ISSUE,"--repo",REPO,"--body",body])
 
 def read_bus():
-    r=gh(["issue","view",ISSUE,"--repo",REPO,"--comments","--json","comments"])
+    r=gh(["api",f"repos/{REPO}/issues/{ISSUE}/comments?per_page=100"])
     if r.returncode!=0: return []
-    try: return json.loads(r.stdout).get("comments",[])
+    try: return json.loads(r.stdout)
     except Exception: return []
 
 def latest_peer(comments):
     for c in reversed(comments):
         body=c.get("body","")
-        m=re.search(r"\*\*(PHANTOM-20-\d{2}) (BOOT|CHECKPOINT|INTERAGENT)",body)
-        if m and m.group(1)!=SESSION:
-            return m.group(1), body[:600]
+        m=re.search(r"\[run=(\d+)\] \*\*(PHANTOM-20-\d{2}) (BOOT|CHECKPOINT|INTERAGENT)",body)
+        if m and m.group(1)==RUN_ID and m.group(2)!=SESSION:
+            return m.group(2), body[:600]
     return None, None
 
 def fetch_source(url):
@@ -59,7 +60,7 @@ def role_observation(peer_id, peer_body):
 
 def main():
     started=datetime.now(timezone.utc).isoformat()
-    comment(f"**{SESSION} BOOT** role={ROLE} mission=PHANTOM-20-REAL-NUMBER-001 target={TARGET}")
+    comment(f"[run={RUN_ID}] **{SESSION} BOOT** role={ROLE} mission=PHANTOM-20-REAL-NUMBER-001 target={TARGET}")
     # Explicitly consume the shared bus before producing a conclusion.
     peer_id=None; peer_body=None; comments=[]
     for _ in range(10):
@@ -68,7 +69,7 @@ def main():
         if peer_id: break
         time.sleep(3)
     evidence={"session_id":SESSION,"role":ROLE,"mission_id":"PHANTOM-20-REAL-NUMBER-001","target_sms_raw":TARGET,"started_at":started}
-    evidence["peer_messages_seen"]=len([c for c in comments if "PHANTOM-20-" in c.get("body","")])
+    evidence["peer_messages_seen"]=len([c for c in comments if f"[run={RUN_ID}]" in c.get("body","") and "PHANTOM-20-" in c.get("body","")])
     evidence["responded_to"]=peer_id
     if ROLE=="TARGET_VALIDATOR":
         evidence["target_validation"]="PASS_NANP_SHAPE" if re.fullmatch(r"[2-9][0-9]{9}",TARGET) else "FAIL_SHAPE"
@@ -92,8 +93,8 @@ def main():
         evidence["status"]="CHECKPOINT"
     evidence["interagent_observation"]=role_observation(peer_id,peer_body)
     Path(OUTPUT/f"{SESSION}.json").write_text(json.dumps(evidence,indent=2)+"\n",encoding="utf-8")
-    comment(f"**{SESSION} INTERAGENT** read_peer={peer_id or "NONE"} seen={evidence["peer_messages_seen"]} | {evidence["interagent_observation"]}")
-    comment(f"**{SESSION} CHECKPOINT** role={ROLE} status=READY peer_consumed={peer_id or "NONE"}\nEvidence: `agent-output/{SESSION}.json`")
+    comment(f"[run={RUN_ID}] **{SESSION} INTERAGENT** read_peer={peer_id or "NONE"} seen={evidence["peer_messages_seen"]} | {evidence["interagent_observation"]}")
+    comment(f"[run={RUN_ID}] **{SESSION} CHECKPOINT** role={ROLE} status=READY peer_consumed={peer_id or "NONE"}\nEvidence: `agent-output/{SESSION}.json`")
     return 0
 
 if __name__=="__main__": raise SystemExit(main())
