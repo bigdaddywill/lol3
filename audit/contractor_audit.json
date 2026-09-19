@@ -14,22 +14,11 @@
         "rows": 3
       }
     ],
-    "rows_seen": 274,
-    "rows_loaded": 272,
-    "blank_rows": 1,
+    "rows_seen": 265,
+    "rows_loaded": 264,
+    "blank_rows": 0,
     "duplicates_removed": 1,
     "header_mapping": {
-      "Summary": {
-        "company": null,
-        "contact": "Spanish cleaned contacts after row 152 that are on Leads Magnet",
-        "email": null,
-        "phone": null,
-        "website": null,
-        "city": null,
-        "state": null,
-        "zip": null,
-        "trade": null
-      },
       "On Leads Magnet": {
         "company": "business_name",
         "contact": null,
@@ -40,93 +29,14 @@
         "state": "state",
         "zip": "zip_code",
         "trade": "category"
-      },
-      "Not on Leads Magnet": {
-        "company": "business_name",
-        "contact": null,
-        "email": "email_address",
-        "phone": "business_phone",
-        "website": "angi_url",
-        "city": "city",
-        "state": "state",
-        "zip": "zip_code",
-        "trade": "category"
       }
-    }
+    },
+    "rows_with_email": 263,
+    "rows_with_phone": 145,
+    "rows_with_location": 262,
+    "rows_with_trade": 215
   },
   "sample": [
-    {
-      "sheet": "Summary",
-      "company": "Source file",
-      "contact": "Source file",
-      "email": "",
-      "phone": "",
-      "website": "",
-      "city": "",
-      "state": "",
-      "zip": "",
-      "trade": ""
-    },
-    {
-      "sheet": "Summary",
-      "company": "Source sheet",
-      "contact": "Source sheet",
-      "email": "",
-      "phone": "",
-      "website": "",
-      "city": "",
-      "state": "",
-      "zip": "",
-      "trade": ""
-    },
-    {
-      "sheet": "Summary",
-      "company": "Rows checked",
-      "contact": "Rows checked",
-      "email": "",
-      "phone": "",
-      "website": "",
-      "city": "",
-      "state": "",
-      "zip": "",
-      "trade": ""
-    },
-    {
-      "sheet": "Summary",
-      "company": "On Leads Magnet",
-      "contact": "On Leads Magnet",
-      "email": "",
-      "phone": "",
-      "website": "",
-      "city": "",
-      "state": "",
-      "zip": "",
-      "trade": ""
-    },
-    {
-      "sheet": "Summary",
-      "company": "Not found on Leads Magnet",
-      "contact": "Not found on Leads Magnet",
-      "email": "",
-      "phone": "",
-      "website": "",
-      "city": "",
-      "state": "",
-      "zip": "",
-      "trade": ""
-    },
-    {
-      "sheet": "Summary",
-      "company": "Live site",
-      "contact": "Live site",
-      "email": "",
-      "phone": "",
-      "website": "",
-      "city": "",
-      "state": "",
-      "zip": "",
-      "trade": ""
-    },
     {
       "sheet": "On Leads Magnet",
       "company": "Vasquez Home Improvement",
@@ -174,6 +84,78 @@
       "state": "OH",
       "zip": "45405",
       "trade": "Additions and Remodels"
+    },
+    {
+      "sheet": "On Leads Magnet",
+      "company": "T & I Lath Plaster Contractors",
+      "contact": "",
+      "email": "tonygunit1@gmail.com",
+      "phone": "",
+      "website": "https://leads-magnet.net/listings/t-i-lath-plaster-contractors-valley-village-ca-91607/",
+      "city": "Valley Village",
+      "state": "CA",
+      "zip": "91607",
+      "trade": "Siding"
+    },
+    {
+      "sheet": "On Leads Magnet",
+      "company": "Chilel Flooring Special",
+      "contact": "",
+      "email": "victor2001chilel10@icloud.com",
+      "phone": "",
+      "website": "https://leads-magnet.net/listings/chilel-flooring-special-dekalb-ga-30360/",
+      "city": "DeKalb",
+      "state": "GA",
+      "zip": "30360",
+      "trade": "Flooring"
+    },
+    {
+      "sheet": "On Leads Magnet",
+      "company": "OG BUILDERS, INC",
+      "contact": "",
+      "email": "og17martinez@gmail.com",
+      "phone": "3109861800",
+      "website": "https://leads-magnet.net/listings/og-builders-inc-canoga-park-ca-91304/",
+      "city": "Canoga Park",
+      "state": "CA",
+      "zip": "91304",
+      "trade": "Additions and Remodels"
+    },
+    {
+      "sheet": "On Leads Magnet",
+      "company": "AYJ Construction LLC",
+      "contact": "",
+      "email": "ayjconsllc@gmail.com",
+      "phone": "3023994673",
+      "website": "https://leads-magnet.net/listings/ayj-construction-llc-dover-de-19904/",
+      "city": "Dover",
+      "state": "DE",
+      "zip": "19904",
+      "trade": "Additions and Remodels"
+    },
+    {
+      "sheet": "On Leads Magnet",
+      "company": "Solutions Rodriguez",
+      "contact": "",
+      "email": "rodriguezmje01@gmail.com",
+      "phone": "4438137848",
+      "website": "https://leads-magnet.net/listings/solutions-rodriguez-cockeysville-md-21030/",
+      "city": "Cockeysville",
+      "state": "MD",
+      "zip": "21030",
+      "trade": "Painting"
+    },
+    {
+      "sheet": "On Leads Magnet",
+      "company": "ST PAINTING, LLC",
+      "contact": "",
+      "email": "stpainting0@gmail.com",
+      "phone": "9196413214",
+      "website": "https://leads-magnet.net/listings/st-painting-llc-bryan-nc-27601/",
+      "city": "Bryan",
+      "state": "NC",
+      "zip": "27601",
+      "trade": "Painting"
     }
   ]
 }

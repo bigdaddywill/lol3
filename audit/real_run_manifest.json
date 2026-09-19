@@ -14,22 +14,11 @@
         "rows": 3
       }
     ],
-    "rows_seen": 274,
-    "rows_loaded": 272,
-    "blank_rows": 1,
+    "rows_seen": 265,
+    "rows_loaded": 264,
+    "blank_rows": 0,
     "duplicates_removed": 1,
     "header_mapping": {
-      "Summary": {
-        "company": null,
-        "contact": "Spanish cleaned contacts after row 152 that are on Leads Magnet",
-        "email": null,
-        "phone": null,
-        "website": null,
-        "city": null,
-        "state": null,
-        "zip": null,
-        "trade": null
-      },
       "On Leads Magnet": {
         "company": "business_name",
         "contact": null,
@@ -40,37 +29,30 @@
         "state": "state",
         "zip": "zip_code",
         "trade": "category"
-      },
-      "Not on Leads Magnet": {
-        "company": "business_name",
-        "contact": null,
-        "email": "email_address",
-        "phone": "business_phone",
-        "website": "angi_url",
-        "city": "city",
-        "state": "state",
-        "zip": "zip_code",
-        "trade": "category"
       }
-    }
+    },
+    "rows_with_email": 263,
+    "rows_with_phone": 145,
+    "rows_with_location": 262,
+    "rows_with_trade": 215
   },
   "results": [
     {
-      "company": "Source file",
+      "company": "Vasquez Home Improvement",
       "status": "no_match",
-      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" remodeling construction",
+      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Painting Brewster NY remodeling construction",
       "candidates": 0
     },
     {
-      "company": "Source sheet",
+      "company": "Universe Gutters Inc.",
       "status": "no_match",
-      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" remodeling construction",
+      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Roofing & Gutters Marlborough MA remodeling construction",
       "candidates": 0
     },
     {
-      "company": "Rows checked",
+      "company": "D State Tile and Granite Installation, Inc",
       "status": "no_match",
-      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" remodeling construction",
+      "query": "\"commercial bid\" OR \"invitation to bid\" OR \"request for bid\" Stone & Tile SAN JOSE CA remodeling construction",
       "candidates": 0
     }
   ]
