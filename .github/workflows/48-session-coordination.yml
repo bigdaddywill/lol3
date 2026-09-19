@@ -1,0 +1,211 @@
+name: 48-Session Coordination Proof
+
+on:
+  push:
+    paths:
+      - "swarm/mission-48/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  worker:
+    name: "Worker ${{ matrix.session }}"
+    strategy:
+      fail-fast: false
+      max-parallel: 48
+      matrix:
+        session:
+          - PHANTOM-48-01
+          - PHANTOM-48-02
+          - PHANTOM-48-03
+          - PHANTOM-48-04
+          - PHANTOM-48-05
+          - PHANTOM-48-06
+          - PHANTOM-48-07
+          - PHANTOM-48-08
+          - PHANTOM-48-09
+          - PHANTOM-48-10
+          - PHANTOM-48-11
+          - PHANTOM-48-12
+          - PHANTOM-48-13
+          - PHANTOM-48-14
+          - PHANTOM-48-15
+          - PHANTOM-48-16
+          - PHANTOM-48-17
+          - PHANTOM-48-18
+          - PHANTOM-48-19
+          - PHANTOM-48-20
+          - PHANTOM-48-21
+          - PHANTOM-48-22
+          - PHANTOM-48-23
+          - PHANTOM-48-24
+          - PHANTOM-48-25
+          - PHANTOM-48-26
+          - PHANTOM-48-27
+          - PHANTOM-48-28
+          - PHANTOM-48-29
+          - PHANTOM-48-30
+          - PHANTOM-48-31
+          - PHANTOM-48-32
+          - PHANTOM-48-33
+          - PHANTOM-48-34
+          - PHANTOM-48-35
+          - PHANTOM-48-36
+          - PHANTOM-48-37
+          - PHANTOM-48-38
+          - PHANTOM-48-39
+          - PHANTOM-48-40
+          - PHANTOM-48-41
+          - PHANTOM-48-42
+          - PHANTOM-48-43
+          - PHANTOM-48-44
+          - PHANTOM-48-45
+          - PHANTOM-48-46
+          - PHANTOM-48-47
+          - PHANTOM-48-48
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read shared mission
+        run: |
+          test -f swarm/mission-48/MISSION.md
+          grep -q "mission_id: 48-SESSION-COORDINATION-001" swarm/mission-48/MISSION.md
+          grep -q "single_purpose:" swarm/mission-48/MISSION.md
+
+      - name: Execute session task
+        env:
+          SESSION_ID: ${{ matrix.session }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          mission = Path("swarm/mission-48/MISSION.md").read_text(encoding="utf-8")
+          required = [
+              "mission_id: 48-SESSION-COORDINATION-001",
+              "single_purpose:",
+              "shared_directive:",
+              "evidence_requirement:",
+          ]
+          missing = [x for x in required if x not in mission]
+          if missing:
+              raise SystemExit(f"MISSION_INVALID missing={missing}")
+          result = {
+              "session_id": os.environ["SESSION_ID"],
+              "mission_id": "48-SESSION-COORDINATION-001",
+              "status": "READY",
+              "shared_mission_sha256": hashlib.sha256(mission.encode()).hexdigest(),
+              "evidence": [
+                  "worker VM booted",
+                  "shared mission loaded",
+                  "mission contract validated",
+              ],
+          }
+          Path("result").mkdir()
+          Path("result/session.json").write_text(json.dumps(result, indent=2)+"\n", encoding="utf-8")
+          PY
+
+      - name: Upload session evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: session-${{ matrix.session }}
+          path: result/session.json
+          if-no-files-found: error
+          retention-days: 7
+
+  integrate:
+    name: "48-Session Integrator"
+    needs: worker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all 48 session results
+        uses: actions/download-artifact@v4
+        with:
+          path: swarm/mission-48/results
+
+      - name: Verify and synthesize
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          
+          root = Path("swarm/mission-48/results")
+          files = sorted(root.glob("session-*/session.json"))
+          expected = {f"PHANTOM-48-{i:02d}" for i in range(1, 49)}
+          rows = [json.loads(p.read_text(encoding="utf-8")) for p in files]
+          ids = [r["session_id"] for r in rows]
+          unique = set(ids)
+          errors = []
+          if len(files) != 48:
+              errors.append(f"expected 48 result files, got {len(files)}")
+          if unique != expected:
+              errors.append(f"worker identity mismatch missing={sorted(expected-unique)} extra={sorted(unique-expected)}")
+          if any(r.get("mission_id") != "48-SESSION-COORDINATION-001" for r in rows):
+              errors.append("mission_id mismatch")
+          hashes = {r.get("shared_mission_sha256") for r in rows}
+          if len(hashes) != 1:
+              errors.append(f"shared mission hash divergence: {sorted(hashes)}")
+          if any(r.get("status") != "READY" for r in rows):
+              errors.append("one or more sessions did not reach READY")
+          status = "PASS" if not errors else "FAIL"
+          
+          report = [
+              "# 48-Session Coordination Proof",
+              "",
+              f"- Run: {os.environ['GITHUB_RUN_ID']}",
+              f"- Source commit: {os.environ['GITHUB_SHA']}",
+              f"- Mission: 48-SESSION-COORDINATION-001",
+              f"- Expected sessions: 48",
+              f"- Observed sessions: {len(files)}",
+              f"- Unique session IDs: {len(unique)}",
+              f"- Shared mission hashes: {len(hashes)}",
+              f"- Result: **{status}**",
+              "",
+              "## Session evidence",
+              "",
+          ]
+          for r in sorted(rows, key=lambda x: x["session_id"]):
+              report.append(f"- {r['session_id']}: {r['status']} — mission loaded and contract validated")
+          if errors:
+              report += ["", "## Errors", ""] + [f"- {e}" for e in errors]
+          else:
+              report += ["", "## Integration conclusion", "", "All 48 workers independently loaded the same mission contract and returned machine-readable evidence. The integrator observed one result per worker and no mission-hash divergence."]
+          
+          Path("swarm/runs").mkdir(parents=True, exist_ok=True)
+          Path("swarm/runs/48-SESSION-COORDINATION-001.md").write_text("\n".join(report)+"\n", encoding="utf-8")
+          Path("swarm/runs/48-SESSION-COORDINATION-001.json").write_text(
+              json.dumps({
+                  "mission_id":"48-SESSION-COORDINATION-001",
+                  "run_id":os.environ["GITHUB_RUN_ID"],
+                  "source_sha":os.environ["GITHUB_SHA"],
+                  "expected":48,
+                  "observed":len(files),
+                  "unique_ids":len(unique),
+                  "shared_mission_hashes":len(hashes),
+                  "status":status,
+                  "errors":errors,
+              }, indent=2)+"\n",
+              encoding="utf-8",
+          )
+          if errors:
+              raise SystemExit("\n".join(errors))
+          PY
+
+      - name: Persist integrated result
+        run: |
+          git config user.name "LOL3 Swarm Integrator"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add swarm/runs/48-SESSION-COORDINATION-001.md swarm/runs/48-SESSION-COORDINATION-001.json
+          git diff --cached --quiet || git commit -m "Record 48-session coordination result"
+          git push
