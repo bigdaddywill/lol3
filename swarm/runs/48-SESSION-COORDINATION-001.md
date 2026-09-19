@@ -1,12 +1,16 @@
 # 48-Session Coordination Proof
 
-- Run: 35424191384
-- Source commit: 47141871175d72c3af5b82ee223a25d3705bec99
+- Run: 35424284041
+- Source commit: bee8edd394152dc114ebe5e0ae73b68c0c34fdad
 - Mission: 48-SESSION-COORDINATION-001
 - Expected sessions: 48
 - Observed sessions: 48
 - Unique session IDs: 48
 - Shared mission hashes: 1
+- Unique runner names observed: 48
+- Runner OS values observed: Linux
+- Measured maximum worker overlap: 1
+- Worker duration range (seconds): 4.4e-05 to 8.8e-05
 - Result: **PASS**
 
 ## Session evidence
@@ -62,4 +66,4 @@
 
 ## Integration conclusion
 
-All 48 workers independently loaded the same mission contract and returned machine-readable evidence. The integrator observed one result per worker and no mission-hash divergence.
+All 48 workers independently loaded the same mission contract and returned machine-readable evidence. The integrator observed one result per worker, no mission-hash divergence, 48 unique runner names, and a measured maximum overlap of 1 workers.
