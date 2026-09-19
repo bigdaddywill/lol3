@@ -656,7 +656,7 @@ def generate_email(primary: Match, related: list[Match] | None = None) -> tuple[
     matches = [primary] + list(related or [])
     subject = f"Commercial Bid Opportunities in {c.state or 'Your Area'}"
     greeting = c.contact or c.company or "there"
-    lines = [f"Hi {greeting},", "", f"William here — we found {len(matches)} active commercial bid opportunities that may fit {c.company or 'your company'}.", ""]
+    lines = [f"Hi {greeting},", "", f"William here — we found {len(matches)} recent commercial bid opportunities that may fit {c.company or 'your company'}.", ""]
     for i, m in enumerate(matches, 1):
         b = m.bid
         lines += [
