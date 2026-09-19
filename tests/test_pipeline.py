@@ -25,7 +25,7 @@ def test_bid_extraction():
 
 def test_match_and_outreach():
     c=Contractor(sheet="x",company="Acme Tree Care",contact="John",email="john@example.com",city="Raleigh",state="NC",trade="Tree Trimming")
-    b=Bid(title="Walmart Exterior Tree Pruning",source_url="https://example.org/bid",source_domain="example.org",scope=source_field("Prune limbs and haul debris.","https://example.org/bid"),location=source_field("Raleigh, NC","https://example.org/bid"),due_date=source_field("December 1, 2026","https://example.org/bid"))
+    b=Bid(title="Invitation to Bid - Walmart Exterior Tree Pruning",source_url="https://example.org/bid",source_domain="example.org",scope=source_field("Prune limbs and haul debris.","https://example.org/bid"),location=source_field("Raleigh, NC","https://example.org/bid"),due_date=source_field("December 1, 2026","https://example.org/bid"))
     m=rank_matches(c,[b],minimum_score=1)[0]
     subject,email=generate_email(m)
     sms=generate_sms(m)
