@@ -44,3 +44,8 @@ F009 — Long work was previously session-bound.
 Root cause: durable memory existed, but no durable representation of in-flight work, ownership, checkpoints, or stale-worker recovery.
 Fix: persistent executor with queue, lease, checkpoint, watchdog, and recovery protocol.
 Status: SOLVED BY EXECUTOR LAYER; END-TO-END WORKER TEST PENDING
+
+F010 — Separate ChatGPT sessions previously had no shared conversational transport.
+Root cause: durable project memory existed, but there was no explicit agent identity, mailbox, routing, or shared-blackboard protocol.
+Fix: ChatGPT session swarm layer with immutable GitHub messages, roles, routing, and boot card.
+Status: SOLVED BY SWARM LAYER; LIVE HANDSHAKE TEST PENDING
