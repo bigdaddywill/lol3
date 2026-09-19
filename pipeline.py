@@ -203,7 +203,7 @@ class SearchResult:
 def _extract_anchor_results(html: str) -> list[SearchResult]:
     results: list[SearchResult] = []
     pattern = re.compile(
-        r'<a[^>]*href=["\\']([^"\\']+)["\\'][^>]*>(.*?)</a>',
+        r"""<a[^>]*href=["']([^"']+)["'][^>]*>(.*?)</a>""",
         flags=re.I | re.S,
     )
     for href, title_html in pattern.findall(html):
@@ -235,8 +235,8 @@ def search_duckduckgo(query: str, max_results: int = 10, timeout: int = 20) -> l
     with urlopen(req, timeout=timeout) as resp:
         html = resp.read(3_000_000).decode(resp.headers.get_content_charset() or "utf-8", errors="replace")
     results: list[SearchResult] = []
-    anchor_re = re.compile(r'<a[^>]*class=["\\'][^"\\']*result__a[^"\\']*["\\'][^>]*>(.*?)</a>', re.I | re.S)
-    href_re = re.compile(r'href=["\\']([^"\\']+)["\\']', re.I)
+    anchor_re = re.compile(r"""<a[^>]*class=["'](?:[^"']*result__a[^"']*)["'][^>]*>(.*?)</a>""", re.I | re.S)
+    href_re = re.compile(r"""href=["']([^"']+)["']""", re.I)
     for node in anchor_re.findall(html)[:max_results]:
         href = href_re.search(node)
         title = re.sub(r"\\s+", " ", re.sub(r"<[^>]+>", " ", node)).strip()
