@@ -78,3 +78,27 @@ Replace broad HTML/digest ingestion with adapters for the actual bid sources and
 - contact/channel validation
 - persistent bid/contractor/message status tracking
 - benchmark labels for match precision/recall
+
+
+## LIVE SOURCE AUDIT UPDATE — 2026-09-19
+
+### Indiana Armory Board adapter
+- Adapter: `pipeline/live_sources.py`
+- Endpoint: `https://www.in.gov/apps/sab/bidsystem/sab_bviewer`
+- Parser fixture test: PASS.
+- Live GitHub Actions run: `35421618318`
+- Live result: PASS.
+- The endpoint returned its real bid-posting table shell and explicitly reported `No Bids Posted at This Time` during the live run.
+- This was initially treated as a parser failure; diagnostics established that the source was returning an empty current board, not malformed HTML or a bot/WAF response.
+- The live smoke gate now distinguishes a valid empty source from an unexpected empty/invalid response.
+
+### Final smoke status
+Run `35421618318` at commit `ca19e382edd822a5ff63b4749ad18472564bbb93` completed successfully.
+- Unit tests: PASS (6/6)
+- Reference 8-bid E2E: PASS
+- Output invariants: PASS
+- Live Indiana Armory Board scrape: PASS
+- Artifact upload: PASS
+
+### Current boundary
+The reference matching/outreach pipeline is verified end-to-end. One live public source adapter is verified and can correctly report a live empty board. The larger production scraper fleet still needs additional source adapters and a discovery strategy for sources whose public pages require authentication, dynamic sessions, or other access conditions.
