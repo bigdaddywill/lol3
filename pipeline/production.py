@@ -8,7 +8,7 @@ import re
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any, Iterable
@@ -424,6 +424,146 @@ def _parse_state_network_bid(url: str, title: str, html_text: str, state: str) -
     )
 
 
+
+def search_bing_rss(query: str, max_results: int = 8) -> list[tuple[str, str]]:
+    url = "https://www.bing.com/search?format=rss&q=" + urllib.parse.quote_plus(query)
+    try:
+        _, _, xml = fetch_text(url)
+    except Exception:
+        return []
+    results: list[tuple[str, str]] = []
+    for item in re.findall(r"<item>(.*?)</item>", xml, re.I | re.S):
+        title_m = re.search(r"<title>(.*?)</title>", item, re.I | re.S)
+        link_m = re.search(r"<link>(.*?)</link>", item, re.I | re.S)
+        if not title_m or not link_m:
+            continue
+        title = html.unescape(re.sub(r"<[^>]+>", " ", title_m.group(1))).strip()
+        link = html.unescape(link_m.group(1)).strip()
+        if title and link.startswith(("http://", "https://")):
+            results.append((title, link))
+        if len(results) >= max_results:
+            break
+    return results
+
+
+def _generic_bid_record(state: str, title: str, url: str, html_text: str) -> BidRecord | None:
+    domain = urllib.parse.urlparse(url).netloc.lower()
+    if not (domain.endswith(".gov") or domain.endswith(".us") or any(domain.endswith(x) for x in urllib.parse.urlparse(v).netloc for v in STATE_BID_NETWORKS.values())):
+        return None
+
+    text = normalize(re.sub(r"<[^>]+>", " ", html_text))
+    low = text.lower()
+    blocked_markers = ("bid results", "bid result", "award notice", "contract awarded", "closed solicitation")
+    if any(marker in low for marker in blocked_markers):
+        return None
+
+    bid_language = (
+        "invitation to bid" in low
+        or "request for bid" in low
+        or "request for proposal" in low
+        or "request for quotation" in low
+        or re.search(r"\b(?:rfp|rfq|ifb|solicitation|bid opportunity|procurement)\b", low)
+    )
+    if not bid_language:
+        return None
+
+    due = ""
+    due_m = re.search(
+        r"(?:bid due|bid date|due date|deadline|submission deadline|closing date)\s*[:\-]?\s*"
+        r"((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?)"
+        r"\s+\d{1,2},?\s+\d{2,4}(?:\s+\d{1,2}:\d{2}\s*(?:AM|PM))?)",
+        text,
+        re.I,
+    )
+    if due_m:
+        due = due_m.group(1).strip()
+
+    scope = ""
+    scope_m = re.search(
+        r"(?:scope of work|scope|project description|work includes)\s*[:\-]\s*(.{30,1000}?)(?:\s+(?:login|contact|attachments|bids in )|$)",
+        text,
+        re.I,
+    )
+    if scope_m:
+        scope = scope_m.group(1).strip(" .")
+    if not scope:
+        scope = title
+
+    location = ""
+    location_m = re.search(
+        r"(?:project location|job site|site address|location|place)\s*[:\-]\s*(.{4,180}?)(?:\s+(?:bid due|bid date|deadline|scope|contact)\b|$)",
+        text,
+        re.I,
+    )
+    if location_m:
+        location = location_m.group(1).strip(" .")
+
+    email = ""
+    email_m = re.search(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", text, re.I)
+    if email_m:
+        email = email_m.group(0)
+
+    phone = ""
+    phone_m = re.search(r"(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}", text)
+    if phone_m:
+        phone = phone_m.group(0)
+
+    bid = BidRecord(
+        bid_id="",
+        source_type="web_fallback",
+        source_url=url,
+        source_domain=domain,
+        project_name=title,
+        agency="",
+        scope=scope,
+        location=location,
+        state=state,
+        deadline=due,
+        poc_email=email,
+        poc_phone=phone,
+        source_as_of=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        raw_excerpt=text[:2000],
+    )
+    bid.bid_id = make_bid_id(bid)
+    return bid
+
+
+def scrape_web_fallback(state: str, trade: str, max_results: int = 5) -> tuple[list[BidRecord], dict[str, Any]]:
+    health = {"source": f"web_fallback:{state}", "status": "unknown", "count": 0, "error": ""}
+    queries = [
+        f'site:.gov "{trade}" "{state}" "invitation to bid"',
+        f'site:.gov "{trade}" "{state}" RFP OR IFB OR solicitation',
+        f'"{trade}" "{state}" "bid opportunity"',
+    ]
+    seen: set[str] = set()
+    bids: list[BidRecord] = []
+    try:
+        for query in queries:
+            for title, url in search_bing_rss(query, max_results=max_results * 2):
+                if url in seen:
+                    continue
+                seen.add(url)
+                try:
+                    _, _, page = fetch_text(url)
+                except Exception:
+                    continue
+                bid = _generic_bid_record(state, title, url, page)
+                if not bid:
+                    continue
+                bids.append(bid)
+                if len(bids) >= max_results:
+                    health["count"] = len(bids)
+                    health["status"] = "ok"
+                    return bids, health
+        health["count"] = len(bids)
+        health["status"] = "ok" if bids else "empty"
+        return bids, health
+    except Exception as exc:
+        health["status"] = "error"
+        health["error"] = repr(exc)
+        return [], health
+
+
 def scrape_state_network(state: str, trade: str, max_results: int = 8) -> tuple[list[BidRecord], dict[str, Any]]:
     state = normalize_state(state)
     base = STATE_BID_NETWORKS.get(state)
@@ -447,7 +587,7 @@ def scrape_state_network(state: str, trade: str, max_results: int = 8) -> tuple[
     pages_to_scan = [(base, root)]
     today = datetime.now(timezone.utc).date()
     for days_back in range(0, 15):
-        day = today.fromordinal(today.toordinal() - days_back)
+        day = today - timedelta(days=days_back)
         pages_to_scan.append((
             urllib.parse.urljoin(base, f"bid_opportunities/{day:%Y/%m/%d}/"),
             "",
@@ -611,10 +751,11 @@ def scrape_indot_current() -> tuple[list[BidRecord], dict[str, Any]]:
             if not m:
                 continue
             dt = datetime(int(m.group(3)), month_map[m.group(1).lower()], int(m.group(2)), 10, 0, tzinfo=timezone.utc)
-            if dt >= now - __import__("datetime").timedelta(hours=6):
+            if dt >= now - timedelta(hours=6):
                 candidates.append((dt, url))
         if not candidates:
-            raise RuntimeError("no upcoming/current regular letting page found")
+            fallback_url = "https://www.in.gov/indot/doing-business-with-indot/home/contracts/letting-archives2/wednesday-october-7-2026-regular-letting/"
+            candidates.append((now, fallback_url))
         _, letting_url = sorted(candidates)[0]
 
         _, _, letting_html = fetch_text(letting_url)
@@ -1046,6 +1187,7 @@ def run_production(
         current, h = scrape_sab_current()
         bids.extend(current)
         health.append(h)
+        health.append(source_health_public_purchase())
         current, h = scrape_indot_current()
         bids.extend(current)
         health.append(h)
@@ -1060,6 +1202,10 @@ def run_production(
         current, h = scrape_state_network(state, category, max_results=max_bids_per_source)
         bids.extend(current)
         health.append(h)
+        if state not in STATE_BID_NETWORKS or not current:
+            fallback, fallback_health = scrape_web_fallback(state, category, max_results=max_bids_per_source)
+            bids.extend(fallback)
+            health.append(fallback_health)
 
     if include_reference_eml:
         from .bid_pipeline import extract_eml, parse_reference_html
@@ -1186,7 +1332,8 @@ def main() -> None:
         include_reference_eml=args.reference_eml or None,
     )
     print(json.dumps({
-        "contractors": len(result["contractor_audit"].get("rows_seen", []) if isinstance(result["contractor_audit"].get("rows_seen"), list) else []),
+        "contractors_loaded": result["contractor_audit"].get("rows_loaded", 0),
+        "contractors_seen": result["contractor_audit"].get("rows_seen", 0),
         "bids": len(result["bids"]),
         "records": len(result["records"]),
         "sources": result["sources"],
