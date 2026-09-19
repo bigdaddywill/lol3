@@ -7,21 +7,25 @@ Read:
 3. DECISION_LEDGER.md
 4. FAILURE_LEDGER.md
 5. RESTART.md
+6. agent/QUEUE.json
+7. agent/STATE.json
 
 Then recover:
 - current phase
 - verified facts
 - last audit
 - active TODO
+- active task, worker lease, and latest checkpoint
 
 Do not read the whole chat unless the task requires history.
 
 ## Warm start
 1. Read HOT_STATE.
-2. Read the ledger relevant to the request.
-3. Inspect the repo files involved.
-4. Inspect current CI/artifacts if behavior is involved.
-5. Update HOT_STATE and the relevant ledger before ending.
+2. Read agent/STATE.json and agent/QUEUE.json.
+3. Read the ledger relevant to the request.
+4. Inspect the repo files involved.
+5. Inspect current CI/artifacts if behavior is involved.
+6. Update HOT_STATE and the relevant ledger before ending.
 
 ## New phase
 1. Change HOT_STATE to the new phase.
