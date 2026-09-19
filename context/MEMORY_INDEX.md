@@ -11,6 +11,7 @@ WARM
 - FACT_LEDGER.md — durable facts.
 - agent/QUEUE.json — durable work queue.
 - agent/LEDGER.md — in-flight execution history.
+- agent/WORKER_CONTRACT.md — worker/resume protocol.
 - DECISION_LEDGER.md — durable decisions.
 - FAILURE_LEDGER.md — solved failures and prevention.
 
