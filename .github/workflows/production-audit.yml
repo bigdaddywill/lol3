@@ -90,6 +90,19 @@ jobs:
           assert bids, "Production run produced zero bids"
           assert queue, "Production run produced zero candidate matches"
 
+          from collections import Counter
+          print("manifest=", manifest)
+          print("validation_errors=", Counter(
+              err
+              for row in queue
+              for err in row["validation"]["errors"]
+          ))
+          print("validation_warnings=", Counter(
+              warning
+              for row in queue
+              for warning in row["validation"]["warnings"]
+          ))
+
           seen = set()
           for row in queue:
               assert row["bid"]["state"] == "IN"
@@ -119,6 +132,7 @@ jobs:
           PY
 
       - name: Upload complete audit artifacts
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: lol3-production-audit
