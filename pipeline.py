@@ -160,6 +160,17 @@ def load_contractors(path: str | Path) -> tuple[list[Contractor], dict[str, Any]
     audit["rows_with_trade"] = sum(bool(c.trade) for c in contractors)
     return contractors, audit
 
+STATE_BID_NETWORKS = {
+    "NY": "https://www.newyorkbids.net/",
+    "MA": "https://www.massbids.net/",
+    "CA": "https://www.californiabids.com/",
+    "OH": "https://www.ohiobids.com/",
+    "TX": "https://www.texasbids.net/",
+    "FL": "https://www.floridabids.net/",
+}
+TRUSTED_BID_DOMAINS = tuple(urlparse(v).netloc for v in STATE_BID_NETWORKS.values())
+
+
 class HTMLTextParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
@@ -185,6 +196,34 @@ class HTMLTextParser(HTMLParser):
             self.parts.append(text)
             if self.in_title:
                 self.title.append(text)
+
+class LinkParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.in_anchor = False
+        self.href = ""
+        self.text_parts: list[str] = []
+        self.links: list[tuple[str, str]] = []
+
+    def handle_starttag(self, tag: str, attrs):
+        if tag.lower() == "a":
+            self.in_anchor = True
+            self.href = dict(attrs).get("href") or ""
+            self.text_parts = []
+
+    def handle_data(self, data: str):
+        if self.in_anchor:
+            self.text_parts.append(data)
+
+    def handle_endtag(self, tag: str):
+        if tag.lower() == "a" and self.in_anchor:
+            text_value = re.sub(r"\s+", " ", " ".join(self.text_parts)).strip()
+            if text_value and self.href:
+                self.links.append((text_value, self.href))
+            self.in_anchor = False
+            self.href = ""
+            self.text_parts = []
+
 
 def fetch_page(url: str, timeout: int = 20) -> tuple[str, str]:
     req = Request(url, headers={"User-Agent": "CommercialBidPipeline/1.0"})
@@ -438,6 +477,52 @@ def extract_bid(result: SearchResult, page_title: str, page_text: str) -> Bid:
         raw_excerpt=combined[:2000],
     )
 
+def discover_bid_network(contractor: Contractor, max_results: int = 8) -> list[Bid]:
+    base = STATE_BID_NETWORKS.get(contractor.state.upper().strip())
+    if not base:
+        return []
+    try:
+        with urlopen(Request(base, headers={"User-Agent": "CommercialBidPipeline/1.0"}), timeout=20) as resp:
+            html = resp.read(4_000_000).decode(resp.headers.get_content_charset() or "utf-8", errors="replace")
+    except Exception:
+        return []
+
+    parser = LinkParser()
+    parser.feed(html)
+    trade_terms_set = trade_terms(contractor.trade)
+    wanted: list[tuple[str, str]] = []
+    seen_urls: set[str] = set()
+
+    for title, href in parser.links:
+        absolute = urljoin(base, href)
+        if absolute in seen_urls:
+            continue
+        low = (title + " " + absolute).lower()
+        relevant = (
+            any(t in low for t in trade_terms_set)
+            or any(k in low for k in ("bid", "solicitation", "rfp", "rfq", "invitation", "proposal", "project"))
+        )
+        if not relevant:
+            continue
+        seen_urls.add(absolute)
+        wanted.append((title, absolute))
+        if len(wanted) >= max_results * 2:
+            break
+
+    bids: list[Bid] = []
+    for result_title, url in wanted:
+        try:
+            page_title, page_text = fetch_page(url)
+            result = SearchResult(result_title, url)
+            bid = extract_bid(result, page_title or result_title, page_text)
+            bids.append(bid)
+            if len(bids) >= max_results:
+                break
+        except Exception:
+            continue
+    return bids
+
+
 def discover(queries: list[str] | str, max_results: int = 10) -> list[Bid]:
     if isinstance(queries, str):
         queries = [queries]
@@ -497,8 +582,12 @@ class Match:
 
 def score_match(contractor: Contractor, bid: Bid) -> Match:
     hay = " ".join([bid.title, bid.field("scope"), bid.field("location"), bid.raw_excerpt]).lower()
-    if not any(term in hay for term in ("invitation to bid", "request for bid", "request for proposal", "rfp", "rfq", "ifb", "solicitation", "bid opportunity", "procurement")):
+    trusted_source = any(bid.source_domain.endswith(domain) for domain in TRUSTED_BID_DOMAINS if domain)
+    bid_language = any(term in hay for term in ("invitation to bid", "request for bid", "request for proposal", "request for quotation", "rfp", "rfq", "ifb", "solicitation", "bid opportunity", "procurement"))
+    if not bid_language and not (trusted_source and (bid.field("due_date") or bid.field("bid_number"))):
         return Match(contractor, bid, 0, ["not clearly a bid opportunity"])
+    if bid.source_domain and not trusted_source and not bid_language:
+        return Match(contractor, bid, 0, ["untrusted opportunity source"])
     score = 0
     reasons: list[str] = []
     if contractor.state and re.search(rf"\b{re.escape(contractor.state.lower())}\b", hay):
@@ -621,7 +710,7 @@ def run(args: argparse.Namespace) -> None:
         if args.query:
             queries = [args.query]
         try:
-            bids = discover(queries, max_results=args.max_results)
+            bids = discover_bid_network(contractor, max_results=args.max_results)\n        if not bids:\n            bids = discover(queries, max_results=args.max_results)
         except Exception as exc:
             manifest.append({"company": contractor.company, "status": "discovery_error", "error": str(exc), "queries": queries})
             continue
