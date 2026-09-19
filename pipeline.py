@@ -220,13 +220,16 @@ def search_bing(query: str, max_results: int = 10, timeout: int = 20) -> list[Se
     req = Request(search_url, headers={"User-Agent": "Mozilla/5.0 (commercial bid research)"})
     with urlopen(req, timeout=timeout) as resp:
         html = resp.read(3_000_000).decode(resp.headers.get_content_charset() or "utf-8", errors="replace")
+
     results: list[SearchResult] = []
-    for href, title_html in re.findall(
-        r"""<li[^>]*class=["'](?:[^"']*b_algo[^"']*)["'][^>]*>.*?<h2><a[^>]*href=["']([^"']+)["'][^>]*>(.*?)</a>""",
-        html, flags=re.I | re.S
-    )[:max_results]:
+    pattern = re.compile(
+        r"""<h2[^>]*>\\s*<a[^>]*href=["']([^"']+)["'][^>]*>(.*?)</a>\\s*</h2>""",
+        flags=re.I | re.S,
+    )
+    for href, title_html in pattern.findall(html)[:max_results]:
         title = re.sub(r"\\s+", " ", re.sub(r"<[^>]+>", " ", title_html)).strip()
-        results.append(SearchResult(title=title, url=href))
+        if title:
+            results.append(SearchResult(title=title, url=href))
     return results
 
 def search_duckduckgo(query: str, max_results: int = 10, timeout: int = 20) -> list[SearchResult]:
