@@ -35,60 +35,22 @@ class Sheet:
     rows: list[list[str]]
 
 def read_xlsx(path: str | Path) -> list[Sheet]:
-    path = Path(path)
-    with ZipFile(path, "r") as z:
-        names = set(z.namelist())
-        if "xl/workbook.xml" not in names:
-            raise ValueError("Invalid XLSX: xl/workbook.xml missing")
-        shared: list[str] = []
-        if "xl/sharedStrings.xml" in names:
-            root = ET.fromstring(z.read("xl/sharedStrings.xml"))
-            shared = [_text(si) for si in root.findall("main:si", NS)]
-        wb = ET.fromstring(z.read("xl/workbook.xml"))
-        rels = ET.fromstring(z.read("xl/_rels/workbook.xml.rels"))
-        rel_map: dict[str, str] = {}
-        for rel in rels:
-            rid = rel.attrib.get("Id")
-            target = rel.attrib.get("Target", "")
-            if rid:
-                rel_map[rid] = target if target.startswith("xl/") else "xl/" + target
-        result: list[Sheet] = []
-        for sh in wb.findall("main:sheets/main:sheet", NS):
-            rid = sh.attrib.get(f"{{{NS['rel']}}}id", "")
-            target = rel_map.get(rid)
-            if not target or target not in names:
-                continue
-            root = ET.fromstring(z.read(target))
-            rows_map: dict[int, dict[int, str]] = {}
-            max_col = -1
-            for row in root.findall("main:sheetData/main:row", NS):
-                r_idx = int(row.attrib.get("r", "1")) - 1
-                cells = rows_map.setdefault(r_idx, {})
-                for cell in row.findall("main:c", NS):
-                    col = _col_index(cell.attrib.get("r", ""))
-                    max_col = max(max_col, col)
-                    typ = cell.attrib.get("t", "")
-                    if typ == "inlineStr":
-                        value = _text(cell.find("main:is", NS))
-                    else:
-                        node = cell.find("main:v", NS)
-                        value = node.text if node is not None and node.text else ""
-                        if typ == "s" and value:
-                            i = int(value)
-                            value = shared[i] if 0 <= i < len(shared) else ""
-                        elif typ == "b":
-                            value = "TRUE" if value == "1" else "FALSE"
-                    cells[col] = value
-            if not rows_map:
-                result.append(Sheet(sh.attrib.get("name", "Sheet"), []))
-                continue
-            max_row = max(rows_map)
-            width = max_col + 1
-            result.append(Sheet(
-                sh.attrib.get("name", "Sheet"),
-                [[rows_map.get(r, {}).get(c, "") for c in range(width)] for r in range(max_row + 1)]
-            ))
-        return result
+    try:
+        from openpyxl import load_workbook
+    except ImportError as exc:
+        raise RuntimeError("openpyxl is required to read XLSX workbooks") from exc
+
+    wb = load_workbook(filename=path, read_only=True, data_only=True)
+    sheets: list[Sheet] = []
+    try:
+        for ws in wb.worksheets:
+            rows: list[list[str]] = []
+            for row in ws.iter_rows(values_only=True):
+                rows.append([norm(v) for v in row])
+            sheets.append(Sheet(ws.title, rows))
+    finally:
+        wb.close()
+    return sheets
 
 ALIASES = {
     "company": ["company", "company name", "business", "business name", "contractor", "contractor name", "legal name"],
