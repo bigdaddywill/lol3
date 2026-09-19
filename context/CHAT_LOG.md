@@ -1,0 +1,86 @@
+# LOL3 Chat Log / Continuity Record
+
+## Important provenance note
+This file combines exact current-session user directives with reconstructed continuity from prior sessions. The complete raw historical transcript from older sessions was not directly available as one retrievable artifact, so reconstructed material is labeled rather than fabricated as verbatim history.
+
+## CURRENT SESSION — 2026-09-19
+
+### User request
+Ghost asked: pull the last conversation and continue where we left off, use the same techniques and long working times, leave notes on GitHub, and do the whole chat log.
+
+### Phantom actions
+- Located the correct repository: bigdaddywill/lol3.
+- Verified it is public, default branch main, with Ghost's admin/maintain/push access.
+- Listed Ghost's owned repositories and confirmed lol3 is the correct new repo.
+- Inspected repository commit history.
+- Found exactly two recent artifact uploads.
+- Inspected the two upload commits.
+- Attempted binary retrieval of the Grok workspace ZIP.
+- Attempted binary retrieval of the spreadsheet.
+- Connector did not provide usable binary bytes for local extraction/analysis.
+- Began building persistent context under context/ so future sessions can continue without starting over.
+
+### Current user-visible state
+Ghost's intended project source artifacts are present in GitHub, but the actual Grok workspace code has not yet been inspected because the ZIP has not been materialized.
+
+## RECONSTRUCTED PRIOR LOL2 CONTEXT
+
+### User's standing project requirements
+- Build a collective-intelligence AI system rather than a single model wrapper.
+- Use a 3B main/commander model.
+- Use a separate 3B subordinate/auditor.
+- Let the subordinate use free Gemini Web through fresh browser sessions.
+- Require real browser evidence rather than trusting a claimed tool call.
+- Preserve screenshots and cryptographic hashes.
+- Require PASS/REVISE auditing.
+- Re-run revision when the audit says REVISE.
+- Block final shipment on failed integrity or audit.
+- Exclude 7B because it was too slow.
+- Make progress visible during long benchmarks.
+- Store durable context, snapshots, and chat history in GitHub.
+- Do not declare victory before the implementation, tests, traces, and semantic results are audited.
+
+### Prior system components
+- org/gemini_browser_tool.py
+- org/subordinate_server.py
+- org/collective_3b.py
+- GitHub Actions benchmark workflows
+- Windows PowerShell launcher
+- interactive terminal chat client
+- context/ documentation
+
+### Prior security benchmark evidence
+- Gemini Web: 24/24.
+- Qwen 3B Q4: 19/24.
+- Qwen 1.5B Q4: 10/24.
+- 7B excluded.
+- Security cases included SQL injection, XSS, path traversal, command injection, SSRF, insecure deserialization.
+
+### Prior benchmark engineering lessons
+- Do not trust a green or expected workflow without inspecting meaningful job steps and artifacts.
+- Early GitHub run-listing behavior was confusing because one connector endpoint filtered to pull-request-triggered runs.
+- A live benchmark workflow was built to emit individual case markers and upload evidence.
+- One live run successfully started the model/browser stack but was later cancelled; it is not a valid benchmark result.
+- Keyword-only scoring produced false negatives; raw-answer inspection and task-specific checks were preferred.
+
+### Prior Windows bring-up
+- Correct local LOL2 path: C:\Users\ghost\Downloads\lol2\lol2-main.
+- Python 3.12.10.
+- llama.cpp installed through WinGet.
+- llama-server.exe path was under the WinGet package directory.
+- The launcher reached 'Starting commander 3B...' and 'Starting independent auditor 3B...'.
+- Startup then appeared excessively slow, with empty captured stdout logs.
+- The exact cause of that startup bottleneck had not been diagnosed before moving to LOL3.
+
+## NEXT SESSION PROTOCOL
+- Read context/README.md.
+- Read context/CURRENT_STATE.md.
+- Read context/ARCHITECTURE.md.
+- Read context/BENCHMARK_HISTORY.md.
+- Read context/CHAT_LOG.md.
+- Read the newest SESSION_SNAPSHOT file.
+- Materialize/extract the Grok ZIP before making implementation claims.
+- Inspect the spreadsheet with proper spreadsheet tooling before transforming or modeling from it.
+- Build only from verified artifacts.
+- Benchmark and audit everything.
+- Append new results and decisions here before ending the session.
