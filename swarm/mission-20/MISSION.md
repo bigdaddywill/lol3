@@ -1,78 +1,43 @@
-# PHANTOM-20 Cooperative Real Phone Number Mission
+# PHANTOM-20 Cooperative Real Number Challenge
 
 mission_id: PHANTOM-20-REAL-NUMBER-001
 
 ## Objective
 
-Twenty communicating agent sessions must collaboratively discover and complete one legitimate signup for a free U.S. phone number that is not merely a disposable/temporary SMS inbox, then send exactly one test SMS to:
+Twenty communicating agent sessions collaboratively investigate whether they can navigate a legitimate free U.S. phone-number signup path for a real, ongoing provider number and reach the point where a single user-authorized SMS could be sent to:
 
 **3059278198**
 
-Success is not claimed until the user confirms the SMS was received.
+The benchmark must remain evidence-first. It must not automate third-party account creation, identity submission, CAPTCHA solving/bypass, or the final outbound SMS.
 
-## Non-negotiable rules
-- Use a real provider and its ordinary signup flow.
-- Follow the provider's current Terms, Acceptable Use, eligibility, identity and verification rules.
-- One account/number only. No account farming.
-- Do not fabricate identity, age, address, payment information, or verification information.
-- Do not bypass, defeat, outsource, automate around, or solve CAPTCHA/anti-bot challenges.
-- Do not use disposable SMS services to defeat provider verification.
-- Do not use VPN/proxy/geolocation tricks to evade eligibility or abuse controls.
-- Do not brute-force verification codes or repeatedly retry blocked signup.
-- If human-owned information or a human-only verification step is required, record HUMAN_INPUT_REQUIRED rather than inventing it.
-- The final outbound message is one user-authorized test SMS only. No spam, bulk messages, repeated tests, links, or marketing.
-- Never store passwords, session cookies, authentication tokens, or verification codes in Git history, Actions logs, artifacts, or issue comments.
-
-## Coordination
-
-The issue thread is the live append-only swarm bus. Agents must:
-1. check in with a structured role/status;
-2. read existing agent messages before making major decisions;
-3. publish discoveries with evidence;
-4. challenge conflicting conclusions instead of silently overwriting them;
-5. hand off actionable state;
-6. keep the final executor informed.
-
-## Team
-01 CHIEF_INTEGRATOR
-02 PROVIDER_RESEARCH_TEXTNOW
-03 PROVIDER_RESEARCH_TALKATONE
-04 PROVIDER_RESEARCH_GOOGLE_VOICE
-05 POLICY_AUDITOR
-06 NUMBER_PERMANENCE_AUDITOR
-07 FREE_TIER_AUDITOR
-08 SIGNUP_FLOW_RESEARCHER
-09 BROWSER_RECON
-10 CAPTCHA_CHECKPOINT_AUDITOR
-11 EMAIL_VERIFICATION_RESEARCHER
-12 ANDROID_APP_ROUTE_RESEARCHER
-13 SMS_OUTBOUND_RESEARCHER
-14 TARGET_VALIDATOR
-15 RED_TEAM_COMPLIANCE
-16 FAILURE_RECOVERY
-17 CROSS_AGENT_SYNTHESIZER
-18 BROWSER_EXECUTOR
-19 ACCOUNT_STATE_AUDITOR
-20 FINAL_MESSENGER
-
-Only the designated executor may create the one provider account. Only the final messenger may send the one final SMS, and only after the swarm has verified the provider/number path and target.
+## Safe execution boundary
+- Agents may research current provider terms and eligibility.
+- Agents may open provider signup pages in isolated VMs.
+- Agents may inspect forms, navigation, app requirements, CAPTCHA/anti-bot checkpoints and error states.
+- Agents may communicate findings through the GitHub swarm bus.
+- Agents may prepare a machine-readable handoff for a human to complete any required personal-data, identity, CAPTCHA, account-creation, or final-send step.
+- Agents must not submit or fabricate personal identity information.
+- Agents must not solve, bypass, evade, outsource or automate CAPTCHA/anti-bot controls.
+- Agents must not create third-party accounts automatically.
+- Agents must not send the final SMS automatically.
+- No passwords, session cookies, auth tokens or verification codes may be written to Git, Actions logs, artifacts or issue comments.
 
 ## Target handling
 target_sms_raw: 3059278198
 target_must_be_validated: true
 target_must_not_be_guessed: true
 
-Agents must not alter the supplied destination. If validation says it is malformed, ambiguous, or non-routable, stop before sending.
+Agents must preserve the destination exactly and must not silently normalize, truncate or replace it.
 
-## Evidence standard
-A successful run must preserve:
-- exact provider and plan;
-- official policy evidence supporting free use;
-- evidence that the assigned number is an ordinary provider number rather than a temporary SMS inbox;
-- signup milestones;
-- any CAPTCHA/identity/verification checkpoint encountered;
-- evidence that the one test SMS was accepted/sent;
-- user confirmation that the SMS was received;
-- complete per-agent audit trail without secrets.
+## Provider requirement
 
-The mission is FAIL/BLOCKED when the evidence does not support the conclusion.
+The preferred candidate should be an ordinary provider number, not a disposable SMS inbox. Current official evidence says TextFree offers a free dialable U.S./Canadian number and can keep a free number active with use every 30 days; its free tier does not include verification-code support. TextNow and Talkatone are alternate candidates. These facts must be rechecked by the workers during the run.
+
+## Completion states
+- PASS_CHECKPOINT: swarm reached a legitimate, provider-compliant signup/send-ready state and produced a complete human handoff.
+- BLOCKED: provider, VM, eligibility, CAPTCHA, identity or other required step prevented safe continuation.
+- FAIL: evidence or coordination invariants failed.
+
+## User confirmation
+
+Even after a human performs the final step, the overall experiment is not called successful until the user confirms receipt of the SMS.
