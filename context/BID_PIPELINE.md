@@ -95,3 +95,22 @@ For each new bid:
 
 The email generator should mirror the reference digest's factual discipline while changing the unit of output from a market digest to a contractor-specific opportunity.
 
+
+
+## IMPLEMENTATION UPDATE — 2026-09-19
+
+The first functional LOL3 bid-to-outreach implementation now exists in `pipeline/bid_pipeline.py`.
+
+Verified against the repo's actual `hi` contractor export and recovered 8-bid Indiana reference digest.
+
+Key audit decisions:
+- Match score is independently derived from documented trade, state, scope, and contact evidence.
+- Known bid state is a hard eligibility gate by default.
+- Digest subject supplies missing market state for cards whose Place field omits it.
+- Qualification requirements are preserved as source facts but never converted into contractor credentials.
+- The old digest score remains source metadata only.
+
+Automated audit run 35421452945 passed unit tests, the full 8-bid pipeline, output invariants, and artifact upload. Detailed results are in `context/PIPELINE_AUDIT_2026-09-19.md`.
+
+### Next stage
+Build source-specific live procurement adapters, freshness/open-status checks, geography/service-area constraints, deduplication, and persistent delivery/status tracking.
