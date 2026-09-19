@@ -222,7 +222,7 @@ def search_bing(query: str, max_results: int = 10, timeout: int = 20) -> list[Se
         html = resp.read(3_000_000).decode(resp.headers.get_content_charset() or "utf-8", errors="replace")
     results: list[SearchResult] = []
     for href, title_html in re.findall(
-        r'<li[^>]*class=["\\'][^"\\']*b_algo[^"\\']*["\\'][^>]*>.*?<h2><a[^>]*href=["\\']([^"\\']+)["\\'][^>]*>(.*?)</a>',
+        r"""<li[^>]*class=["'](?:[^"']*b_algo[^"']*)["'][^>]*>.*?<h2><a[^>]*href=["']([^"']+)["'][^>]*>(.*?)</a>""",
         html, flags=re.I | re.S
     )[:max_results]:
         title = re.sub(r"\\s+", " ", re.sub(r"<[^>]+>", " ", title_html)).strip()
