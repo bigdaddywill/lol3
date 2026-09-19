@@ -101,11 +101,11 @@
         "site:govly.com/public/opportunities \"roofing gutters\" \"MA\"",
         "site:gov \"roofing gutters\" \"MA\" bid solicitation"
       ],
-      "candidates": 5,
+      "candidates": 3,
       "candidate_diagnostics": [
         {
-          "title": "THE  BEST 10 Roofing in NORTHGLENN, CO  - Updated 2026 - Yelp",
-          "url": "https://www.yelp.com/search?cflt=roofing&find_loc=Northglenn%2C+CO&msockid=2162d95f872566e136f6ce8686df67a4",
+          "title": "THE BEST 10 Roofing in NORTHGLENN, CO - Updated 2026 - Yelp",
+          "url": "https://www.yelp.com/search?cflt=roofing&find_loc=Northglenn%2C+CO",
           "domain": "www.yelp.com",
           "scope": "",
           "location": "",
@@ -118,8 +118,8 @@
           ]
         },
         {
-          "title": "ATLAS  ROOFING  - Updated August 2026 -  Northglenn ,  Colorado  - Yelp",
-          "url": "https://www.yelp.com/biz/atlas-roofing-northglenn?msockid=2162d95f872566e136f6ce8686df67a4",
+          "title": "ATLAS ROOFING - Updated August 2026 - Northglenn, Colorado - Yelp",
+          "url": "https://www.yelp.com/biz/atlas-roofing-northglenn",
           "domain": "www.yelp.com",
           "scope": "",
           "location": "",
@@ -132,37 +132,9 @@
           ]
         },
         {
-          "title": "Roofing Contractors  near  Northglenn ,  CO  | Better Business Bureau",
+          "title": "Roofing Contractors near Northglenn, CO | Better Business Bureau",
           "url": "https://www.bbb.org/us/co/northglenn/category/roofing-contractors",
           "domain": "www.bbb.org",
-          "scope": "",
-          "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "THE  BEST 10 Roofing in NORTHGLENN, CO  - Updated 2026 - Yelp",
-          "url": "https://www.yelp.com/search?cflt=roofing&find_loc=Northglenn%2C+CO&msockid=23d725eb61d366ab07eb323260da6701",
-          "domain": "www.yelp.com",
-          "scope": "",
-          "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "ATLAS  ROOFING  - Updated August 2026 -  Northglenn ,  Colorado  - Yelp",
-          "url": "https://www.yelp.com/biz/atlas-roofing-northglenn?msockid=23d725eb61d366ab07eb323260da6701",
-          "domain": "www.yelp.com",
           "scope": "",
           "location": "",
           "due_date": "",
@@ -201,7 +173,7 @@
           ]
         },
         {
-          "title": "Tile  -  The Home Depot",
+          "title": "Tile - The Home Depot",
           "url": "https://www.homedepot.com/b/Flooring-Tile/N-5yc1vZar0y",
           "domain": "www.homedepot.com",
           "scope": "",
