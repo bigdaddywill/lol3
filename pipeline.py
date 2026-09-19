@@ -8,6 +8,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote_plus, urljoin, urlparse
+from urllib.parse import parse_qs
+import base64
 from urllib.request import Request, urlopen
 from zipfile import ZipFile
 from xml.etree import ElementTree as ET
@@ -194,6 +196,20 @@ def fetch_page(url: str, timeout: int = 20) -> tuple[str, str]:
     parser.feed(html)
     return " ".join(parser.title).strip(), " ".join(parser.parts)
 
+def unwrap_bing_url(url: str) -> str:
+    try:
+        parsed = urlparse(url)
+        if "bing.com" not in parsed.netloc:
+            return url
+        raw = parse_qs(parsed.query).get("u", [""])[0]
+        if not raw:
+            return url
+        token = raw[2:] if raw.startswith("a1") else raw
+        decoded = base64.urlsafe_b64decode(token + "=" * (-len(token) % 4)).decode("utf-8", "ignore")
+        return decoded if decoded.startswith(("http://", "https://")) else url
+    except Exception:
+        return url
+
 @dataclass
 class SearchResult:
     title: str
@@ -250,7 +266,7 @@ class SearchHTMLParser(HTMLParser):
             if self.anchor_is_result and self.anchor_href:
                 title = re.sub(r"\\s+", " ", " ".join(self.title_parts)).strip()
                 if title:
-                    self.results.append(SearchResult(title=title, url=self.anchor_href))
+                    self.results.append(SearchResult(title=title, url=unwrap_bing_url(self.anchor_href)))
             self.in_anchor = False
             self.anchor_href = ""
             self.title_parts = []
