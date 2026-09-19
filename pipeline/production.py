@@ -51,6 +51,8 @@ PUBLIC_PURCHASE_INDIANA = "https://www.publicpurchase.com/gems/indianapolis%2Cin
 EMAIL_RE = re.compile(r"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$", re.I)
 PHONE_RE = re.compile(r"\d{10,15}")
 
+TRADE_STOPWORDS = {"and", "the", "of", "for", "with", "on", "to"}
+
 TRADE_GROUPS = {
     "concrete": {"concrete", "masonry", "pccp", "slab", "foundation", "sidewalk", "curb", "culvert"},
     "roofing": {"roof", "roofing", "gutter", "gutters", "reroof", "downspout"},
@@ -919,11 +921,44 @@ def trade_terms(category: str) -> set[str]:
 
 def contractor_trade_terms(category: str) -> set[str]:
     category_norm = normalize(category)
-    result = set(re.findall(r"[a-z0-9]+", category_norm))
+    result = {
+        token for token in re.findall(r"[a-z0-9]+", category_norm)
+        if token not in TRADE_STOPWORDS and len(token) >= 4
+    }
     for label, terms in TRADE_GROUPS.items():
         if any(term in category_norm for term in terms) or category_norm == label:
-            result |= terms
+            result |= {t for t in terms if t not in TRADE_STOPWORDS and len(t) >= 4}
     return result
+
+
+def contractor_matches_trade(contractor: Contractor, trade_focus: str) -> bool:
+    focus = normalize(trade_focus)
+    if not focus:
+        return True
+    category = normalize(contractor.category)
+    if focus == "concrete":
+        return "concrete" in category or "masonry" in category
+    if focus in TRADE_GROUPS:
+        return bool(contractor_trade_terms(category) & {
+            t for t in TRADE_GROUPS[focus] if t not in TRADE_STOPWORDS and len(t) >= 4
+        })
+    return focus in category
+
+
+def bid_relevant_to_trade(bid: BidRecord, trade_focus: str) -> bool:
+    focus = normalize(trade_focus)
+    if not focus:
+        return True
+    text = bid_text(bid)
+    if focus == "concrete":
+        concrete_evidence = {
+            "concrete", "masonry", "pccp", "slab", "foundation", "sidewalk",
+            "curb", "culvert", "bridge", "deck", "beam", "box", "substructure",
+            "scour", "pavement", "paving", "overlay", "structure",
+        }
+        return any(term in text for term in concrete_evidence)
+    terms = TRADE_GROUPS.get(focus, {focus})
+    return any(term in text for term in terms if term not in TRADE_STOPWORDS and len(term) >= 4)
 
 
 def bid_text(bid: BidRecord) -> str:
@@ -985,18 +1020,58 @@ def dedupe_bids(bids: Iterable[BidRecord]) -> list[BidRecord]:
     return sorted(buckets.values(), key=lambda x: (normalize(x.state), x.deadline_iso or "9999", x.project_name.lower()))
 
 
-def _trade_overlap(contractor: Contractor, bid: BidRecord) -> tuple[int, list[str]]:
-    cterms = contractor_trade_terms(contractor.category)
+def _trade_overlap(
+    contractor: Contractor,
+    bid: BidRecord,
+    trade_focus: str = "",
+) -> tuple[int, list[str]]:
     btext = bid_text(bid)
-    hits = sorted(term for term in cterms if len(term) >= 3 and term in btext)
+    focus = normalize(trade_focus)
+    if focus == "concrete":
+        hits = sorted(
+            term for term in (
+                "concrete", "pccp", "slab", "foundation", "sidewalk", "curb",
+                "culvert", "bridge", "deck", "beam", "box", "substructure",
+                "scour", "pavement", "paving", "overlay", "structure",
+            )
+            if term in btext
+        )
+        return min(50, len(hits) * 8), hits[:8]
+    cterms = contractor_trade_terms(contractor.category)
+    hits = sorted(term for term in cterms if term in btext)
     return min(50, len(hits) * 8), hits[:8]
 
 
-def score_contract_match(contractor: Contractor, bid: BidRecord) -> dict[str, Any]:
+def score_contract_match(
+    contractor: Contractor,
+    bid: BidRecord,
+    trade_focus: str = "",
+) -> dict[str, Any]:
     reasons: list[str] = []
     evidence: list[str] = []
+    focus = normalize(trade_focus)
     state = normalize_state(bid.state or infer_state(bid.location))
     cstate = normalize_state(contractor.state)
+
+    if focus and not contractor_matches_trade(contractor, focus):
+        return {
+            "eligible": False,
+            "score": 0,
+            "confidence": "blocked",
+            "reasons": [f"Contractor is not documented for trade focus: {focus}."],
+            "evidence": [f"contractor.category={contractor.category}"],
+            "breakdown": {},
+        }
+
+    if focus and not bid_relevant_to_trade(bid, focus):
+        return {
+            "eligible": False,
+            "score": 0,
+            "confidence": "blocked",
+            "reasons": [f"Bid has insufficient documented scope evidence for trade focus: {focus}."],
+            "evidence": [f"bid.project_name={bid.project_name}"],
+            "breakdown": {},
+        }
 
     if state and cstate and state != cstate:
         return {
@@ -1031,7 +1106,7 @@ def score_contract_match(contractor: Contractor, bid: BidRecord) -> dict[str, An
         reasons.append("Exact contractor ZIP appears in the bid location.")
         evidence.append(f"zip={contractor.zip_code}")
 
-    trade_score, hits = _trade_overlap(contractor, bid)
+    trade_score, hits = _trade_overlap(contractor, bid, trade_focus=focus)
     if not hits:
         return {
             "eligible": False,
@@ -1098,6 +1173,7 @@ def score_contract_match(contractor: Contractor, bid: BidRecord) -> dict[str, An
 
     return {
         "eligible": True,
+        "trade_focus": focus,
         "score": min(score, 100),
         "confidence": confidence,
         "reasons": reasons,
@@ -1205,6 +1281,7 @@ def run_production(
     states: set[str] | None = None,
     limit_contractors: int | None = None,
     max_bids_per_source: int = 8,
+    trade_focus: str = "",
     tracking_path: str | Path | None = None,
     include_reference_eml: str | Path | None = None,
 ) -> dict[str, Any]:
@@ -1213,6 +1290,8 @@ def run_production(
     contractors, contractor_audit = load_contractors(contractor_path)
     if states:
         contractors = [c for c in contractors if normalize_state(c.state) in {normalize_state(s) for s in states}]
+    if trade_focus:
+        contractors = [c for c in contractors if contractor_matches_trade(c, trade_focus)]
     if limit_contractors:
         contractors = contractors[:limit_contractors]
 
@@ -1275,13 +1354,16 @@ def run_production(
         health.append({"source": "reference_eml", "status": "fixture", "count": len(bids)})
 
     bids = dedupe_bids(bids)
+    bids_before_trade_filter = len(bids)
+    if trade_focus:
+        bids = [b for b in bids if bid_relevant_to_trade(b, trade_focus)]
     prior = load_tracking(tracking_path) if tracking_path else {}
     output_records: list[dict[str, Any]] = []
     tracking_rows: list[dict[str, Any]] = []
 
     for bid in bids:
         for contractor in contractors:
-            match = score_contract_match(contractor, bid)
+            match = score_contract_match(contractor, bid, trade_focus=trade_focus)
             if not match["eligible"]:
                 continue
             validation = validate_outreach(bid, contractor, match)
@@ -1329,7 +1411,9 @@ def run_production(
     )
     Path(out / "manifest.json").write_text(
         json.dumps({
+            "trade_focus": normalize(trade_focus),
             "contractors_evaluated": len(contractors),
+            "bids_before_trade_filter": bids_before_trade_filter,
             "bids_deduped": len(bids),
             "outreach_records": len(output_records),
             "email_ready": sum(1 for r in output_records if r["validation"]["ready_for_email"]),
@@ -1357,6 +1441,7 @@ def main() -> None:
     p.add_argument("--states", default="")
     p.add_argument("--limit-contractors", type=int, default=25)
     p.add_argument("--max-bids-per-source", type=int, default=8)
+    p.add_argument("--trade", default="")
     p.add_argument("--tracking", default="")
     p.add_argument("--reference-eml", default="")
     args = p.parse_args()
@@ -1366,6 +1451,7 @@ def main() -> None:
         states={x.strip().upper() for x in args.states.split(",") if x.strip()} or None,
         limit_contractors=args.limit_contractors or None,
         max_bids_per_source=args.max_bids_per_source,
+        trade_focus=args.trade,
         tracking_path=args.tracking or None,
         include_reference_eml=args.reference_eml or None,
     )
