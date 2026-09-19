@@ -1,26 +1,69 @@
 # LOL3 Durable Context
 
-## Purpose
-This folder is persistent working memory for Phantom + Ghost on bigdaddywill/lol3.
+This folder is the external working memory for Phantom + Ghost.
 
-## Read order
-1. CURRENT_STATE.md
-2. ARCHITECTURE.md
-3. BENCHMARK_HISTORY.md
-4. CHAT_LOG.md
-5. SESSION_SNAPSHOT_2026-09-19.md
+## Fast boot
 
-## Source of truth
-Repository files and directly inspected GitHub results are authoritative. Never invent missing historical text, benchmark output, model behavior, or test results.
+Read:
+1. context/HOT_STATE.md
+2. context/FACT_LEDGER.md
+3. context/DECISION_LEDGER.md
+4. context/FAILURE_LEDGER.md
+5. context/RESTART.md
+
+That is the default working set. Do not reread the whole chat unless needed.
+
+## Memory layers
+
+HOT
+- HOT_STATE.md
+- RESTART.md
+
+WARM
+- FACT_LEDGER.md
+- DECISION_LEDGER.md
+- FAILURE_LEDGER.md
+
+COLD
+- CHAT_LOG.md
+- PIPELINE_AUDIT_2026-09-19.md
+- FINAL_AUDIT_2026-09-19.md
+- BID_PIPELINE.md
+- ARCHITECTURE.md
+- BENCHMARK_HISTORY.md
+- session snapshots
+
+## Truth hierarchy
+
+1. Directly verified repository/runtime/artifact evidence.
+2. HOT_STATE for the current phase.
+3. Fact/decision/failure ledgers for durable continuity.
+4. Chronological chat history for historical context.
+
+Never allow an old chat entry to override a newer verified result.
 
 ## Audit discipline
-Do not claim completion merely because code exists or a workflow is green. Inspect runtime behavior, logs/traces, artifacts, semantic correctness, failure paths, reproducibility, performance, and user-facing usability.
 
-## Continuity
-Append major user directives, architecture decisions, benchmark results, failures, fixes, and final decisions to CHAT_LOG.md. Keep session snapshots in this folder.
+Do not claim completion because code exists or CI is green. Inspect:
+- runtime behavior
+- logs/traces
+- produced artifacts
+- semantic correctness
+- failure paths
+- reproducibility
+- user-facing output
 
-## Current artifacts
-- Bs0DhhjMBGFJgTHV-grok-workspace.zip
-- Spanish_cleaned_after_152_on_Leads_Magnet.xlsx
+## Current production status
 
-The GitHub connector can identify these binaries but has not returned usable raw bytes for local extraction in this environment. Do not claim they were extracted until actually materialized and inspected.
+The audited Concrete/Indiana bid-to-outreach path is finalized for its current scope.
+
+See:
+- context/HOT_STATE.md
+- context/FINAL_AUDIT_2026-09-19.md
+
+## Memory self-test
+
+Run:
+`python tools/memory_audit.py`
+
+The GitHub memory audit also runs in CI and validates that the compact boot memory is internally consistent and free of stale active blockers.
