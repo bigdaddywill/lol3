@@ -212,15 +212,15 @@ def _load_rows_from_xlsx(path: str | Path) -> tuple[list[dict[str, str]], dict[s
             }
             if not normalized["business_name"]:
                 continue
-            fingerprint = (
-                normalize(normalized["business_name"]),
-                normalize(normalized["email"]),
-                re.sub(r"\D", "", normalized["business_phone"]),
-            )
-            if fingerprint in seen:
+            business_key = normalize(normalized["business_name"])
+            email_key = normalize(normalized["email"])
+            phone_key = re.sub(r"\D", "", normalized["business_phone"])
+            fingerprint = (business_key, email_key, phone_key) if (email_key or phone_key) else None
+            if fingerprint and fingerprint in seen:
                 audit["duplicates_removed"] += 1
                 continue
-            seen.add(fingerprint)
+            if fingerprint:
+                seen.add(fingerprint)
             rows.append(normalized)
         audit["rows_loaded"] = len(rows)
     finally:
@@ -260,15 +260,15 @@ def _load_rows_from_tsv(path: str | Path) -> tuple[list[dict[str, str]], dict[st
         if not normalized["business_name"]:
             audit["blank_rows"] += 1
             continue
-        fingerprint = (
-            normalize(normalized["business_name"]),
-            normalize(normalized["email"]),
-            re.sub(r"\D", "", normalized["business_phone"]),
-        )
-        if fingerprint in seen:
+        business_key = normalize(normalized["business_name"])
+        email_key = normalize(normalized["email"])
+        phone_key = re.sub(r"\D", "", normalized["business_phone"])
+        fingerprint = (business_key, email_key, phone_key) if (email_key or phone_key) else None
+        if fingerprint and fingerprint in seen:
             audit["duplicates_removed"] += 1
             continue
-        seen.add(fingerprint)
+        if fingerprint:
+            seen.add(fingerprint)
         rows.append(normalized)
     audit["rows_loaded"] = len(rows)
     return rows, audit
