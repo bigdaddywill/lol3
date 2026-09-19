@@ -125,12 +125,18 @@ def recover_stale_leases(state: dict[str, Any], queue: dict[str, Any]) -> int:
         if not lease or lease >= now:
             continue
 
-        task["state"] = "READY"
         task["worker_id"] = None
         task["lease_expires_at"] = None
-        task["attempts"] = int(task.get("attempts", 0)) + 1
+        task["stale_recoveries"] = int(task.get("stale_recoveries", 0)) + 1
         task["last_recovery_at"] = iso(now)
         task["last_error"] = "stale lease recovered"
+
+        max_attempts = int(task.get("max_attempts", 0))
+        if max_attempts > 0 and int(task.get("attempts", 0)) >= max_attempts:
+            task["state"] = "FAILED"
+            task["terminal_reason"] = "retry budget exhausted after stale lease"
+        else:
+            task["state"] = "READY"
 
         state["recovery_count"] = int(state.get("recovery_count", 0)) + 1
         state["active_task_id"] = None
@@ -230,12 +236,15 @@ def fail(state: dict[str, Any], queue: dict[str, Any], task_id: str,
             if task.get("state") != "RUNNING" or task.get("worker_id") != worker_id:
                 raise RuntimeError("fail rejected: worker does not own running task")
             now = now_utc()
-            task["state"] = "READY" if retry else "FAILED"
+            max_attempts = int(task.get("max_attempts", 0))
+            exhausted = retry and max_attempts > 0 and int(task.get("attempts", 0)) >= max_attempts
+            task["state"] = "FAILED" if (not retry or exhausted) else "READY"
+            task["terminal_reason"] = "retry budget exhausted" if exhausted else task.get("terminal_reason")
             task["last_error"] = error
             task["last_failed_at"] = iso(now)
             task["lease_expires_at"] = None
             task["worker_id"] = None
-            state["phase"] = "IDLE" if retry else "FAILED"
+            state["phase"] = "IDLE" if task["state"] == "READY" else "FAILED"
             state["active_task_id"] = None
             state["worker_id"] = None
             state["lease_expires_at"] = None
@@ -309,11 +318,12 @@ def self_test() -> None:
                 "worker_id": "dead-worker",
                 "lease_expires_at": "2000-01-01T00:00:00Z",
                 "attempts": 1,
+                "max_attempts": 1,
             }]
         }
         recovered = recover_stale_leases(stale_state, stale_queue)
         assert recovered == 1
-        assert stale_queue["tasks"][0]["state"] == "READY"
+        assert stale_queue["tasks"][0]["state"] == "FAILED"
         assert stale_state["recovery_count"] == 1
 
         if old_ledger_override is None:
