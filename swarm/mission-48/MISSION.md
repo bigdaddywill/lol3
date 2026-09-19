@@ -27,4 +27,5 @@ The final proof must preserve worker start/end timestamps, runner identity/platf
 
 After this proof is independently audited, replace the deterministic worker body with real model-driven agents while preserving the same mission/evidence/integration gates.
 
-mission_revision: 003-concurrency-evidence
+mission_revision: 004-measured-concurrency
+measurement_hold_seconds: 15
