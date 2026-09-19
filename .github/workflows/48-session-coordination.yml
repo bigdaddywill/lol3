@@ -84,6 +84,7 @@ jobs:
           import hashlib
           import json
           import os
+          import time
           from datetime import datetime, timezone
           from pathlib import Path
           started_at = datetime.now(timezone.utc)
@@ -97,6 +98,7 @@ jobs:
           missing = [x for x in required if x not in mission]
           if missing:
               raise SystemExit(f"MISSION_INVALID missing={missing}")
+          time.sleep(15)
           finished_at = datetime.now(timezone.utc)
           result = {
               "session_id": os.environ["SESSION_ID"],
