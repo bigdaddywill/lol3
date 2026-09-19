@@ -215,7 +215,7 @@ def _load_rows_from_xlsx(path: str | Path) -> tuple[list[dict[str, str]], dict[s
             fingerprint = (
                 normalize(normalized["business_name"]),
                 normalize(normalized["email"]),
-                re.sub(r"\D", "", normalized["business_phone"] or normalized["cell_phone"]),
+                re.sub(r"\D", "", normalized["business_phone"]),
             )
             if fingerprint in seen:
                 audit["duplicates_removed"] += 1
@@ -263,7 +263,7 @@ def _load_rows_from_tsv(path: str | Path) -> tuple[list[dict[str, str]], dict[st
         fingerprint = (
             normalize(normalized["business_name"]),
             normalize(normalized["email"]),
-            re.sub(r"\D", "", normalized["business_phone"] or normalized["cell_phone"]),
+            re.sub(r"\D", "", normalized["business_phone"]),
         )
         if fingerprint in seen:
             audit["duplicates_removed"] += 1
@@ -300,7 +300,9 @@ def load_contractors(path: str | Path) -> tuple[list[Contractor], dict[str, Any]
             )
         )
     audit["rows_with_email"] = sum(bool(c.email) for c in contractors)
-    audit["rows_with_phone"] = sum(bool(c.phone) for c in contractors)
+    audit["rows_with_business_phone"] = sum(bool(c.business_phone) for c in contractors)
+    audit["rows_with_any_phone"] = sum(bool(c.phone) for c in contractors)
+    audit["rows_with_phone"] = audit["rows_with_any_phone"]
     audit["rows_with_location"] = sum(bool(c.city and c.state) for c in contractors)
     audit["rows_with_trade"] = sum(bool(c.category) for c in contractors)
     return contractors, audit
