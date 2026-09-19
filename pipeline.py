@@ -6,6 +6,7 @@ import re
 from dataclasses import asdict, dataclass, field
 from html.parser import HTMLParser
 from pathlib import Path
+from datetime import date, timedelta
 from typing import Any
 from urllib.parse import quote_plus, urljoin, urlparse
 from urllib.parse import parse_qs
@@ -477,51 +478,78 @@ def extract_bid(result: SearchResult, page_title: str, page_text: str) -> Bid:
         raw_excerpt=combined[:2000],
     )
 
+def _is_bid_network_detail_url(url: str, state: str) -> bool:
+    parsed = urlparse(url)
+    if not any(parsed.netloc.endswith(domain) for domain in TRUSTED_BID_DOMAINS):
+        return False
+    path = parsed.path.lower()
+    if "/bid_opportunities/" not in path:
+        return False
+    if path.rstrip("/").endswith("bid_opportunities"):
+        return False
+    if "/page/" in path:
+        return False
+    blocked = ("/register/", "/bid-result/", "/bid-results/", "/directory/", "/classified")
+    if any(x in path for x in blocked):
+        return False
+    return path.endswith(".html") or path.rstrip("/").count("/") >= 5
+
 def discover_bid_network(contractor: Contractor, max_results: int = 8) -> list[Bid]:
     base = STATE_BID_NETWORKS.get(contractor.state.upper().strip())
     if not base:
         return []
-    try:
-        with urlopen(Request(base, headers={"User-Agent": "CommercialBidPipeline/1.0"}), timeout=20) as resp:
-            html = resp.read(4_000_000).decode(resp.headers.get_content_charset() or "utf-8", errors="replace")
-    except Exception:
-        return []
 
-    parser = LinkParser()
-    parser.feed(html)
     trade_terms_set = trade_terms(contractor.trade)
-    wanted: list[tuple[str, str]] = []
+    candidates: list[tuple[str, str]] = []
     seen_urls: set[str] = set()
 
-    for title, href in parser.links:
-        absolute = urljoin(base, href)
-        if absolute in seen_urls:
+    # The public Bid Network sites publish dated bid-opportunity index pages.
+    # Crawl a recent rolling window so we don't confuse navigation/result pages with opportunities.
+    for days_back in range(0, 22):
+        d = date.today() - timedelta(days=days_back)
+        index_url = urljoin(base, f"bid_opportunities/{d:%Y/%m/%d}/")
+        try:
+            req = Request(index_url, headers={"User-Agent": "CommercialBidPipeline/1.0"})
+            with urlopen(req, timeout=15) as resp:
+                html = resp.read(4_000_000).decode(resp.headers.get_content_charset() or "utf-8", errors="replace")
+        except Exception:
             continue
-        low = (title + " " + absolute).lower()
-        relevant = (
-            any(t in low for t in trade_terms_set)
-            or any(k in low for k in ("bid", "solicitation", "rfp", "rfq", "invitation", "proposal", "project"))
-        )
-        if not relevant:
-            continue
-        seen_urls.add(absolute)
-        wanted.append((title, absolute))
-        if len(wanted) >= max_results * 2:
+
+        parser = LinkParser()
+        parser.feed(html)
+        for title, href in parser.links:
+            absolute = urljoin(index_url, href)
+            if absolute in seen_urls or not _is_bid_network_detail_url(absolute, contractor.state):
+                continue
+            low = (title + " " + absolute).lower()
+            relevant = (
+                any(t in low for t in trade_terms_set)
+                or any(k in low for k in ("bid", "solicitation", "rfp", "rfq", "invitation", "proposal", "project", "renovation", "roof", "tile", "paint"))
+            )
+            if not relevant:
+                continue
+            seen_urls.add(absolute)
+            candidates.append((title, absolute))
+            if len(candidates) >= max_results * 4:
+                break
+        if len(candidates) >= max_results * 4:
             break
 
     bids: list[Bid] = []
-    for result_title, url in wanted:
+    for result_title, url in candidates:
         try:
             page_title, page_text = fetch_page(url)
             result = SearchResult(result_title, url)
             bid = extract_bid(result, page_title or result_title, page_text)
+            if not bid.field("scope"):
+                continue
+            bid.tags.extend(["state_bid_network", contractor.state.upper()])
             bids.append(bid)
             if len(bids) >= max_results:
                 break
         except Exception:
             continue
     return bids
-
 
 def discover(queries: list[str] | str, max_results: int = 10) -> list[Bid]:
     if isinstance(queries, str):
@@ -583,9 +611,12 @@ class Match:
 def score_match(contractor: Contractor, bid: Bid) -> Match:
     hay = " ".join([bid.title, bid.field("scope"), bid.field("location"), bid.raw_excerpt]).lower()
     trusted_source = any(bid.source_domain.endswith(domain) for domain in TRUSTED_BID_DOMAINS if domain)
+    trusted_detail = trusted_source and _is_bid_network_detail_url(bid.source_url, contractor.state) and bool(bid.field("scope"))
     bid_language = any(term in hay for term in ("invitation to bid", "request for bid", "request for proposal", "request for quotation", "rfp", "rfq", "ifb", "solicitation", "bid opportunity", "procurement"))
-    if not bid_language and not (trusted_source and (bid.field("due_date") or bid.field("bid_number"))):
+    if not bid_language and not trusted_detail:
         return Match(contractor, bid, 0, ["not clearly a bid opportunity"])
+    if bid.source_url.rstrip("/").endswith(("register", "bid-result", "bid-results")):
+        return Match(contractor, bid, 0, ["navigation/result page, not an opportunity"])
     if bid.source_domain and not trusted_source and not bid_language:
         return Match(contractor, bid, 0, ["untrusted opportunity source"])
     score = 0
