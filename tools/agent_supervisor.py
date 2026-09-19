@@ -67,7 +67,9 @@ def append_ledger(event: str, task_id: str | None, worker_id: str | None,
     line = f"- {stamp} | task={task_id or '-'} | worker={worker_id or '-'} | {event}"
     if detail:
         line += f" | {detail}"
-    with LEDGER_PATH.open("a", encoding="utf-8") as fh:
+    ledger_path = Path(os.environ.get("LOL3_LEDGER_PATH", str(LEDGER_PATH)))
+    ledger_path.parent.mkdir(parents=True, exist_ok=True)
+    with ledger_path.open("a", encoding="utf-8") as fh:
         fh.write(line + "\n")
 
 
@@ -258,6 +260,8 @@ def self_test() -> None:
 
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
+        old_ledger_override = os.environ.get("LOL3_LEDGER_PATH")
+        os.environ["LOL3_LEDGER_PATH"] = str(tmp_path / "ledger.md")
         test_state = {
             "schema_version": 1,
             "phase": "IDLE",
@@ -311,6 +315,11 @@ def self_test() -> None:
         assert recovered == 1
         assert stale_queue["tasks"][0]["state"] == "READY"
         assert stale_state["recovery_count"] == 1
+
+        if old_ledger_override is None:
+            os.environ.pop("LOL3_LEDGER_PATH", None)
+        else:
+            os.environ["LOL3_LEDGER_PATH"] = old_ledger_override
 
     print("AGENT_BRAIN_SELF_TEST: PASS")
 
