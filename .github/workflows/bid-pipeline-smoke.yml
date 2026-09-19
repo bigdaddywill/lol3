@@ -61,16 +61,20 @@ jobs:
           import re
           from pipeline.bid_pipeline import scrape_url
           from pipeline.live_sources import parse_sab_bids
+
           raw = scrape_url("https://www.in.gov/apps/sab/bidsystem/sab_bviewer")
-          print("live_sab_bytes=", len(raw))
-          title = re.search(r"<title[^>]*>(.*?)</title>", raw, re.I | re.S)
-          print("live_sab_title=", re.sub(r"\s+", " ", title.group(1)).strip() if title else "<none>")
-          print("live_sab_prefix=", re.sub(r"\s+", " ", raw[:1000]))
+          normalized = re.sub(r"\s+", " ", raw)
+          assert "Bid Posting" in raw
+          assert "Project" in raw and "Number" in raw
           bids = parse_sab_bids(raw)
-          assert bids, "Live Armory Board returned zero parseable bids"
-          print(f"live_sab_bids={len(bids)}")
-          for bid in bids[:10]:
-              print(bid["solicitation"], "|", bid["project_name"], "|", bid["deadline"], "|", bid["poc_email"])
+
+          if bids:
+              print(f"live_sab_bids={len(bids)}")
+              for bid in bids[:10]:
+                  print(bid["solicitation"], "|", bid["project_name"], "|", bid["deadline"], "|", bid["poc_email"])
+          else:
+              assert "No Bids Posted at This Time" in normalized, "Unexpected empty Armory Board response"
+              print("live_sab_bids=0 (source explicitly reports no bids currently posted)")
           PY
 
       - name: Upload pipeline artifact
