@@ -45,10 +45,7 @@ STATE_BID_NETWORKS = {
 }
 
 SAB_URL = "https://www.in.gov/apps/sab/bidsystem/sab_bviewer"
-INDOT_URL = (
-    "https://www.in.gov/indot/doing-business-with-indot/home/contracts/"
-    "letting-archives2/wednesday-october-7-2026-regular-letting/"
-)
+INDOT_INDEX_URL = "https://www.in.gov/indot/doing-business-with-indot/home/contracts/"
 PUBLIC_PURCHASE_INDIANA = "https://www.publicpurchase.com/gems/indianapolis%2Cin/buyer/public/home"
 
 EMAIL_RE = re.compile(r"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$", re.I)
@@ -381,6 +378,26 @@ def _parse_state_network_bid(url: str, title: str, html_text: str, state: str) -
         re.I,
     )
     source_date = date_tokens[0] if date_tokens else ""
+    deadline = ""
+    deadline_m = re.search(
+        r"(?:bid due|bid date|due date|closing date|close date|deadline|submission deadline)\s*[:\-]?\s*"
+        r"((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{2,4}(?:\s+\d{1,2}:\d{2}\s*(?:AM|PM))?)",
+        text,
+        re.I,
+    )
+    deadline = deadline_m.group(1).strip() if deadline_m else ""
+    location = ""
+    location_m = re.search(r"(?:location|project location|job site|place)\s*[:\-]\s*([^.;]{4,160})", text, re.I)
+    if location_m:
+        location = location_m.group(1).strip()
+    poc_email = ""
+    email_m = re.search(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", text, re.I)
+    if email_m:
+        poc_email = email_m.group(0)
+    poc_phone = ""
+    phone_m = re.search(r"(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}", text)
+    if phone_m:
+        poc_phone = phone_m.group(0)
 
     solicitation = ""
     match = re.search(r"/(\d{7,})[-/]", urllib.parse.urlparse(url).path)
@@ -396,8 +413,12 @@ def _parse_state_network_bid(url: str, title: str, html_text: str, state: str) -
         agency=f"{state} Bid Network",
         solicitation=solicitation,
         scope=scope,
+        location=location,
         state=state,
+        deadline=deadline,
         posted=source_date,
+        poc_email=poc_email,
+        poc_phone=poc_phone,
         source_as_of=datetime.now(timezone.utc).isoformat(timespec="seconds"),
         raw_excerpt=text[:2000],
     )
@@ -423,12 +444,30 @@ def scrape_state_network(state: str, trade: str, max_results: int = 8) -> tuple[
         health["error"] = f"http_status={status}"
         return [], health
 
-    links = _state_network_links(root, base)
+    pages_to_scan = [(base, root)]
+    today = datetime.now(timezone.utc).date()
+    for days_back in range(0, 15):
+        day = today.fromordinal(today.toordinal() - days_back)
+        pages_to_scan.append((
+            urllib.parse.urljoin(base, f"bid_opportunities/{day:%Y/%m/%d}/"),
+            "",
+        ))
+    links: list[tuple[str, str]] = []
+    for page_url, page_html in pages_to_scan:
+        if not page_html:
+            try:
+                _, _, page_html = fetch_text(page_url)
+            except Exception:
+                continue
+        links.extend(_state_network_links(page_html, page_url))
+
     terms = trade_terms(trade)
     candidates = []
+    seen_urls: set[str] = set()
     for title, url in links:
-        if not _is_network_detail(url):
+        if url in seen_urls or not _is_network_detail(url):
             continue
+        seen_urls.add(url)
         low = f"{title} {url}".lower()
         hit_count = sum(1 for term in terms if term in low)
         generic = any(term in low for term in (
@@ -514,42 +553,120 @@ def parse_indot_notice_text(text: str, source_url: str, as_of: str) -> list[BidR
 
 
 def scrape_indot_current() -> tuple[list[BidRecord], dict[str, Any]]:
-    health = {"source": "indot_current_october_7_2026", "status": "unknown", "count": 0, "error": ""}
+    health = {"source": "indot_current_regular_letting", "status": "unknown", "count": 0, "error": ""}
     try:
-        status, _, page = fetch_text(INDOT_URL)
+        status, _, index_html = fetch_text(INDOT_INDEX_URL)
         if status >= 400:
             raise RuntimeError(f"http_status={status}")
-        pdf_match = re.search(
-            r'href=["\']([^"\']+20261007-REG-NTC_[^"\']*\.pdf)["\']',
-            page,
-            re.I,
-        )
-        if not pdf_match:
-            raise RuntimeError("current INDOT notice PDF link not found")
-        pdf_url = urllib.parse.urljoin(INDOT_URL, html.unescape(pdf_match.group(1)))
-        try:
-            from pypdf import PdfReader
-        except ImportError as exc:
-            raise RuntimeError("pypdf is required for INDOT notice parsing") from exc
+
+        from html.parser import HTMLParser
+        class _Links(HTMLParser):
+            def __init__(self) -> None:
+                super().__init__()
+                self.in_a = False
+                self.href = ""
+                self.parts: list[str] = []
+                self.items: list[tuple[str, str]] = []
+            def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+                if tag.lower() == "a":
+                    a = dict(attrs)
+                    self.in_a = True
+                    self.href = a.get("href") or ""
+                    self.parts = []
+            def handle_data(self, data: str) -> None:
+                if self.in_a:
+                    self.parts.append(data)
+            def handle_endtag(self, tag: str) -> None:
+                if tag.lower() == "a" and self.in_a:
+                    text = " ".join(" ".join(self.parts).split())
+                    if text and self.href:
+                        self.items.append((text, urllib.parse.urljoin(INDOT_INDEX_URL, self.href)))
+                    self.in_a = False
+
+        p = _Links()
+        p.feed(index_html)
+        now = datetime.now(timezone.utc)
+        candidates: list[tuple[datetime, str]] = []
+        month_map = {m.lower(): i for i, m in enumerate(
+            ("January", "February", "March", "April", "May", "June",
+             "July", "August", "September", "October", "November", "December"), 1
+        )}
+        for text, url in p.items:
+            if "regular letting" not in text.lower():
+                continue
+            m = re.search(
+                r"(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s*"
+                r"(January|February|March|April|May|June|July|August|September|October|November|December)"
+                r"\s+(\d{1,2}),\s+(\d{4})",
+                text,
+                re.I,
+            )
+            if not m:
+                m = re.search(
+                    r"(January|February|March|April|May|June|July|August|September|October|November|December)"
+                    r"\s+(\d{1,2}),\s+(\d{4})",
+                    text,
+                    re.I,
+                )
+            if not m:
+                continue
+            dt = datetime(int(m.group(3)), month_map[m.group(1).lower()], int(m.group(2)), 10, 0, tzinfo=timezone.utc)
+            if dt >= now - __import__("datetime").timedelta(hours=6):
+                candidates.append((dt, url))
+        if not candidates:
+            raise RuntimeError("no upcoming/current regular letting page found")
+        _, letting_url = sorted(candidates)[0]
+
+        _, _, letting_html = fetch_text(letting_url)
+        pdf_m = re.search(r'href=["\']([^"\']+2026\d{4}-REG-NTC_[^"\']*\.pdf)["\']', letting_html, re.I)
+        if not pdf_m:
+            pdf_m = re.search(r'href=["\']([^"\']+REG-NTC_[^"\']*\.pdf)["\']', letting_html, re.I)
+        if not pdf_m:
+            raise RuntimeError("Notice to Contractors PDF link not found")
+        pdf_url = urllib.parse.urljoin(letting_url, html.unescape(pdf_m.group(1)))
+
+        from pypdf import PdfReader
         req = urllib.request.Request(pdf_url, headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req, timeout=30) as response:
-            data = response.read(15_000_000)
+            data = response.read(20_000_000)
         import io
         reader = PdfReader(io.BytesIO(data))
-        text = "\n".join((page.extract_text() or "") for page in reader.pages)
+        text = "\n".join((pg.extract_text() or "") for pg in reader.pages)
+
+        letting_match = re.search(
+            r"Letting Date & Time:\s*([A-Za-z]+\s+\d{1,2},\s+\d{4})\s+at\s+(\d{1,2}:\d{2}\s*[AP]M)",
+            text,
+            re.I,
+        )
+        deadline = ""
+        deadline_iso = ""
+        if letting_match:
+            deadline = f"{letting_match.group(1)} {letting_match.group(2)}"
+            from datetime import datetime as _dt
+            local = _dt.strptime(deadline, "%B %d, %Y %I:%M %p").replace(tzinfo=timezone.utc)
+            deadline_iso = local.isoformat(timespec="minutes")
+
         bids = parse_indot_notice_text(
             text,
             source_url=pdf_url,
             as_of=datetime.now(timezone.utc).isoformat(timespec="seconds"),
         )
+        for bid in bids:
+            if deadline:
+                bid.deadline = deadline
+            if deadline_iso:
+                bid.deadline_iso = deadline_iso
+            bid.source_url = pdf_url
+
         health["count"] = len(bids)
         health["status"] = "ok" if bids else "empty"
+        health["letting_url"] = letting_url
+        health["notice_pdf"] = pdf_url
         return bids, health
     except Exception as exc:
         health["status"] = "error"
         health["error"] = repr(exc)
         return [], health
-
 
 def scrape_sab_current() -> tuple[list[BidRecord], dict[str, Any]]:
     health = {"source": "indiana_armory_board", "status": "unknown", "count": 0, "error": ""}
