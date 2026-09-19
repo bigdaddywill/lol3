@@ -2,6 +2,7 @@
 
 updated: 2026-09-19
 executor_layer_updated: 2026-09-19
+session_swarm_layer_updated: 2026-09-19
 repo: bigdaddywill/lol3
 branch: main
 
@@ -9,9 +10,9 @@ branch: main
 Build and maintain the bid-to-outreach automation system while preserving durable context in GitHub.
 
 ## CURRENT PHASE
-PERSISTENT_EXECUTOR_BRAIN
+CHATGPT_SESSION_SWARM
 
-The production bid path remains audited for its defined scope. The new phase adds durable work-in-motion state so long tasks can survive worker/session restarts.
+The persistent executor remains the work-in-motion layer. The new session-swarm layer adds independent ChatGPT agents that collaborate through GitHub mailboxes and a shared blackboard.
 
 ## CURRENT FLOW
 LIVE BID SOURCES -> NORMALIZE -> TRADE RELEVANCE -> STATE GATE -> OPEN-DEADLINE GATE -> MATCH SCORE/REASONS -> BID INVITATION -> EMAIL -> FOLLOW-UP SMS -> TRACKING -> HUMAN SEND GATE
@@ -47,6 +48,18 @@ Optional:
 - SAB: degraded/empty responses are recorded and excluded.
 - Public Purchase Indianapolis: optional.
 
+## CHATGPT SESSION SWARM TRUTH
+- `swarm/README.md`: swarm architecture and limitation boundary.
+- `swarm/PROTOCOL.md`: immutable message protocol.
+- `swarm/ROUTER.md`: role routing and boot order.
+- `swarm/SESSION_BOOT.md`: boot card for a fresh ChatGPT session.
+- `swarm/agents/`: five predefined agent identities.
+- `swarm/inbox/`: per-agent durable mailboxes.
+- `swarm/board/BLACKBOARD.md`: shared swarm state.
+- `tools/swarm_protocol.py`: local protocol validator/helper.
+- `.github/workflows/session-swarm-audit.yml`: swarm CI self-test.
+- Actual live multi-session ChatGPT handshake is not yet verified.
+
 ## PERSISTENT EXECUTOR TRUTH
 - `agent/QUEUE.json`: durable task queue.
 - `agent/STATE.json`: active task, worker lease, checkpoint, recovery counter.
@@ -65,6 +78,7 @@ Optional:
 ## ACTIVE TODO
 - Connect an always-on worker runtime to the executor protocol.
 - Run and record an end-to-end multi-slice resume test, including a forced worker death and watchdog recovery.
+- Run the first real multi-session ChatGPT handshake: one session sends a TASK, another returns a RESULT/CHALLENGE, and the Chief integrates it.
 
 Update this file only from verified reality.
 
