@@ -448,7 +448,7 @@ def search_bing_rss(query: str, max_results: int = 8) -> list[tuple[str, str]]:
 
 def _generic_bid_record(state: str, title: str, url: str, html_text: str) -> BidRecord | None:
     domain = urllib.parse.urlparse(url).netloc.lower()
-    if not (domain.endswith(".gov") or domain.endswith(".us") or any(domain.endswith(x) for x in urllib.parse.urlparse(v).netloc for v in STATE_BID_NETWORKS.values())):
+    if not (domain.endswith(".gov") or domain.endswith(".us") or any(domain.endswith(urllib.parse.urlparse(v).netloc) for v in STATE_BID_NETWORKS.values())):
         return None
 
     text = normalize(re.sub(r"<[^>]+>", " ", html_text))
@@ -470,7 +470,7 @@ def _generic_bid_record(state: str, title: str, url: str, html_text: str) -> Bid
     due = ""
     due_m = re.search(
         r"(?:bid due|bid date|due date|deadline|submission deadline|closing date)\s*[:\-]?\s*"
-        r"((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?)"
+        r"((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
         r"\s+\d{1,2},?\s+\d{2,4}(?:\s+\d{1,2}:\d{2}\s*(?:AM|PM))?)",
         text,
         re.I,
