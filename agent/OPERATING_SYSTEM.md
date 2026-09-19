@@ -24,7 +24,7 @@ A worker MUST:
 2. Acquire a lease with a deadline.
 3. Record a checkpoint before expensive work.
 4. Emit another checkpoint after every meaningful unit.
-5. Finish, fail, or release the task explicitly.
+5. Finish or fail the task explicitly.
 6. Persist important state before the slice exits.
 
 A slice MUST be bounded. A dead worker must never leave the task permanently locked.
