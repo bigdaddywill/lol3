@@ -124,3 +124,40 @@ Use long-running, multi-step work when justified; send milestone updates; keep l
 - GitHub connector exposed the XLSX as a binary upload but did not return usable raw bytes.
 - Direct raw/web retrieval and a container-side GitHub API request were also unavailable due cache/DNS restrictions in the environment.
 - Do not infer workbook columns, contractor counts, or matching fields until the XLSX bytes are actually accessible.
+
+
+## CONTINUATION UPDATE — 2026-09-19 — BID PIPELINE BUILD
+
+### User directive
+Ghost said: “now GO GO GO, remember to use github as your chatlog & context.”
+
+### Verified work
+- Read LOL3 durable context before changing implementation.
+- Located and read repo file `hi`; it is a TSV contractor export.
+- Parsed the full text export through the GitHub connector: 263 contractor records, 13 Concrete & Masonry, 2 Indiana Concrete & Masonry.
+- Recovered and parsed the 8-card Indiana concrete reference EML.
+- Built the first end-to-end pipeline under `pipeline/`.
+- Added unit/regression tests under `tests/`.
+- Added a GitHub Actions smoke workflow with a live artifact.
+
+### Audit sequence
+1. First smoke run failed two tests. Defects: project names were lowercased by display cleaning; outreach omitted contractor company name.
+2. Fixed both defects.
+3. Second smoke run passed unit tests, end-to-end execution, and output invariants.
+4. Artifact inspection then found a semantic matching flaw: trade-matched contractors from other states were being selected for Indiana bids.
+5. Added a strict state gate and inherited state from the digest subject when a card's location omitted the state.
+6. Final smoke run passed and artifact audit showed only Indiana contractors matched to Indiana bids.
+
+### Final verified matching output
+- All 8 reference bids parsed.
+- Carr Construction + Percrete matched all 8.
+- Carrillos Construction + DND Construction were retained only on three building/general-trade opportunities as medium-confidence matches.
+- No out-of-state contractor remained in the final artifact.
+- Outreach includes bid project, location, deadline, source URL, company/person personalization, and an explicit qualification-unverified disclaimer.
+
+### Durable artifact
+- `context/PIPELINE_AUDIT_2026-09-19.md`
+- Smoke run: 35421452945, success.
+
+### Boundary
+This is now a verified reference-digest matcher/outreach engine, not yet a completed production scraper fleet. Live source adapters, freshness verification, geo/service-area matching, dedupe, status tracking, and labeled match-quality benchmarks remain.
