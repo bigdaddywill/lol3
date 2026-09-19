@@ -28,7 +28,7 @@ A future worker can:
 - persist results;
 - exit;
 - restart later;
-- detect and recover stale work;
+- detect and recover stale work with the watchdog;
 - continue from the last checkpoint.
 
 That removes the biggest failure mode of long autonomous work: **losing the exact point of progress when the runtime dies.**
