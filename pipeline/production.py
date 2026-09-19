@@ -954,7 +954,7 @@ def bid_relevant_to_trade(bid: BidRecord, trade_focus: str) -> bool:
         concrete_evidence = {
             "concrete", "masonry", "pccp", "slab", "foundation", "sidewalk",
             "curb", "culvert", "bridge", "deck", "beam", "box", "substructure",
-            "scour", "pavement", "paving", "overlay", "structure",
+            "scour", "structure",
         }
         return any(term in text for term in concrete_evidence)
     terms = TRADE_GROUPS.get(focus, {focus})
