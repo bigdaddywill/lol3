@@ -1,101 +1,59 @@
 # LOL3 Hot State
 
 updated: 2026-09-19
-executor_layer_updated: 2026-09-19
-session_swarm_layer_updated: 2026-09-19
 repo: bigdaddywill/lol3
 branch: main
 
 ## MISSION
-Build and maintain the bid-to-outreach automation system while preserving durable context in GitHub.
+Maintain the LOL3 swarm/control-plane experiments with durable GitHub context, evidence-first audits, and resumable coordination.
 
 ## CURRENT PHASE
-CHATGPT_48_SESSION_COORDINATION_PROOF
+PHANTOM_20_REAL_NUMBER_CHECKPOINT_SWARM
 
-The 48-worker coordination proof is the active swarm mission. The deterministic worker body is intentionally separate from the later model-driven agent layer.
+## ACTIVE SWARM MISSION
+- mission_id: PHANTOM-20-REAL-NUMBER-001
+- GitHub issue bus: #2
+- target_sms_raw: 3059278198
+- Target is preserved exactly; workers must not guess, normalize, truncate, or replace it.
+- 20 role-specialized sessions are launched through `.github/workflows/20-phone-swarm-checkpoint.yml`.
+- Communication channel: GitHub issue #2 comments.
+- Durable mission files: `swarm/mission-20/MISSION.md`, `swarm/mission-20/ROLES.md`.
+- Worker implementation: `tools/phone_swarm_worker.py`.
 
-## CURRENT FLOW
-LIVE BID SOURCES -> NORMALIZE -> TRADE RELEVANCE -> STATE GATE -> OPEN-DEADLINE GATE -> MATCH SCORE/REASONS -> BID INVITATION -> EMAIL -> FOLLOW-UP SMS -> TRACKING -> HUMAN SEND GATE
+## SAFE EXECUTION BOUNDARY
+- Agents may research provider rules, inspect signup paths, use isolated browser sessions, detect CAPTCHA/anti-bot checkpoints, communicate, and produce a final human handoff.
+- The automation does NOT create third-party phone accounts, submit identity data, bypass CAPTCHA/anti-bot controls, or send the final SMS.
+- Overall experiment is not successful until the user confirms receipt of the SMS after any human-controlled final step.
 
-## VERIFIED FACTS
-- Contractor workbook: Spanish_cleaned_after_152_on_Leads_Magnet.xlsx
-- Sheet: On Leads Magnet
-- 264 contractor rows loaded; 1 duplicate removed; 2 missing business names recovered; 0 unidentifiable.
-- Indiana Concrete/Masonry production contractors: Percrete and Carr Construction.
-- Mode: --states IN --trade concrete
-- 39 current INDOT contracts parsed.
-- 25 current concrete-relevant INDOT bids retained.
-- 8 historical reference-email bids are fixture/provenance only and are closed.
-- 50 current bid/contractor pairings.
-- 50 email-ready.
-- 50 SMS-ready.
-- 0 validation errors.
-- Every outbound record is HUMAN_REVIEW_REQUIRED.
+## CURRENT PROVIDER EVIDENCE
+- TextFree currently advertises a free, dialable U.S./Canadian number and free calling/texting; its official site says the free number stays active with use at least every 30 days.
+- TextFree's free tier does not include verification-code support; Plus adds that feature.
+- TextFree currently says new accounts are created through the app and that service is for U.S./Canadian residents while physically in those countries.
+- TextNow and Talkatone remain alternate candidates to be rechecked by the swarm.
+These are externally verified findings and must be rechecked in-run for current accuracy.
 
-## HARD MATCHING GATES
-1. Contractor category must document Concrete or Masonry.
-2. Bid must contain concrete-relevant scope evidence.
-3. Bid and contractor must share state.
-4. Bid must have a verified open deadline.
+## ACTIVE AUDIT RULE
+No victory claim until:
+1. 20/20 worker evidence is observed and integrated;
+2. cross-agent communication is evidenced;
+3. browser/provider findings are audited for contradictions;
+4. final handoff state is explicit;
+5. no unresolved defects or suggestions remain in the implementation;
+6. user confirms receipt of the final SMS after any human-controlled action.
 
-HMA-only and pavement-marking-only opportunities are excluded from Concrete mode.
+## 48-SESSION HISTORY
+The earlier 48-worker infrastructure proof remains historical evidence. Its last known hardened state used a 15-second worker hold; its corrected concurrency result had not yet been persisted at the time of this state rewrite. Do not treat the provisional overlap=1 measurement as final concurrency evidence.
 
-## SOURCE HEALTH
-Required:
-- INDOT current regular letting: healthy in final audit.
-
-Optional:
-- SAB: degraded/empty responses are recorded and excluded.
-- Public Purchase Indianapolis: optional.
-
-## CHATGPT SESSION SWARM TRUTH
-- `swarm/README.md`: swarm architecture and limitation boundary.
-- `swarm/PROTOCOL.md`: immutable message protocol.
-- `swarm/ROUTER.md`: role routing and boot order.
-- `swarm/SESSION_BOOT.md`: boot card for a fresh ChatGPT session.
-- `swarm/agents/`: five predefined agent identities.
-- `swarm/inbox/`: per-agent durable mailboxes.
-- `swarm/board/BLACKBOARD.md`: shared swarm state.
-- `tools/swarm_protocol.py`: local protocol validator/helper.
-- `.github/workflows/session-swarm-audit.yml`: swarm CI self-test.
-- Actual live multi-session ChatGPT handshake is not yet verified.
-
-## PERSISTENT EXECUTOR TRUTH
-- `agent/QUEUE.json`: durable task queue.
-- `agent/STATE.json`: active task, worker lease, checkpoint, recovery counter.
-- `agent/LEDGER.md`: operational event history.
-- `tools/agent_supervisor.py`: claim/checkpoint/finish/fail/watchdog protocol.
-- `.github/workflows/agent-brain-audit.yml`: scheduled watchdog + self-test.
-- Worker runtime connection is not yet verified end-to-end; the current implementation is the durable control plane, not an immortal chat session.
-
-## AUDIT TRUTH
-- Production audit 35422565481: SUCCESS.
-- Standalone smoke 35422611533: SUCCESS, 17/17 tests.
-- Final production artifact 10578650088.
-- Artifact SHA-256 73b49ec60b4b624faab382701fa5bd8ed5546273e46f45b743b288172068eccc.
-- Audited source head f8f768ba97534e7cddca9013598bae5c0af86a8c.
-
-## ACTIVE TODO
-- Verify the corrected 48-session run whose source commit is the hardened workflow/mission state, not the earlier provisional run.
-- Inspect the final 48-session evidence for count, identity, shared mission hash, runner platform, failure visibility, and provenance.
-- Verify whether 48 jobs actually ran concurrently or were queued by the account's GitHub Actions concurrency ceiling.
-- After the coordination proof is independently finalized, replace the deterministic worker body with real model-driven agents while preserving the same evidence/integration gates.
+## LONG-TERM MEMORY
+- `context/FACT_LEDGER.md`
+- `context/DECISION_LEDGER.md`
+- `context/FAILURE_LEDGER.md`
+- `context/RESTART.md`
+- `context/CHAT_LOG.md`
+- `context/BENCHMARK_HISTORY.md`
+- `context/ARCHITECTURE.md`
+- `agent/QUEUE.json`
+- `agent/STATE.json`
+- `agent/LEDGER.md`
 
 Update this file only from verified reality.
-
-## 48-SESSION PROOF STATUS
-- Provisional first run: GitHub Actions run 35424136351, source commit 2677dfdd, result PASS with 48/48 workers and one shared mission hash.
-- Corrected run: GitHub Actions run 35424191384, source commit 47141871175d72c3af5b82ee223a25d3705bec99, result PASS with 48/48 workers and 48 unique runner names.
-- The corrected run's measured overlap was 1, but its worker execution window was only microseconds, so that measurement is insufficient to characterize real scheduler concurrency.
-- Concurrency evidence was hardened with a 15-second measurement hold.
-- Measurement workflow commit: b55009b257adbd9223497399c23c6f16d43b6939.
-- Measurement mission commit: b223a6278d88192d4a582c86aa711d56a57e2204.
-- Final concurrency run is pending its persisted result. Do not claim 48 simultaneous workers until that result reports the measured overlap.
-- The last verified architectural fact is: 48 distinct GitHub-hosted runner jobs can be created and integrated through the shared mission/result mechanism.
-
-## MEMORY SYSTEM SELF-TEST
-- Memory audit run 35423030637: SUCCESS.
-- Cold-start reconstruction: PASS.
-- Boot set: HOT_STATE -> FACT_LEDGER -> DECISION_LEDGER -> FAILURE_LEDGER -> RESTART.
-- The memory audit caught and fixed two internal audit bugs during the spin.
-- Spin result: context/MEMORY_SPIN_RESULT.md
