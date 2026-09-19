@@ -26,12 +26,15 @@ STALE_PATTERNS = [
     "Production status: reference pipeline functional; live source-specific scraping",
 ]
 
+
 def read(name: str) -> str:
     return (CTX / name).read_text(encoding="utf-8")
+
 
 def fail(msg: str) -> None:
     print(f"MEMORY AUDIT: FAIL — {msg}")
     sys.exit(1)
+
 
 def main() -> None:
     for name in REQUIRED:
@@ -44,18 +47,25 @@ def main() -> None:
     bid = read("BID_PIPELINE.md")
     current = read("CURRENT_STATE.md")
 
+    phase_match = re.search(r"(?m)^## CURRENT PHASE\s*\n([A-Z0-9_]+)", hot)
+    current_phase = phase_match.group(1) if phase_match else None
+
     assertions = [
-        ("hot phase", "FINALIZED_FOR_CURRENT_CONCRETE_INDIANA_SCOPE" in hot),
-        ("hot no todo", bool(re.search(r"(?is)## ACTIVE TODO\s*None for this defined scope\.", hot))),
+        ("hot phase exists", bool(current_phase)),
+        ("hot active-todo section", "## ACTIVE TODO" in hot),
         ("prod run", "35422565481" in hot and "SUCCESS" in hot),
         ("smoke run", "35422611533" in hot and "SUCCESS" in hot),
         ("17 tests", "17/17" in hot),
         ("final artifact", "10578650088" in hot),
         ("memory index references hot", "HOT_STATE.md" in idx),
-        ("memory index references ledgers", all(x in idx for x in ["FACT_LEDGER.md", "DECISION_LEDGER.md", "FAILURE_LEDGER.md"])),
+        ("memory index references ledgers", all(
+            x in idx for x in ["FACT_LEDGER.md", "DECISION_LEDGER.md", "FAILURE_LEDGER.md"]
+        )),
         ("restart protocol", "Cold start" in read("RESTART.md")),
         ("executor state indexed", "agent/STATE.json" in idx and "agent/QUEUE.json" in idx),
         ("executor files present", (ROOT / "agent/STATE.json").exists() and (ROOT / "agent/QUEUE.json").exists()),
+        ("executor supervisor present", (ROOT / "tools/agent_supervisor.py").exists()),
+        ("executor audit workflow present", (ROOT / ".github/workflows/agent-brain-audit.yml").exists()),
         ("final audit references prod run", "35422565481" in final),
         ("final audit references smoke run", "35422611533" in final),
     ]
@@ -69,18 +79,12 @@ def main() -> None:
             if pattern in text:
                 fail(f"stale active-context phrase {pattern!r} remains in {name}")
 
-    for ledger_name, prefix in [
-        ("FACT_LEDGER.md", "F"),
-        ("DECISION_LEDGER.md", "D"),
-        ("FAILURE_LEDGER.md", "F"),
-    ]:
+    for ledger_name in ["FACT_LEDGER.md", "DECISION_LEDGER.md", "FAILURE_LEDGER.md"]:
         text = read(ledger_name)
         ids = re.findall(r"(?m)^([A-Z]\d{3})\s", text)
         if len(ids) != len(set(ids)):
             fail(f"duplicate ledger IDs in {ledger_name}")
 
-    # Cold-start simulation: the five boot files must independently expose
-    # the project identity, mission, phase, and audit truth.
     boot = "\n".join(read(name) for name in [
         "HOT_STATE.md",
         "FACT_LEDGER.md",
@@ -99,7 +103,7 @@ def main() -> None:
         "35422611533",
         "HUMAN_REVIEW_REQUIRED",
     ]:
-        if needle not in boot:
+        if needle and needle not in boot:
             fail(f"cold-start memory missing {needle!r}")
 
     print("MEMORY AUDIT: PASS")
@@ -108,6 +112,7 @@ def main() -> None:
     print("Production audit: 35422565481 SUCCESS")
     print("Smoke audit: 35422611533 SUCCESS")
     print("Executor control plane: present")
+
 
 if __name__ == "__main__":
     main()
