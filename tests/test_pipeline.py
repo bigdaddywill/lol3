@@ -1,6 +1,6 @@
 from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
-from pipeline import Bid, Contractor, Match, SearchResult, extract_bid, generate_email, generate_sms, load_contractors, rank_matches, search_bing, source_field, unwrap_bing_url
+from pipeline import Bid, Contractor, Match, SearchResult, extract_bid, generate_email, generate_sms, load_contractors, rank_matches, search_bing, source_field, unwrap_bing_url, search_google
 
 def make_xlsx(path: Path):
     workbook = '''<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="On Leads Magnet" sheetId="1" r:id="rId1"/></sheets></workbook>'''
@@ -69,3 +69,20 @@ def test_bing_redirect_unwrap():
     token = "a1" + base64.urlsafe_b64encode(target.encode()).decode().rstrip("=")
     wrapped = "https://www.bing.com/ck/a?u=" + urllib.parse.quote(token)
     assert unwrap_bing_url(wrapped) == target
+
+
+def test_google_result_parser(monkeypatch):
+    class Resp:
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            return False
+        def read(self, n):
+            return b'<html><a href="https://example.org/bid"><h3>Invitation to Bid - Painting</h3></a></html>'
+        @property
+        def headers(self):
+            return type("H", (), {"get_content_charset": lambda self: "utf-8"})()
+    monkeypatch.setattr("pipeline.urlopen", lambda *args, **kwargs: Resp())
+    results = search_google("painting bid")
+    assert results and results[0].title == "Invitation to Bid - Painting"
+    assert results[0].url == "https://example.org/bid"
