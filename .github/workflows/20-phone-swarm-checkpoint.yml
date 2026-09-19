@@ -1,4 +1,4 @@
-name: PHANTOM-20 Real Number Checkpoint Swarm
+name: PHANTOM-20 Real Number Swarm
 
 on:
   push:
@@ -13,8 +13,8 @@ permissions:
   issues: write
 
 jobs:
-  worker:
-    name: 'PHANTOM-20 ${{ matrix.id }}'
+  stage1:
+    name: 'PHANTOM-20 Stage1 ${{ matrix.id }}'
     strategy:
       fail-fast: false
       max-parallel: 20
@@ -43,17 +43,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run worker checkpoint
+      - name: Run stage1
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           SESSION_ID: ${{ matrix.id }}
           ROLE: ${{ matrix.role }}
+          PHASE: stage1
           SWARM_ISSUE: '2'
           TARGET_SMS: '3059278198'
         run: python tools/phone_swarm_worker.py
-      - name: Browser recon
-        if: contains(matrix.role, 'BROWSER') || matrix.role == 'FINAL_HANDOFF_COORDINATOR'
+      - name: Browser recon evidence
+        if: matrix.role == 'BROWSER_RECON' || matrix.role == 'BROWSER_EXECUTOR' || matrix.role == 'FINAL_HANDOFF_COORDINATOR'
         run: |
           python -m pip install --quiet playwright
           python -m playwright install --with-deps chromium
@@ -77,104 +78,142 @@ jobs:
                       item['captcha_observed']=any(k in item['text'].lower() for k in ['captcha','verify you are human','press and hold'])
                       item['app_required_language']=any(k in item['text'].lower() for k in ['download the app','google play','app store'])
                       page.screenshot(path=str(out/(session+'-'+str(len(rows))+'.png')),full_page=True)
-                  except Exception as exc:
-                      item['error']=str(exc)
+                  except Exception as exc: item['error']=str(exc)
                   rows.append(item)
               browser.close()
           (out/(session+'.json')).write_text(json.dumps(rows,indent=2),encoding='utf-8')
           PY
-      - name: Upload checkpoint evidence
+      - name: Upload stage1 evidence
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.id }}
+          name: stage1-${{ matrix.id }}
           path: |
             agent-output/${{ matrix.id }}.json
             browser-evidence/*
           if-no-files-found: warn
           retention-days: 7
 
+  stage2:
+    name: 'PHANTOM-20 Stage2 ${{ matrix.id }}'
+    needs: stage1
+    if: ${{ always() }}
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        include:
+          - {id: PHANTOM-20-01, role: CHIEF_INTEGRATOR}
+          - {id: PHANTOM-20-02, role: PROVIDER_RESEARCH_TEXTNOW}
+          - {id: PHANTOM-20-03, role: PROVIDER_RESEARCH_TALKATONE}
+          - {id: PHANTOM-20-04, role: PROVIDER_RESEARCH_GOOGLE_VOICE}
+          - {id: PHANTOM-20-05, role: POLICY_AUDITOR}
+          - {id: PHANTOM-20-06, role: NUMBER_PERMANENCE_AUDITOR}
+          - {id: PHANTOM-20-07, role: FREE_TIER_AUDITOR}
+          - {id: PHANTOM-20-08, role: SIGNUP_FLOW_RESEARCHER}
+          - {id: PHANTOM-20-09, role: BROWSER_RECON}
+          - {id: PHANTOM-20-10, role: CAPTCHA_CHECKPOINT_AUDITOR}
+          - {id: PHANTOM-20-11, role: EMAIL_VERIFICATION_RESEARCHER}
+          - {id: PHANTOM-20-12, role: ANDROID_APP_ROUTE_RESEARCHER}
+          - {id: PHANTOM-20-13, role: SMS_OUTBOUND_RESEARCHER}
+          - {id: PHANTOM-20-14, role: TARGET_VALIDATOR}
+          - {id: PHANTOM-20-15, role: RED_TEAM_COMPLIANCE}
+          - {id: PHANTOM-20-16, role: FAILURE_RECOVERY}
+          - {id: PHANTOM-20-17, role: CROSS_AGENT_SYNTHESIZER}
+          - {id: PHANTOM-20-18, role: BROWSER_EXECUTOR}
+          - {id: PHANTOM-20-19, role: ACCOUNT_STATE_AUDITOR}
+          - {id: PHANTOM-20-20, role: FINAL_HANDOFF_COORDINATOR}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download all stage1 evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: stage1-*
+          merge-multiple: true
+          path: peer-evidence
+      - name: Run stage2 peer review
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          SESSION_ID: ${{ matrix.id }}
+          ROLE: ${{ matrix.role }}
+          PHASE: stage2
+          SWARM_ISSUE: '2'
+          TARGET_SMS: '3059278198'
+        run: python tools/phone_swarm_worker.py
+      - name: Upload stage2 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage2-${{ matrix.id }}
+          path: agent-output/${{ matrix.id }}.json
+          if-no-files-found: error
+          retention-days: 7
+
   integrate:
     name: PHANTOM-20 Integrator
-    needs: worker
+    needs: [stage1, stage2]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download evidence
+      - name: Download all evidence
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
+          pattern: stage*
+          merge-multiple: true
           path: swarm/mission-20/results
       - name: Verify coordination
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           gh api "repos/$GITHUB_REPOSITORY/issues/2/comments?per_page=100" > swarm/mission-20/results/ISSUE_BUS.json || true
           python - <<'PY'
-          import json, re
+          import json, os, re
           from pathlib import Path
           root=Path('swarm/mission-20/results')
-          rows=[]
-          for p in root.glob('PHANTOM-20-*/agent-output/*.json'):
-              try: rows.append(json.loads(p.read_text()))
+          stage1=[]; stage2=[]
+          for p in root.rglob('PHANTOM-20-*.json'):
+              try:
+                  r=json.loads(p.read_text())
+                  (stage1 if r.get('phase')=='stage1' else stage2).append(r)
               except Exception: pass
           expected={f'PHANTOM-20-{i:02d}' for i in range(1,21)}
-          seen={r.get('session_id') for r in rows}
-          bus=(root/'ISSUE_BUS.json').read_text(errors='replace') if (root/'ISSUE_BUS.json').exists() else ''
-          target='3059278198'
-          import os
-          target_pass=bool(re.fullmatch(r'[2-9][0-9]{9}',target))
-          peer_failures=[r.get('session_id') for r in rows if not r.get('responded_to')]
-          target_rows=[r for r in rows if r.get('role')=='TARGET_VALIDATOR']
-          target_evidence_pass=any(r.get('target_validation')=='PASS_NANP_SHAPE' for r in target_rows)
-          browser_jsons=list(root.glob('PHANTOM-20-*/browser-evidence/*.json'))
-          browser_evidence_count=len(browser_jsons)
-          run_id=os.environ.get('GITHUB_RUN_ID','')
+          s1={r.get('session_id') for r in stage1}; s2={r.get('session_id') for r in stage2}
+          current=[]
           try:
-              comments=json.loads(bus)
-          except Exception:
-              comments=[]
-          current=[x.get('body','') for x in comments if f'[run={run_id}]' in x.get('body','')]
-          interagent_messages=sum(' INTERAGENT**' in b for b in current)
+              current=[x.get('body','') for x in json.loads((root/'ISSUE_BUS.json').read_text()) if f"[run={os.environ['RUN_ID']}]" in x.get('body','')]
+          except Exception: pass
+          inter=[b for b in current if ' INTERAGENT**' in b]
+          peer_fail=[r.get('session_id') for r in stage2 if not r.get('peer_consumed') or not r.get('peer_session') or r.get('peer_session')==r.get('session_id')]
+          target_pass=any(r.get('target_validation')=='PASS_NANP_SHAPE' for r in stage1)
+          browser_files=list(root.rglob('browser-evidence/*.json'))
           report={
             'mission_id':'PHANTOM-20-REAL-NUMBER-001',
-            'expected_workers':20,
-            'observed_worker_evidence':len(rows),
-            'missing_workers':sorted(expected-seen),
-            'unique_workers':len(seen),
-            'issue_bus_mentions':bus.count('PHANTOM-20-'),
-            'interagent_messages':interagent_messages,
-            'peer_consumption_failures':peer_failures,
-            'target_sms_raw':target,
-            'target_evidence_pass':target_evidence_pass,
-            'browser_evidence_files':browser_evidence_count,
-            'target_shape_pass':target_pass,
-            'status':'PASS_CHECKPOINT' if seen==expected and target_pass else 'FAIL_COORDINATION',
-            'account_creation_performed_by_workflow':False,
-            'sms_sent_by_workflow':False,
+            'run_id':os.environ['RUN_ID'],
+            'stage1_workers':len(stage1),'stage2_workers':len(stage2),
+            'stage1_complete':s1==expected,'stage2_complete':s2==expected,
+            'missing_stage1':sorted(expected-s1),'missing_stage2':sorted(expected-s2),
+            'interagent_messages':len(inter),'peer_failures':peer_fail,
+            'target_validation_evidence':target_pass,
+            'browser_evidence_files':len(browser_files),
+            'account_creation_performed_by_workflow':False,'sms_sent_by_workflow':False,
             'human_confirmation_required':True
           }
-          if interagent_messages < 20:
-              report['status']='FAIL_TWO_WAY_COMMUNICATION'
-          if peer_failures:
-              report['status']='FAIL_PEER_CONSUMPTION'
-          if browser_evidence_count < 3:
-              report['status']='FAIL_BROWSER_EVIDENCE'
-          if not target_evidence_pass:
-              report['status']='FAIL_TARGET_VALIDATION'
-          if seen!=expected:
-              report['status']='FAIL_COORDINATION'
+          report['status']='PASS_CHECKPOINT' if report['stage1_complete'] and report['stage2_complete'] and len(inter)>=20 and not peer_fail and target_pass and len(browser_files)>=3 else 'FAIL'
           Path('swarm/runs').mkdir(parents=True,exist_ok=True)
-          run_id=os.environ.get('GITHUB_RUN_ID','unknown')
-          Path(f'swarm/runs/PHANTOM-20-REAL-NUMBER-001-{run_id}.json').write_text(json.dumps(report,indent=2)+'\n')
-          Path(f'swarm/runs/PHANTOM-20-REAL-NUMBER-001-{run_id}.md').write_text('# PHANTOM-20 Real Number Challenge\n\n'+json.dumps(report,indent=2)+'\n\n**Not a victory report:** final signup/send remains human-controlled and user confirmation is required.\n')
+          out=Path(f"swarm/runs/PHANTOM-20-REAL-NUMBER-001-{os.environ['RUN_ID']}")
+          out.mkdir(exist_ok=True)
+          (out/'result.json').write_text(json.dumps(report,indent=2)+'\n')
+          (out/'result.md').write_text('# PHANTOM-20 audit\n\n'+json.dumps(report,indent=2)+'\n')
           print(json.dumps(report,indent=2))
           if report['status']!='PASS_CHECKPOINT': raise SystemExit(1)
-      - name: Persist integrated checkpoint
+      - name: Persist audit
         run: |
           git config user.name 'PHANTOM-20 Integrator'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add swarm/runs/PHANTOM-20-REAL-NUMBER-001-*.md swarm/runs/PHANTOM-20-REAL-NUMBER-001-*.json
-          git diff --cached --quiet || git commit -m 'Record PHANTOM-20 coordination checkpoint'
+          git add swarm/runs/PHANTOM-20-REAL-NUMBER-001-*
+          git diff --cached --quiet || git commit -m 'Record PHANTOM-20 two-phase coordination audit'
           git push
