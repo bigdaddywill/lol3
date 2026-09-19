@@ -161,3 +161,26 @@ Ghost said: “now GO GO GO, remember to use github as your chatlog & context.�
 
 ### Boundary
 This is now a verified reference-digest matcher/outreach engine, not yet a completed production scraper fleet. Live source adapters, freshness verification, geo/service-area matching, dedupe, status tracking, and labeled match-quality benchmarks remain.
+
+
+## CONTINUATION UPDATE — 2026-09-19 — LIVE SOURCE AUDIT
+
+### What happened
+- Added an Indiana Armory Board source adapter and live smoke test.
+- First live smoke attempt failed because the endpoint returned zero rows.
+- Added diagnostics; GitHub Actions showed the actual response was a valid 620-byte page containing the expected bid-posting headers plus `No Bids Posted at This Time`.
+- Browser-like request headers were tested and did not change that response.
+- This established the condition as a valid current empty board, not a parser bug.
+- Updated CI to pass only when zero rows are accompanied by the explicit empty-board marker, or when real bid rows parse.
+
+### Final verified run
+- Run: `35421618318`
+- Commit: `ca19e382edd822a5ff63b4749ad18472564bbb93`
+- 6 unit tests: PASS
+- 8-bid reference E2E: PASS
+- Output invariants: PASS
+- Live Armory Board check: PASS
+- Artifact upload: PASS
+
+### Durable conclusion
+The LOL3 reference pipeline is functional and audited. The live-source layer now has one verified adapter, and the source-status gate distinguishes real empty boards from parsing/access failures. Remaining production work is adding more source adapters and authenticated/dynamic-source handling where necessary.
