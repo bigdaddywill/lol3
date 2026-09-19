@@ -102,3 +102,55 @@ Run `35421618318` at commit `ca19e382edd822a5ff63b4749ad18472564bbb93` completed
 
 ### Current boundary
 The reference matching/outreach pipeline is verified end-to-end. One live public source adapter is verified and can correctly report a live empty board. The larger production scraper fleet still needs additional source adapters and a discovery strategy for sources whose public pages require authentication, dynamic sessions, or other access conditions.
+
+
+## FINAL PRODUCTION AUDIT — 2026-09-19
+
+### Final gate
+Production audit run `35422565481`: SUCCESS.
+
+Final standalone smoke run `35422611533`: SUCCESS, 17/17 tests.
+
+### Final source and contractor facts
+- XLSX rows seen: 265
+- XLSX rows loaded: 264
+- duplicates removed: 1
+- recovered business names: 2
+- unidentifiable rows: 0
+- email present: 263
+- any phone present: 264
+- location present: 262
+- trade present: 215
+- Indiana Concrete/Masonry production contractors: 2
+
+### Final live bid result
+- INDOT current source: 39 contracts parsed
+- current concrete-relevant bids after trade filtering: 25
+- historical reference fixture bids retained: 8
+- final bid set: 33
+- final outreach pairings: 50
+
+### Final semantic guarantees
+- Concrete mode only
+- contractor category must document Concrete or Masonry
+- bid must contain concrete-relevant evidence
+- same-state requirement
+- open deadline required
+- HMA-only and pavement-marking-only records excluded
+- no generic category stopwords used as trade evidence
+- no duplicate pair keys
+- no unsupported contractor qualification claims
+- human send gate on every outbound record
+
+### Final source policy
+- INDOT is the required live source.
+- SAB and Public Purchase are optional; degraded/empty responses do not create phantom bids.
+- Historical digest data is never treated as current open status.
+
+### Final artifact
+GitHub Actions artifact `10578650088`
+SHA-256 `73b49ec60b4b624faab382701fa5bd8ed5546273e46f45b743b288172068eccc`
+
+The downloaded artifact was independently inspected after CI success and its semantic assertions passed.
+
+See `context/FINAL_AUDIT_2026-09-19.md` for the consolidated final record.
