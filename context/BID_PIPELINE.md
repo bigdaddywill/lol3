@@ -114,3 +114,15 @@ Automated audit run 35421452945 passed unit tests, the full 8-bid pipeline, outp
 
 ### Next stage
 Build source-specific live procurement adapters, freshness/open-status checks, geography/service-area constraints, deduplication, and persistent delivery/status tracking.
+
+
+## LIVE SOURCE LAYER — 2026-09-19
+
+### Verified adapter
+`pipeline/live_sources.py` currently provides an Indiana Armory Board adapter for the public SAB bid viewer. The source-specific parser extracts solicitation/project title, bid deadline, prequalification marker, project manager contact, state, posted date, and source link.
+
+### Live behavior
+The current SAB endpoint returned an explicitly empty board during the final smoke run. The system treats this as a valid source result rather than fabricating opportunities. The smoke gate requires the expected table headers and either parseable rows or the explicit `No Bids Posted at This Time` marker.
+
+### Final smoke
+Run `35421618318` passed all checks.
