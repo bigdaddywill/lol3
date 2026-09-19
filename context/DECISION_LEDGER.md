@@ -35,3 +35,11 @@ Status: ACTIVE
 D009 — Audit artifacts are first-class evidence.
 Reason: reproducibility, debugging, and cross-session continuity.
 Status: ACTIVE
+
+D010 — Execution state is separate from project memory.
+Reason: multi-day work needs durable task ownership, checkpoints, leases, and recovery independent of a chat session.
+Status: ACTIVE
+
+D011 — Long-running work uses bounded resumable slices.
+Reason: GitHub-hosted jobs are time-bounded; persisted checkpoints let work continue across many worker lifetimes.
+Status: ACTIVE
