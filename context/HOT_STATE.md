@@ -15,7 +15,7 @@ PHANTOM_20_REAL_NUMBER_CHECKPOINT_SWARM
 - GitHub issue bus: #2
 - target_sms_raw: 3059278198
 - Target is preserved exactly; workers must not guess, normalize, truncate, or replace it.
-- 20 role-specialized sessions are launched through `.github/workflows/20-phone-swarm-checkpoint.yml`.
+- 20 role-specialized sessions are launched through `.github/workflows/20-phone-swarm-checkpoint.yml`; the hardened version requires two-way peer consumption.
 - Communication channel: GitHub issue #2 comments.
 - Durable mission files: `swarm/mission-20/MISSION.md`, `swarm/mission-20/ROLES.md`.
 - Worker implementation: `tools/phone_swarm_worker.py`.
