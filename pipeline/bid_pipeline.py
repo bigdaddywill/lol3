@@ -122,7 +122,8 @@ class _CardParser(HTMLParser):
 
 
 def _clean_tag_text(value: str) -> str:
-    return normalize(re.sub(r"<[^>]+>", " ", value))
+    text = html.unescape(re.sub(r"<[^>]+>", " ", value)).replace("\xa0", " ")
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def parse_reference_html(html_text: str) -> list[dict[str, Any]]:
@@ -336,6 +337,7 @@ def generate_outreach(
     bid: dict[str, Any], contractor: dict[str, Any], match: dict[str, Any]
 ) -> dict[str, str]:
     first_name = contractor.get("first_name") or "there"
+    company = contractor.get("business_name") or "your company"
     project = bid.get("project_name") or "the project"
     location = bid.get("location") or bid.get("state") or "the project area"
     deadline = bid.get("deadline") or "the listed deadline"
@@ -345,6 +347,7 @@ def generate_outreach(
     invitation = (
         f"Bid invitation — {project}\n\n"
         f"Hi {first_name},\n\n"
+        f"Company: {company}\n"
         f"We have a potential fit for your {contractor.get('category') or 'contracting'} company: "
         f"{project} in {location}.\n\n"
         f"Scope: {scope}\n"
@@ -356,6 +359,7 @@ def generate_outreach(
     email_subject = f"Bid opportunity: {project} — {location}"
     email_body = (
         f"Hi {first_name},\n\n"
+        f"Company: {company}\n\n"
         f"I’m reaching out about {project} in {location}. Based on your listed "
         f"{contractor.get('category') or 'contracting'} services and location, this looks potentially relevant.\n\n"
         f"Scope: {scope}\n"
