@@ -127,3 +127,25 @@ def test_trusted_detail_page_can_qualify():
     )
     m = rank_matches(c, [b], minimum_score=1)
     assert m
+
+
+def test_bid_network_is_not_a_bid_number():
+    r = SearchResult("Roof Bid", "https://example.org/roof")
+    b = extract_bid(r, "Bid on Roofing Replacement | Massachusetts Bid Network", "Solicitation Title: Roofing Replacement. Scope: Replace roof and gutters.")
+    assert b.bid_number is None
+
+
+def test_outreach_does_not_claim_active_without_deadline():
+    c = Contractor(sheet="x", company="Acme", email="acme@example.com", state="MA", trade="Roofing")
+    b = Bid(
+        title="Roof Replacement",
+        source_url="https://www.massbids.net/bid_opportunities/2026/09/18/123-roof.html",
+        source_domain="www.massbids.net",
+        scope=source_field("Roof replacement and gutter repairs.", "https://www.massbids.net/bid_opportunities/2026/09/18/123-roof.html")
+    )
+    m = rank_matches(c, [b], minimum_score=1)[0]
+    _, email = generate_email(m)
+    sms = generate_sms(m)
+    assert "recent commercial bid opportunities" in email
+    assert "active commercial bid" not in email.lower()
+    assert "recent commercial bid" in sms.lower()
