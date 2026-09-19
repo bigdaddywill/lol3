@@ -100,6 +100,9 @@ jobs:
               "mission_id": "48-SESSION-COORDINATION-001",
               "status": "READY",
               "shared_mission_sha256": hashlib.sha256(mission.encode()).hexdigest(),
+              "runner_os": os.environ.get("RUNNER_OS"),
+              "runner_name": os.environ.get("RUNNER_NAME"),
+              "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
               "evidence": [
                   "worker VM booted",
                   "shared mission loaded",
@@ -121,12 +124,14 @@ jobs:
   integrate:
     name: "48-Session Integrator"
     needs: worker
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download all 48 session results
+      - name: Download all available session results
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           path: swarm/mission-48/results
 
@@ -158,6 +163,8 @@ jobs:
               errors.append(f"shared mission hash divergence: {sorted(hashes)}")
           if any(r.get("status") != "READY" for r in rows):
               errors.append("one or more sessions did not reach READY")
+          if any(r.get("runner_os") != "Linux" for r in rows):
+              errors.append("one or more workers did not report a Linux GitHub-hosted VM")
           status = "PASS" if not errors else "FAIL"
           
           report = [
