@@ -10,9 +10,9 @@ branch: main
 Build and maintain the bid-to-outreach automation system while preserving durable context in GitHub.
 
 ## CURRENT PHASE
-CHATGPT_SESSION_SWARM
+CHATGPT_48_SESSION_COORDINATION_PROOF
 
-The persistent executor remains the work-in-motion layer. The new session-swarm layer adds independent ChatGPT agents that collaborate through GitHub mailboxes and a shared blackboard.
+The 48-worker coordination proof is the active swarm mission. The deterministic worker body is intentionally separate from the later model-driven agent layer.
 
 ## CURRENT FLOW
 LIVE BID SOURCES -> NORMALIZE -> TRADE RELEVANCE -> STATE GATE -> OPEN-DEADLINE GATE -> MATCH SCORE/REASONS -> BID INVITATION -> EMAIL -> FOLLOW-UP SMS -> TRACKING -> HUMAN SEND GATE
@@ -76,11 +76,19 @@ Optional:
 - Audited source head f8f768ba97534e7cddca9013598bae5c0af86a8c.
 
 ## ACTIVE TODO
-- Connect an always-on worker runtime to the executor protocol.
-- Run and record an end-to-end multi-slice resume test, including a forced worker death and watchdog recovery.
-- Run the first real multi-session ChatGPT handshake: one session sends a TASK, another returns a RESULT/CHALLENGE, and the Chief integrates it.
+- Verify the corrected 48-session run whose source commit is the hardened workflow/mission state, not the earlier provisional run.
+- Inspect the final 48-session evidence for count, identity, shared mission hash, runner platform, failure visibility, and provenance.
+- Verify whether 48 jobs actually ran concurrently or were queued by the account's GitHub Actions concurrency ceiling.
+- After the coordination proof is independently finalized, replace the deterministic worker body with real model-driven agents while preserving the same evidence/integration gates.
 
 Update this file only from verified reality.
+
+## 48-SESSION PROOF STATUS
+- Provisional first run: GitHub Actions run 35424136351, source commit 2677dfdd, result PASS with 48/48 workers and one shared mission hash.
+- That result is NOT canonical because the integrator failure-handling bug was discovered afterward.
+- Hardened workflow commit: e08042fcc98d09c681dd83b1ee6200549e7f4eae.
+- Hardened mission commit: 47141871175d72c3af5b82ee223a25d3705bec99.
+- Corrected rerun is expected from the hardened mission push; its final persisted report must name the corrected source commit before it can replace the provisional result as canonical.
 
 ## MEMORY SYSTEM SELF-TEST
 - Memory audit run 35423030637: SUCCESS.
