@@ -1,0 +1,56 @@
+name: LOL3 bid pipeline smoke
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Run reference end-to-end pipeline
+        run: |
+          python -m pipeline.bid_pipeline \
+            --contractors hi \
+            --source "[Concrete _ Indiana] 8 open bids last 14 days — nearest deadline Aug 25, 2026.eml" \
+            --output artifacts/bid_pipeline.json
+
+      - name: Validate output invariants
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          p = Path("artifacts/bid_pipeline.json")
+          data = json.loads(p.read_text(encoding="utf-8"))
+          assert data["bid_count"] == 8, data["bid_count"]
+          assert data["contractor_count"] == 263, data["contractor_count"]
+          assert len(data["results"]) == data["bid_count"]
+          for result in data["results"]:
+              assert result["bid"]["source_url"]
+              for item in result["matches"]:
+                  assert item["contractor"]["business_name"]
+                  assert item["match"]["reasons"]
+                  assert item["match"]["score_breakdown"]
+                  for key in ("bid_invitation", "email_subject", "email_body", "follow_up_sms"):
+                      assert item["outreach"][key]
+          print("output invariants: PASS")
+          PY
+
+      - name: Upload pipeline artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lol3-bid-pipeline-smoke
+          path: artifacts/bid_pipeline.json
