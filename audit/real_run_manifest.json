@@ -49,37 +49,37 @@
       "candidates": 3,
       "candidate_diagnostics": [
         {
+          "title": "Dallas Painting Contractors - Southern Painting",
+          "url": "https://southernpainting.com/dallas/",
+          "domain": "southernpainting.com",
+          "scope": "",
+          "location": "",
+          "due_date": "",
+          "bid_number": "for",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "not clearly a bid opportunity"
+          ]
+        },
+        {
+          "title": "DFW Painters | Painting Company | Professional Painting Services Dallas | Platinum Painting",
+          "url": "https://www.platinumpainting.com/",
+          "domain": "www.platinumpainting.com",
+          "scope": "",
+          "location": "",
+          "due_date": "",
+          "bid_number": "manager",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "not clearly a bid opportunity"
+          ]
+        },
+        {
           "title": "Painting - Wikipedia",
           "url": "https://en.wikipedia.org/wiki/Painting",
           "domain": "en.wikipedia.org",
-          "scope": "",
-          "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "Paint",
-          "url": "https://paint.js.org/",
-          "domain": "paint.js.org",
-          "scope": "",
-          "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "Kleki - Paint Tool",
-          "url": "https://kleki.com/",
-          "domain": "kleki.com",
           "scope": "",
           "location": "",
           "due_date": "",
@@ -104,22 +104,8 @@
       "candidates": 3,
       "candidate_diagnostics": [
         {
-          "title": "Roofing Contractors near Ocean Isle Beach, NC | Better ...",
-          "url": "https://www.bbb.org/us/nc/ocean-isle-beach/category/roofing-contractors",
-          "domain": "www.bbb.org",
-          "scope": "",
-          "location": "",
-          "due_date": "",
-          "bid_number": "",
-          "contact_email": "",
-          "score": 0,
-          "reasons": [
-            "not clearly a bid opportunity"
-          ]
-        },
-        {
-          "title": "The Best 10 Roofing near Ocean Isle Beach, NC 28469 - Yelp",
-          "url": "https://www.yelp.com/search?cflt=roofing&find_loc=Ocean+Isle+Beach%2C+NC+28469",
+          "title": "THE BEST 10 Roofing in NORTHGLENN, CO - Updated 2026 - Yelp",
+          "url": "https://www.yelp.com/search?cflt=roofing&find_loc=Northglenn%2C+CO",
           "domain": "www.yelp.com",
           "scope": "",
           "location": "",
@@ -132,13 +118,27 @@
           ]
         },
         {
-          "title": "Roofing Contractor | Blankenship Roofing",
-          "url": "https://www.blankenshiproofinginc.com/",
-          "domain": "www.blankenshiproofinginc.com",
+          "title": "ATLAS ROOFING - Updated August 2026 - Northglenn, Colorado - Yelp",
+          "url": "https://www.yelp.com/biz/atlas-roofing-northglenn",
+          "domain": "www.yelp.com",
           "scope": "",
           "location": "",
           "due_date": "",
-          "bid_number": "begins",
+          "bid_number": "",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "not clearly a bid opportunity"
+          ]
+        },
+        {
+          "title": "Roofing Contractors near Northglenn, CO | Better Business Bureau",
+          "url": "https://www.bbb.org/us/co/northglenn/category/roofing-contractors",
+          "domain": "www.bbb.org",
+          "scope": "",
+          "location": "",
+          "due_date": "",
+          "bid_number": "",
           "contact_email": "",
           "score": 0,
           "reasons": [
