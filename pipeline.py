@@ -52,6 +52,8 @@ def read_xlsx(path: str | Path) -> list[Sheet]:
         wb.close()
     return sheets
 
+TARGET_SHEET = "on leads magnet"
+
 ALIASES = {
     "company": ["company", "company name", "business", "business name", "contractor", "contractor name", "legal name"],
     "contact": ["contact", "contact name", "primary contact", "owner", "poc", "point of contact", "contact person"],
@@ -110,6 +112,8 @@ def load_contractors(path: str | Path) -> tuple[list[Contractor], dict[str, Any]
         "header_mapping": {},
     }
     for sheet in sheets:
+        if key(sheet.name) != TARGET_SHEET:
+            continue
         if not sheet.rows:
             audit["header_mapping"][sheet.name] = {}
             continue
@@ -148,6 +152,10 @@ def load_contractors(path: str | Path) -> tuple[list[Contractor], dict[str, Any]
             seen.add(fingerprint)
             contractors.append(c)
     audit["rows_loaded"] = len(contractors)
+    audit["rows_with_email"] = sum(bool(c.email) for c in contractors)
+    audit["rows_with_phone"] = sum(bool(c.phone) for c in contractors)
+    audit["rows_with_location"] = sum(bool(c.city and c.state) for c in contractors)
+    audit["rows_with_trade"] = sum(bool(c.trade) for c in contractors)
     return contractors, audit
 
 class HTMLTextParser(HTMLParser):
