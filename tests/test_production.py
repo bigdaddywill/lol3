@@ -75,6 +75,30 @@ class ProductionTests(unittest.TestCase):
             deadline="October 1, 2099",
             deadline_iso="2099-10-01T10:00:00+00:00",
         )
+        hma_bid = BidRecord(
+            bid_id="b-hma",
+            source_type="test",
+            source_url="https://example.com/bid",
+            source_domain="example.com",
+            project_name="HMA OVERLAY, PREVENTIVE MAINTENANCE",
+            scope="HMA overlay and preventive maintenance",
+            location="Indianapolis, IN",
+            state="IN",
+            deadline="October 1, 2099",
+            deadline_iso="2099-10-01T10:00:00+00:00",
+        )
+        markings_bid = BidRecord(
+            bid_id="b-markings",
+            source_type="test",
+            source_url="https://example.com/bid",
+            source_domain="example.com",
+            project_name="PAVEMENT MARKINGS",
+            scope="pavement markings",
+            location="Indianapolis, IN",
+            state="IN",
+            deadline="October 1, 2099",
+            deadline_iso="2099-10-01T10:00:00+00:00",
+        )
         irrelevant_bid = BidRecord(
             bid_id="b-tree",
             source_type="test",
@@ -99,6 +123,8 @@ class ProductionTests(unittest.TestCase):
         )
         self.assertTrue(bid_relevant_to_trade(relevant_bid, "concrete"))
         self.assertFalse(bid_relevant_to_trade(irrelevant_bid, "concrete"))
+        self.assertFalse(bid_relevant_to_trade(hma_bid, "concrete"))
+        self.assertFalse(bid_relevant_to_trade(markings_bid, "concrete"))
         self.assertTrue(score_contract_match(concrete, relevant_bid, trade_focus="concrete")["eligible"])
         self.assertFalse(score_contract_match(general, relevant_bid, trade_focus="concrete")["eligible"])
         self.assertFalse(score_contract_match(concrete, irrelevant_bid, trade_focus="concrete")["eligible"])
