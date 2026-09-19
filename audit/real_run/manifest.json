@@ -39,11 +39,86 @@
   "results": [
     {
       "company": "Vasquez Home Improvement",
-      "status": "qualified",
-      "score": 30,
-      "bid": "Bid on Building Code Compliance and Enforcement Consulting Services (Request for Qualifications) in City Hall, 2 Fifteenth St | New York Bid Network",
-      "source_url": "https://www.newyorkbids.net/bid_opportunities/2026/09/18/15035632-building-code-compliance-and-enforcement-consulting-services-request-for-qualifications.html",
-      "output": "audit/real_run/0001_Vasquez_Home_Improvement"
+      "status": "no_match",
+      "queries": [
+        "site:govtribe.com/opportunity \"Painting\" \"NY\"",
+        "site:govtribe.com/file/government-file \"Painting\" \"NY\" bid",
+        "site:govly.com/public/opportunities \"Painting\" \"NY\"",
+        "site:gov \"Painting\" \"NY\" bid solicitation"
+      ],
+      "candidates": 5,
+      "candidate_diagnostics": [
+        {
+          "title": "Bid on Building Code Compliance and Enforcement Consulting Services (Request for Qualifications) in City Hall, 2 Fifteenth St | New York Bid Network",
+          "url": "https://www.newyorkbids.net/bid_opportunities/2026/09/18/15035632-building-code-compliance-and-enforcement-consulting-services-request-for-qualifications.html",
+          "domain": "www.newyorkbids.net",
+          "scope": "To assist the city in the implementation of tasks associated with development and redevelopment of commercial, multi-family and mixed-use buildings and reconstruction of existing facilities",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Network",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "no trade evidence"
+          ]
+        },
+        {
+          "title": "Bid on Case Construction Equipment Parts and Repairs in | New York Bid Network",
+          "url": "https://www.newyorkbids.net/bid_opportunities/2026/09/16/15029258-case-construction-equipment-parts-and-repairs.html",
+          "domain": "www.newyorkbids.net",
+          "scope": "Purchase of case construction equipment parts and repairs",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Network",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "no trade evidence"
+          ]
+        },
+        {
+          "title": "Bid on Cleaning of Various Greene County Government Buildings in Various locations | New York Bid Network",
+          "url": "https://www.newyorkbids.net/bid_opportunities/2026/09/18/15035605-cleaning-of-various-greene-county-government-buildings.html",
+          "domain": "www.newyorkbids.net",
+          "scope": "Cleaning of Various County Government Buildings",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Network",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "no trade evidence"
+          ]
+        },
+        {
+          "title": "Bid on Construct New Research Building for Graduate Research and Ai Institute Phase 1 (Request for Qualification) in | New York Bid Network",
+          "url": "https://www.newyorkbids.net/bid_opportunities/2026/09/18/15035529-construct-new-research-building-for-graduate-research-and-ai-institute-phase-1-request-for-qualification.html",
+          "domain": "www.newyorkbids.net",
+          "scope": "To provide design and construction administration services for the Construct New Research Building for Graduate Research and AI Institute – Phase 1",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Network",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "no trade evidence"
+          ]
+        },
+        {
+          "title": "Bid on Construction Inspection Services in | New York Bid Network",
+          "url": "https://www.newyorkbids.net/bid_opportunities/2026/09/15/15028758-construction-inspection-services.html",
+          "domain": "www.newyorkbids.net",
+          "scope": "Provide construction inspection services",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Network",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "no trade evidence"
+          ]
+        }
+      ]
     },
     {
       "company": "Universe Gutters Inc.",
@@ -55,11 +130,86 @@
     },
     {
       "company": "D State Tile and Granite Installation, Inc",
-      "status": "qualified",
-      "score": 30,
-      "bid": "Bid on Construction Manager / General Contractor - Embarcadero Plaza & Sue Bierman Park Renovation Project (Request for Qualifications & Proposals) in Embarcadero Plaza | California Bid Network",
-      "source_url": "https://www.californiabids.com/bid_opportunities/2026/09/18/15035527-construction-manager--general-contractor---embarcadero-plaza--sue-bierman-park-renovation-project-request-for-qualifications--proposals.html",
-      "output": "audit/real_run/0003_D_State_Tile_and_Granite_Installation__Inc"
+      "status": "no_match",
+      "queries": [
+        "site:govtribe.com/opportunity \"tile stone flooring\" \"CA\"",
+        "site:govtribe.com/file/government-file \"tile stone flooring\" \"CA\" bid",
+        "site:govly.com/public/opportunities \"tile stone flooring\" \"CA\"",
+        "site:gov \"tile stone flooring\" \"CA\" bid solicitation"
+      ],
+      "candidates": 5,
+      "candidate_diagnostics": [
+        {
+          "title": "Bid on Construction Manager / General Contractor - Embarcadero Plaza & Sue Bierman Park Renovation Project (Request for Qualifications & Proposals) in Embarcadero Plaza | California Bid Network",
+          "url": "https://www.californiabids.com/bid_opportunities/2026/09/18/15035527-construction-manager--general-contractor---embarcadero-plaza--sue-bierman-park-renovation-project-request-for-qualifications--proposals.html",
+          "domain": "www.californiabids.com",
+          "scope": "Perform pre-construction and construction services for park renovation project",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Network",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "no trade evidence"
+          ]
+        },
+        {
+          "title": "Bid on Administration Building Elevator Modernization in | California Bid Network",
+          "url": "https://www.californiabids.com/bid_opportunities/2026/09/18/15035182-administration-building-elevator-modernization.html",
+          "domain": "www.californiabids.com",
+          "scope": "Work includes but is not limited to a full modernization of the existing commercial, standard electric traction elevators, elevator car and hoistway signal equipment, operation and control systems, accessibility provisions for physically disabled persons, patching, painting etc",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Network",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "no trade evidence"
+          ]
+        },
+        {
+          "title": "Bid on Construction Manager At Risk Services for University Library (ul) Egress Stair, California State University, Northridge (Request for Qualifications) in | California Bid Network",
+          "url": "https://www.californiabids.com/bid_opportunities/2026/09/16/15031026-construction-manager-at-risk-services-for--university-library-ul-egress-stair-california-state-university-northridge-request-for-qualifications.html",
+          "domain": "www.californiabids.com",
+          "scope": "Construction manager at risk services for university library",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Network",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "no trade evidence"
+          ]
+        },
+        {
+          "title": "Bid on District Registration Center Roof Repair in | California Bid Network",
+          "url": "https://www.californiabids.com/bid_opportunities/2026/09/16/15030988-district-registration-center-roof-repair.html",
+          "domain": "www.californiabids.com",
+          "scope": "District registration center roof repair",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Network",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "no trade evidence"
+          ]
+        },
+        {
+          "title": "Bid on Liberty Ranch High School Concession Stand Modular Building Project in Liberty Ranch High School | California Bid Network",
+          "url": "https://www.californiabids.com/bid_opportunities/2026/09/16/15031017-liberty-ranch-high-school-concession-stand-modular-building-project.html",
+          "domain": "www.californiabids.com",
+          "scope": "High School Concession Stand Modular Building Project (manufacture, procurement, and installation of a modular concession stand building",
+          "location": "",
+          "due_date": "",
+          "bid_number": "Network",
+          "contact_email": "",
+          "score": 0,
+          "reasons": [
+            "no trade evidence"
+          ]
+        }
+      ]
     }
   ]
 }
