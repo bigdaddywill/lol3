@@ -231,6 +231,23 @@ def _extract_anchor_results(html: str) -> list[SearchResult]:
         results.append(SearchResult(title=title, url=href))
     return results
 
+
+def search_bing_rss(query: str, max_results: int = 10, timeout: int = 20) -> list[SearchResult]:
+    url = "https://www.bing.com/search?format=rss&q=" + quote_plus(query)
+    req = Request(url, headers={"User-Agent": "CommercialBidPipeline/1.0"})
+    with urlopen(req, timeout=timeout) as resp:
+        data = resp.read(1_500_000)
+    root = ET.fromstring(data)
+    results: list[SearchResult] = []
+    for item in root.findall(".//item"):
+        title = "".join(item.findtext("title", "") or "").strip()
+        link = "".join(item.findtext("link", "") or "").strip()
+        if title and link:
+            results.append(SearchResult(title=title, url=link))
+        if len(results) >= max_results:
+            break
+    return results
+
 class SearchHTMLParser(HTMLParser):
     def __init__(self, mode: str):
         super().__init__()
@@ -345,7 +362,7 @@ def search_duckduckgo(query: str, max_results: int = 10, timeout: int = 20) -> l
 def search_web(query: str, max_results: int = 10) -> list[SearchResult]:
     seen: set[str] = set()
     out: list[SearchResult] = []
-    for fn in (search_google, search_bing, search_duckduckgo):
+    for fn in (search_bing_rss, search_google, search_bing, search_duckduckgo):
         try:
             for result in fn(query, max_results=max_results):
                 if result.url in seen:
