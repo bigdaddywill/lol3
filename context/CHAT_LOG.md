@@ -236,3 +236,7 @@ Standalone smoke:
 
 ### Final durable conclusion
 The audited Concrete/Indiana bid-to-outreach pipeline is complete in the repository. The full final audit is preserved in `context/FINAL_AUDIT_2026-09-19.md`.
+
+
+## 2026-09-19 — Persistent executor brain upgrade
+User asked whether the GitHub brain could be enhanced to support multi-day work. Implemented a durable execution layer separate from memory: agent/QUEUE.json, agent/STATE.json, agent/LEDGER.md, agent/OPERATING_SYSTEM.md, tools/agent_supervisor.py, tests/test_agent_supervisor.py, and .github/workflows/agent-brain-audit.yml. Added leases, checkpoints, retry budgets, stale-worker recovery, worker CLI commands, and a scheduled watchdog. Updated HOT_STATE, memory index, restart protocol, decision/failure ledgers, and memory_audit.py so the new phase is represented without stale assertions. End-to-end worker runtime execution is not yet verified; this is the persistent control plane awaiting connection to an always-on worker.
