@@ -132,7 +132,7 @@ def parse_reference_html(html_text: str) -> list[dict[str, Any]]:
 
     for card in parser.cards:
         title_match = re.search(
-            r"<h2[^>]*>\s*<a\s+href="([^"]+)"[^>]*>\s*(.*?)\s*</a>",
+            r'<h2[^>]*>\s*<a\s+href="([^"]+)"[^>]*>\s*(.*?)\s*</a>',
             card,
             re.I | re.S,
         )
