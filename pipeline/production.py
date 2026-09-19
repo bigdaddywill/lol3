@@ -829,7 +829,7 @@ def scrape_indot_current() -> tuple[list[BidRecord], dict[str, Any]]:
         return [], health
 
 def scrape_sab_current() -> tuple[list[BidRecord], dict[str, Any]]:
-    health = {"source": "indiana_armory_board", "status": "unknown", "count": 0, "error": ""}
+    health = {"source": "indiana_armory_board", "status": "unknown", "count": 0, "error": "", "required": False}
     try:
         status, _, raw = fetch_text(SAB_URL)
         if status >= 400:
@@ -861,9 +861,13 @@ def scrape_sab_current() -> tuple[list[BidRecord], dict[str, Any]]:
             bid.bid_id = make_bid_id(bid)
             bids.append(bid)
         health["count"] = len(bids)
-        health["status"] = "ok" if bids else "empty"
-        if not bids and "No Bids Posted at This Time" not in normalize(raw):
-            health["status"] = "invalid_empty"
+        if bids:
+            health["status"] = "ok"
+        elif "No Bids Posted at This Time" in normalize(raw):
+            health["status"] = "empty"
+        else:
+            health["status"] = "degraded"
+            health["error"] = "200 response contained no parseable SAB bid rows; source is optional and excluded from matching for this run."
         return bids, health
     except Exception as exc:
         health["status"] = "error"
@@ -872,7 +876,7 @@ def scrape_sab_current() -> tuple[list[BidRecord], dict[str, Any]]:
 
 
 def source_health_public_purchase() -> dict[str, Any]:
-    health = {"source": "public_purchase_indianapolis", "status": "unknown", "count": 0, "error": ""}
+    health = {"source": "public_purchase_indianapolis", "status": "unknown", "count": 0, "error": "", "required": False}
     try:
         status, _, body = fetch_text(PUBLIC_PURCHASE_INDIANA)
         normalized = normalize(body)
