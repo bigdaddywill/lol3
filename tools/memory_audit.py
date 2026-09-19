@@ -79,8 +79,7 @@ def main() -> None:
 
     # Cold-start simulation: the five boot files must independently expose
     # the project identity, mission, phase, and audit truth.
-    boot = "
-".join(read(name) for name in [
+    boot = "\n".join(read(name) for name in [
         "HOT_STATE.md",
         "FACT_LEDGER.md",
         "DECISION_LEDGER.md",
