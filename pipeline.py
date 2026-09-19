@@ -539,7 +539,27 @@ def run(args: argparse.Namespace) -> None:
             continue
         matches = rank_matches(contractor, bids, minimum_score=args.minimum_score)
         if not matches:
-            manifest.append({"company": contractor.company, "status": "no_match", "queries": queries, "candidates": len(bids)})
+            manifest.append({
+                "company": contractor.company,
+                "status": "no_match",
+                "queries": queries,
+                "candidates": len(bids),
+                "candidate_diagnostics": [
+                    {
+                        "title": b.title,
+                        "url": b.source_url,
+                        "domain": b.source_domain,
+                        "scope": b.field("scope"),
+                        "location": b.field("location"),
+                        "due_date": b.field("due_date"),
+                        "bid_number": b.field("bid_number"),
+                        "contact_email": b.field("contact_email"),
+                        "score": score_match(contractor, b).score,
+                        "reasons": score_match(contractor, b).reasons,
+                    }
+                    for b in bids
+                ],
+            })
             continue
         safe = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in contractor.company)[:60]
         folder = output / f"{index:04d}_{safe}"
