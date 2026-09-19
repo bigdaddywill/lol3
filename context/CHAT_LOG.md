@@ -84,3 +84,25 @@ Ghost's intended project source artifacts are present in GitHub, but the actual 
 - Build only from verified artifacts.
 - Benchmark and audit everything.
 - Append new results and decisions here before ending the session.
+## CONTINUATION UPDATE — 2026-09-19
+
+### Durable context completed
+- context/README.md created and verified.
+- context/CURRENT_STATE.md created and verified.
+- context/ARCHITECTURE.md created and verified.
+- context/BENCHMARK_HISTORY.md created and verified.
+- context/SESSION_SNAPSHOT_2026-09-19.md created and verified.
+- context/CHAT_LOG.md created and verified.
+
+### Artifact extraction investigation
+- Tried GitHub connector fetch_file on the Grok workspace ZIP using UTF-8; binary decode failed as expected.
+- Tried fetch_file with base64 encoding; connector returned metadata but no usable content.
+- Tried public raw/blob URLs through web; binary endpoints were not retrievable in the current web cache.
+- Searched the native Library for the exact artifact names; the GitHub-uploaded ZIP/XLSX were not found there.
+- Therefore the Grok workspace has NOT been inspected and the XLSX has NOT been analyzed.
+
+### Required next action
+Materialize the ZIP/XLSX through a path that exposes their actual bytes, preferably by attaching/uploading the artifacts to the conversation or providing a directly accessible file reference. Do not build assumptions around their unseen contents.
+
+### User's preferred working mode
+Use long-running, multi-step work when justified; send milestone updates; keep live visibility where possible; write durable notes; audit code, tests, artifacts, runtime behavior, and semantic results before declaring completion.
