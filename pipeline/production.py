@@ -664,6 +664,22 @@ def scrape_state_network(state: str, trade: str, max_results: int = 8) -> tuple[
     return bids, health
 
 
+def extract_indot_letting_datetime(text: str) -> tuple[str, str]:
+    flat = re.sub(r"\s+", " ", text).strip()
+    match = re.search(
+        r"Letting\s+Date\s*&\s*Time:\s*"
+        r"((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4})"
+        r".{0,80}?\bat\s+(\d{1,2}:\d{2}\s*[AP]M)\b",
+        flat,
+        re.I,
+    )
+    if not match:
+        return "", ""
+    deadline = f"{match.group(1)} {match.group(2)}"
+    parsed = datetime.strptime(deadline, "%B %d, %Y %I:%M %p").replace(tzinfo=timezone.utc)
+    return deadline, parsed.isoformat(timespec="minutes")
+
+
 def parse_indot_notice_text(text: str, source_url: str, as_of: str) -> list[BidRecord]:
     flat = re.sub(r"\s+\n", "\n", text.replace("\r", ""))
     blocks = re.split(r"(?m)(?=^\s*[A-Z]\s*-\s*[A-Z0-9-]+\s+)", flat)
@@ -793,18 +809,7 @@ def scrape_indot_current() -> tuple[list[BidRecord], dict[str, Any]]:
         reader = PdfReader(io.BytesIO(data))
         text = "\n".join((pg.extract_text() or "") for pg in reader.pages)
 
-        letting_match = re.search(
-            r"Letting Date & Time:\s*([A-Za-z]+\s+\d{1,2},\s+\d{4})\s+at\s+(\d{1,2}:\d{2}\s*[AP]M)",
-            text,
-            re.I,
-        )
-        deadline = ""
-        deadline_iso = ""
-        if letting_match:
-            deadline = f"{letting_match.group(1)} {letting_match.group(2)}"
-            from datetime import datetime as _dt
-            local = _dt.strptime(deadline, "%B %d, %Y %I:%M %p").replace(tzinfo=timezone.utc)
-            deadline_iso = local.isoformat(timespec="minutes")
+        deadline, deadline_iso = extract_indot_letting_datetime(text)
 
         bids = parse_indot_notice_text(
             text,
