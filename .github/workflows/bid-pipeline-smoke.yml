@@ -3,6 +3,12 @@ name: LOL3 bid pipeline smoke
 on:
   push:
     branches: [main]
+    paths:
+      - "pipeline/**"
+      - "tests/**"
+      - "hi"
+      - "*.eml"
+      - ".github/workflows/bid-pipeline-smoke.yml"
   workflow_dispatch:
 
 jobs:
