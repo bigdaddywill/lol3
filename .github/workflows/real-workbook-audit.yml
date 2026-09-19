@@ -32,8 +32,9 @@ jobs:
           from urllib.request import Request, urlopen
           from urllib.parse import quote_plus
           for host in [
-              "https://www.bing.com/search?q=" + quote_plus("invitation to bid roofing Massachusetts 2026"),
-              "https://html.duckduckgo.com/html/?q=" + quote_plus("invitation to bid roofing Massachusetts 2026"),
+              "https://www.google.com/search?q=" + quote_plus('site:govtribe.com/opportunity roofing Massachusetts 2026') + "&num=10&hl=en",
+              "https://www.bing.com/search?q=" + quote_plus("site:govtribe.com/opportunity roofing Massachusetts 2026"),
+              "https://html.duckduckgo.com/html/?q=" + quote_plus("site:govtribe.com/opportunity roofing Massachusetts 2026"),
           ]:
               try:
                   req = Request(host, headers={"User-Agent": "Mozilla/5.0"})
